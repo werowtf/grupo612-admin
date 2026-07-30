@@ -49,8 +49,11 @@ next-env.d.ts
 # base de datos local embebida
 /.pgdata
 
-# caché de datos de idioma de tesseract.js (se regenera en tmpdir)
+# caché de datos de idioma de tesseract.js (se regenera en tmpdir);
+# excepto /tessdata, que es el .traineddata empaquetado a propósito con la
+# app para que el OCR no dependa de descargarlo por red en cada arranque frío
 *.traineddata
+!/tessdata/*.traineddata
 
 # archivos de asistentes de IDE generados por `prisma init` (no son parte de la app)
 /.agents
