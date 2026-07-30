@@ -1,0 +1,390 @@
+// Plataforma Administrativa y Financiera — Grupo 612
+// Schema base: fundación (usuarios/sucursales) + conciliación bancaria.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────
+// Fundación: usuarios, roles y sucursales
+// ─────────────────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN // acceso total
+  GERENTE // gerente de sucursal
+  CONTADOR // contabilidad / conciliación (interna)
+  CONTADOR_EXTERNO // contabilidad externa: sólo sube estados de cuenta
+  COMPRAS // sólo registra compras (egresos) diarias
+  CAJERO // captura operativa
+}
+
+model User {
+  id           String          @id @default(cuid())
+  email        String          @unique
+  name         String
+  passwordHash String
+  role         UserRole        @default(CONTADOR)
+  active       Boolean         @default(true)
+  venues       UserVenue[]
+  auditLogs    AuditLog[]
+  statements   BankStatement[] @relation("ImportedBy")
+  cortes       Corte[]         @relation("CorteCreatedBy")
+  entries      FinancialEntry[] @relation("EntryCreatedBy")
+  documents    Document[]      @relation("DocumentUploadedBy")
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model Venue {
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  rfc          String?
+  active       Boolean       @default(true)
+  users        UserVenue[]
+  bankAccounts BankAccount[]
+  cortes       Corte[]
+  entries      FinancialEntry[]
+  documents    Document[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+// Relación usuario ↔ sucursal (acceso). Los ADMIN ven todas.
+model UserVenue {
+  userId  String
+  venueId String
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue   Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@id([userId, venueId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Banca: cuentas, estados de cuenta importados y movimientos
+// ─────────────────────────────────────────────────────────────
+
+enum Bank {
+  SANTANDER
+  BANBAJIO
+  OTRO
+}
+
+model BankAccount {
+  id            String            @id @default(cuid())
+  venueId       String
+  venue         Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  bank          Bank
+  alias         String // p.ej. "Uno — Santander"
+  accountNumber String? // últimos dígitos / número visible
+  clabe         String?
+  currency      String            @default("MXN")
+  transactions  BankTransaction[]
+  statements    BankStatement[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@unique([venueId, bank, accountNumber])
+}
+
+enum StatementStatus {
+  IMPORTED // importado, pendiente de revisión
+  REVIEWED // revisado por contabilidad
+}
+
+// Un estado de cuenta = un archivo importado (lote).
+model BankStatement {
+  id             String            @id @default(cuid())
+  bankAccountId  String
+  bankAccount    BankAccount       @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  bank           Bank
+  fileName       String
+  periodStart    DateTime?
+  periodEnd      DateTime?
+  rowCount       Int               @default(0)
+  importedCount  Int               @default(0) // movimientos nuevos guardados
+  duplicateCount Int               @default(0) // filas omitidas por duplicado
+  totalCargos    Decimal           @default(0) @db.Decimal(14, 2)
+  totalAbonos    Decimal           @default(0) @db.Decimal(14, 2)
+  status         StatementStatus   @default(IMPORTED)
+  importedById   String?
+  importedBy     User?             @relation("ImportedBy", fields: [importedById], references: [id], onDelete: SetNull)
+  transactions   BankTransaction[]
+  createdAt      DateTime          @default(now())
+}
+
+enum TxDirection {
+  CARGO // salida (-)
+  ABONO // entrada (+)
+}
+
+// Clasificación del cliente: TRANSFERENCIA / CHEQUE / DEPOSITO / COMISION / GASTO_TARJETA (+ OTRO)
+enum TxCategory {
+  TRANSFERENCIA
+  CHEQUE
+  DEPOSITO
+  COMISION
+  GASTO_TARJETA
+  OTRO
+}
+
+enum TxStatus {
+  PENDIENTE // sin conciliar
+  CONCILIADO
+  IGNORADO
+}
+
+model BankTransaction {
+  id               String        @id @default(cuid())
+  bankAccountId    String
+  bankAccount      BankAccount   @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  statementId      String
+  statement        BankStatement @relation(fields: [statementId], references: [id], onDelete: Cascade)
+  date             DateTime
+  time             String? // "02:46"
+  description      String
+  descriptionLong  String?
+  direction        TxDirection
+  amount           Decimal       @db.Decimal(14, 2) // siempre positivo; el signo lo da direction
+  balance          Decimal?      @db.Decimal(14, 2)
+  reference        String?
+  concept          String?
+  category         TxCategory    @default(OTRO)
+  autoCategorized  Boolean       @default(true) // false si un humano la ajustó
+  counterpartyName String?
+  counterpartyRfc  String?
+  trackingKey      String? // clave de rastreo SPEI
+  status           TxStatus      @default(PENDIENTE)
+  note             String?
+  dedupeHash       String
+  raw              Json?
+
+  // Conciliación con cortes de caja: un depósito puede vincularse a un corte.
+  corteId String?
+  corte   Corte?  @relation("CorteDeposits", fields: [corteId], references: [id], onDelete: SetNull)
+
+  documents Document[] @relation("DocumentBankTransaction")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([bankAccountId, dedupeHash])
+  @@index([bankAccountId, date])
+  @@index([statementId])
+  @@index([category])
+  @@index([corteId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Auditoría
+// ─────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String // p.ej. "statement.import", "tx.recategorize"
+  entity    String? // "BankTransaction"
+  entityId  String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([entity, entityId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Cortes de caja (Corte Z / cierre de caja)
+// ─────────────────────────────────────────────────────────────
+
+enum CorteSource {
+  MANUAL // captura manual
+  EXCEL // importado de Excel (Soft Restaurant)
+  OCR // leído de foto del ticket
+}
+
+model Corte {
+  id       String @id @default(cuid())
+  venueId  String
+  venue    Venue  @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  // Identificación
+  date         DateTime // fecha del corte
+  turno        String? // matutino / vespertino / etc.
+  cajera       String?
+  estacion     String?
+  folioCorteZ  String?
+  folioInicial String?
+  folioFinal   String?
+
+  // Ventas por forma de pago
+  pagoEfectivo    Decimal @default(0) @db.Decimal(14, 2)
+  pagoVisa        Decimal @default(0) @db.Decimal(14, 2)
+  pagoMastercard  Decimal @default(0) @db.Decimal(14, 2)
+  pagoAmex        Decimal @default(0) @db.Decimal(14, 2)
+  pagoVales       Decimal @default(0) @db.Decimal(14, 2)
+  pagoOtros       Decimal @default(0) @db.Decimal(14, 2)
+  totalFormasPago Decimal @default(0) @db.Decimal(14, 2)
+
+  // Propinas por forma de pago
+  propinaEfectivo   Decimal @default(0) @db.Decimal(14, 2)
+  propinaVisa       Decimal @default(0) @db.Decimal(14, 2)
+  propinaMastercard Decimal @default(0) @db.Decimal(14, 2)
+  propinaAmex       Decimal @default(0) @db.Decimal(14, 2)
+  totalPropinas     Decimal @default(0) @db.Decimal(14, 2)
+
+  // Ventas por tipo de producto
+  ventaAlimentos Decimal @default(0) @db.Decimal(14, 2)
+  ventaBebidas   Decimal @default(0) @db.Decimal(14, 2)
+  ventaOtros     Decimal @default(0) @db.Decimal(14, 2)
+
+  // Totales
+  subtotal   Decimal @default(0) @db.Decimal(14, 2)
+  descuentos Decimal @default(0) @db.Decimal(14, 2)
+  ventaNeta  Decimal @default(0) @db.Decimal(14, 2)
+  iva        Decimal @default(0) @db.Decimal(14, 2)
+  totalVenta Decimal @default(0) @db.Decimal(14, 2)
+
+  // Control de caja
+  efectivoInicial   Decimal @default(0) @db.Decimal(14, 2)
+  efectivoDeclarado Decimal @default(0) @db.Decimal(14, 2)
+  retiros           Decimal @default(0) @db.Decimal(14, 2)
+  depositos         Decimal @default(0) @db.Decimal(14, 2)
+  sobranteFaltante  Decimal @default(0) @db.Decimal(14, 2)
+
+  // Operación
+  cuentasNormales   Int?
+  cuentasCanceladas Int?
+  comensales        Int?
+  cuentaPromedio    Decimal? @db.Decimal(14, 2)
+
+  // Origen y evidencia
+  source      CorteSource @default(MANUAL)
+  fileName    String?
+  rawText     String? // texto OCR crudo
+  raw         Json? // datos crudos del Excel u OCR
+  notes       String?
+  createdById String?
+  createdBy   User?       @relation("CorteCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  // Depósitos bancarios vinculados (conciliación de ventas con tarjeta).
+  deposits  BankTransaction[] @relation("CorteDeposits")
+  documents Document[]       @relation("DocumentCorte")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([venueId, folioCorteZ])
+  @@index([venueId, date])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Ingresos y egresos (movimientos manuales / compras)
+// ─────────────────────────────────────────────────────────────
+
+enum EntryType {
+  INGRESO
+  EGRESO
+}
+
+enum PaymentMethod {
+  EFECTIVO
+  TARJETA
+  TRANSFERENCIA
+  OTRO
+}
+
+enum EntrySource {
+  MANUAL
+  OCR // capturado desde foto del ticket
+}
+
+model FinancialEntry {
+  id          String       @id @default(cuid())
+  venueId     String
+  venue       Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  type        EntryType
+  date        DateTime
+  amount      Decimal      @db.Decimal(14, 2)
+  category    String // "Insumos", "Bebidas", "Renta", "Venta", etc.
+  description String?
+  supplier    String? // proveedor / beneficiario
+  rfc         String?
+  paymentMethod PaymentMethod @default(EFECTIVO)
+  reference   String?
+  folio       String? // folio del ticket / factura
+  source      EntrySource   @default(MANUAL)
+
+  // Evidencia (foto del ticket) almacenada en la BD por ahora (migrar a R2 después).
+  photo     Bytes?
+  photoMime String?
+  rawText   String? // texto OCR crudo
+
+  notes       String?
+  createdById String?
+  createdBy   User?    @relation("EntryCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  documents   Document[] @relation("DocumentEntry")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([venueId, date])
+  @@index([type])
+  @@index([category])
+  @@index([createdById])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Documentos (repositorio centralizado)
+// ─────────────────────────────────────────────────────────────
+
+/** Categorías sugeridas; se guarda como texto libre para no limitar de más. */
+enum DocumentCategory {
+  FACTURA
+  CONTRATO
+  COMPROBANTE
+  IDENTIFICACION
+  ACTA_CONSTITUTIVA
+  PERMISO
+  RECIBO
+  OTRO
+}
+
+model Document {
+  id      String @id @default(cuid())
+  venueId String
+  venue   Venue  @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  title    String
+  category DocumentCategory @default(OTRO)
+  tags     String? // separadas por coma, búsqueda simple
+  notes    String?
+
+  fileName String
+  mime     String
+  size     Int // bytes
+  file     Bytes // contenido almacenado en la BD por ahora (migrar a R2 después)
+
+  // Vínculos opcionales a otros registros de la plataforma.
+  corteId           String?
+  corte             Corte?           @relation("DocumentCorte", fields: [corteId], references: [id], onDelete: SetNull)
+  entryId           String?
+  entry             FinancialEntry?  @relation("DocumentEntry", fields: [entryId], references: [id], onDelete: SetNull)
+  bankTransactionId String?
+  bankTransaction   BankTransaction? @relation("DocumentBankTransaction", fields: [bankTransactionId], references: [id], onDelete: SetNull)
+
+  uploadedById String?
+  uploadedBy   User?    @relation("DocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([venueId, createdAt])
+  @@index([category])
+  @@index([corteId])
+  @@index([entryId])
+  @@index([bankTransactionId])
+}

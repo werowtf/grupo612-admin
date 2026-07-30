@@ -1,0 +1,79 @@
+import Link from "next/link";
+import { ImageIcon } from "lucide-react";
+import type { FinancialEntry } from "@/generated/prisma/client";
+import { entryTypeLabels, paymentLabels } from "@/lib/entries/config";
+import { formatMXN, formatDate } from "@/lib/utils";
+
+interface Props {
+  rows: FinancialEntry[];
+  hrefBase?: string; // p.ej. "/ingresos-egresos" para enlazar al detalle
+  emptyText?: string;
+}
+
+export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
+  if (rows.length === 0) {
+    return (
+      <div className="card p-8 text-center text-sm text-[var(--color-muted)]">
+        {emptyText ?? "No hay movimientos."}
+      </div>
+    );
+  }
+
+  return (
+    <div className="card overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[760px] text-sm">
+          <thead>
+            <tr className="border-b border-[var(--color-border)] bg-gray-50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+              <th className="px-3 py-2 font-medium">Fecha</th>
+              <th className="px-3 py-2 font-medium">Tipo</th>
+              <th className="px-3 py-2 font-medium">Categoría</th>
+              <th className="px-3 py-2 font-medium">Proveedor / origen</th>
+              <th className="px-3 py-2 font-medium">Pago</th>
+              <th className="px-3 py-2 text-right font-medium">Monto</th>
+              <th className="px-3 py-2 font-medium"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--color-border)]">
+            {rows.map((e) => {
+              const isEgreso = e.type === "EGRESO";
+              const dateCell = hrefBase ? (
+                <Link href={`${hrefBase}/${e.id}`} className="font-medium text-brand-700 hover:underline">
+                  {formatDate(e.date)}
+                </Link>
+              ) : (
+                <span className="font-medium">{formatDate(e.date)}</span>
+              );
+              return (
+                <tr key={e.id} className="hover:bg-gray-50/60">
+                  <td className="whitespace-nowrap px-3 py-2">{dateCell}</td>
+                  <td className="px-3 py-2">
+                    <span
+                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                        isEgreso ? "bg-rose-50 text-rose-700" : "bg-brand-50 text-brand-700"
+                      }`}
+                    >
+                      {entryTypeLabels[e.type]}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2">{e.category}</td>
+                  <td className="max-w-[200px] px-3 py-2 text-[var(--color-muted)]">
+                    <span className="line-clamp-1">{e.supplier ?? "—"}</span>
+                  </td>
+                  <td className="px-3 py-2 text-[var(--color-muted)]">{paymentLabels[e.paymentMethod]}</td>
+                  <td className={`px-3 py-2 text-right tabular-nums font-medium ${isEgreso ? "text-[var(--color-danger)]" : "text-brand-600"}`}>
+                    {isEgreso ? "−" : "+"}
+                    {formatMXN(e.amount)}
+                  </td>
+                  <td className="px-3 py-2 text-[var(--color-muted)]">
+                    {e.photoMime && <ImageIcon className="h-4 w-4" />}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
