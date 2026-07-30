@@ -27,6 +27,10 @@ function draftToValues(draft: CorteDraft): Values {
   return v;
 }
 
+// Debe quedar por debajo del maxDuration del endpoint (60s) para que el
+// cliente nunca espere más que el propio servidor.
+const OCR_TIMEOUT_MS = 55_000;
+
 export function CorteEditor({ venueId, venueName, corteId, initialValues, initialSource }: Props) {
   const [method, setMethod] = useState<Method>(
     initialSource && initialSource !== "MANUAL" ? initialSource : "MANUAL",
@@ -36,6 +40,8 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
   const [source, setSource] = useState<CorteSource>(initialSource ?? "MANUAL");
   const [fileName, setFileName] = useState<string>(initialValues?.fileName ?? "");
   const [processing, startProcessing] = useTransition();
+  const [ocrPending, setOcrPending] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState<number | null>(null);
   const [procMsg, setProcMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -45,31 +51,124 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
     setValues((v) => ({ ...v, [key]: value }));
   }
 
+  function applyExtraction(
+    draft: CorteDraft,
+    detectedKeys: string[],
+    extractionSource: CorteSource,
+    name: string,
+  ) {
+    setValues((v) => ({ ...v, ...draftToValues(draft) }));
+    setDetected(new Set(detectedKeys));
+    setSource(extractionSource);
+    setFileName(name);
+    const n = detectedKeys.length;
+    setProcMsg({
+      ok: true,
+      text: `Se detectaron ${n} campo${n === 1 ? "" : "s"}. Revísalos y corrige lo necesario antes de guardar.`,
+    });
+  }
+
   function onProcess() {
     const file = fileRef.current?.files?.[0];
     if (!file) {
       setProcMsg({ ok: false, text: "Selecciona un archivo primero." });
       return;
     }
+
+    if (method === "OCR") {
+      void onProcessOcr(file);
+      return;
+    }
+
+    // Excel: parseo local rápido, sigue usando la Server Action.
     const fd = new FormData();
     fd.set("file", file);
+    setProcMsg(null);
     startProcessing(async () => {
-      const res = await processCorteFileAction(fd);
-      if (!res.ok) {
-        setProcMsg({ ok: false, text: res.error });
-        return;
+      try {
+        const res = await processCorteFileAction(fd);
+        if (!res.ok) {
+          setProcMsg({ ok: false, text: res.error });
+          return;
+        }
+        applyExtraction(res.extraction.draft, res.extraction.detected as string[], res.extraction.source, file.name);
+      } catch (err) {
+        console.error("Error al procesar archivo:", err);
+        setProcMsg({
+          ok: false,
+          text: "No se pudo procesar el archivo. Intenta de nuevo o captura los datos manualmente.",
+        });
       }
-      const draft = res.extraction.draft;
-      setValues((v) => ({ ...v, ...draftToValues(draft) }));
-      setDetected(new Set(res.extraction.detected as string[]));
-      setSource(res.extraction.source);
-      setFileName(file.name);
-      const n = res.extraction.detected.length;
-      setProcMsg({
-        ok: true,
-        text: `Se detectaron ${n} campo${n === 1 ? "" : "s"}. Revísalos y corrige lo necesario antes de guardar.`,
-      });
     });
+  }
+
+  /**
+   * OCR de la foto vía endpoint con streaming: reporta progreso real y nunca
+   * se queda "colgado" (timeout propio + manejo de error en cada rama).
+   */
+  async function onProcessOcr(file: File) {
+    setOcrPending(true);
+    setOcrProgress(0);
+    setProcMsg(null);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), OCR_TIMEOUT_MS);
+
+    try {
+      const fd = new FormData();
+      fd.set("file", file);
+      const res = await fetch("/api/cortes/ocr", {
+        method: "POST",
+        body: fd,
+        signal: controller.signal,
+      });
+      if (!res.body) throw new Error("Sin respuesta del servidor.");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        let idx: number;
+        while ((idx = buf.indexOf("\n")) >= 0) {
+          const raw = buf.slice(0, idx);
+          buf = buf.slice(idx + 1);
+          if (!raw.trim()) continue;
+          const evt = JSON.parse(raw) as
+            | { type: "progress"; progress: number }
+            | { type: "done"; ok: true; result: { draft: CorteDraft; detected: string[]; source: CorteSource } }
+            | { type: "done"; ok: false; error: string };
+
+          if (evt.type === "progress") {
+            setOcrProgress(Math.max(0, Math.min(100, Math.round(evt.progress * 100))));
+          } else if (evt.ok) {
+            applyExtraction(evt.result.draft, evt.result.detected, evt.result.source, file.name);
+          } else {
+            setProcMsg({ ok: false, text: evt.error });
+          }
+        }
+      }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setProcMsg({
+          ok: false,
+          text: "El procesamiento tardó demasiado. Intenta con una foto más ligera/nítida o captura los datos manualmente.",
+        });
+      } else {
+        console.error("Error OCR:", err);
+        setProcMsg({
+          ok: false,
+          text: "No se pudo leer el ticket. Intenta de nuevo o captura los datos manualmente.",
+        });
+      }
+    } finally {
+      clearTimeout(timeoutId);
+      setOcrPending(false);
+      setOcrProgress(null);
+    }
   }
 
   const methods: { id: Method; label: string; icon: React.ComponentType<{ className?: string }>; hint: string }[] = [
@@ -121,9 +220,18 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                 className="input file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
               />
             </div>
-            <button type="button" onClick={onProcess} disabled={processing} className="btn-primary">
+            <button
+              type="button"
+              onClick={onProcess}
+              disabled={processing || ocrPending}
+              className="btn-primary"
+            >
               <UploadCloud className="h-4 w-4" />
-              {processing ? "Procesando…" : "Procesar archivo"}
+              {ocrPending
+                ? `Procesando… ${ocrProgress ?? 0}%`
+                : processing
+                  ? "Procesando…"
+                  : "Procesar archivo"}
             </button>
           </div>
           {method === "OCR" && (

@@ -44,8 +44,8 @@ npm run seed
 
 1. Sube este repo a GitHub (o usa `vercel` CLI para desplegar sin Git).
 2. En [vercel.com](https://vercel.com) → **Add New → Project** → importa el repo.
-3. **Root Directory**: selecciona `plataforma` (el proyecto Next.js vive en ese
-   subfolder, no en la raíz del repo).
+3. **Root Directory**: déjalo en `/` (la raíz) — el repo se inicializó dentro de
+   `plataforma/`, así que el proyecto Next.js ya está en la raíz del repo.
 4. Framework Preset: Next.js (se detecta automático).
 
 ## 4. Variables de entorno en Vercel

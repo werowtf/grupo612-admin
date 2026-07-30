@@ -96,8 +96,11 @@ export function extractTicket(text: string): {
   return { draft, detected: [...detected] };
 }
 
-export async function parseTicketImage(buffer: Buffer): Promise<TicketExtraction> {
-  const worker = await createOcrWorker("spa");
+export async function parseTicketImage(
+  buffer: Buffer,
+  onProgress?: (p: { status: string; progress: number }) => void,
+): Promise<TicketExtraction> {
+  const worker = await createOcrWorker("spa", onProgress);
   try {
     const { data } = await worker.recognize(buffer);
     const rawText = data.text ?? "";

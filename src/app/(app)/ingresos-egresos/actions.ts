@@ -8,8 +8,6 @@ import type { EntryType, PaymentMethod } from "@/generated/prisma/enums";
 import { getCurrentUser } from "@/lib/auth";
 import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
-import { parseTicketImage } from "@/lib/entries/ticket";
-import type { TicketDraft } from "@/lib/entries/ticket";
 
 export interface EntryFormState {
   error?: string;
@@ -147,24 +145,5 @@ export async function deleteEntryAction(entryId: string) {
   revalidatePath("/compras");
 }
 
-export type TicketResult =
-  | { ok: true; draft: TicketDraft; rawText: string; detected: string[] }
-  | { ok: false; error: string };
-
-/** Procesa la foto de un ticket con OCR y devuelve un borrador editable. */
-export async function processTicketAction(formData: FormData): Promise<TicketResult> {
-  const user = await getCurrentUser();
-  if (!user) return { ok: false, error: "Sesión expirada." };
-  const file = formData.get("photo");
-  if (!(file instanceof File) || file.size === 0) {
-    return { ok: false, error: "Selecciona una foto del ticket." };
-  }
-  try {
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const res = await parseTicketImage(buffer);
-    return { ok: true, draft: res.draft, rawText: res.rawText, detected: res.detected };
-  } catch (err) {
-    console.error("Error OCR ticket:", err);
-    return { ok: false, error: "No se pudo leer el ticket. Captura los datos manualmente." };
-  }
-}
+// El procesamiento OCR de tickets ahora corre vía /api/entries/ocr (streaming
+// con progreso real); ver src/app/api/entries/ocr/route.ts.

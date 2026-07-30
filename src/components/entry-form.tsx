@@ -1,13 +1,18 @@
 "use client";
 
-import { useRef, useState, useTransition, useActionState } from "react";
+import { useRef, useState, useActionState } from "react";
 import { ScanLine, Save, AlertCircle, CheckCircle2, ArrowDownLeft, ArrowUpRight } from "lucide-react";
-import { saveEntryAction, processTicketAction, type EntryFormState } from "@/app/(app)/ingresos-egresos/actions";
+import { saveEntryAction, type EntryFormState } from "@/app/(app)/ingresos-egresos/actions";
 import { categoriesFor, PAYMENT_METHODS, paymentLabels } from "@/lib/entries/config";
 import type { EntryType } from "@/generated/prisma/enums";
+import type { TicketDraft } from "@/lib/entries/ticket";
 import { cn } from "@/lib/utils";
 
 type Values = Record<string, string>;
+
+// Debe quedar por debajo del maxDuration del endpoint (60s) para que el
+// cliente nunca espere más que el propio servidor.
+const OCR_TIMEOUT_MS = 55_000;
 
 interface Props {
   venues: { id: string; name: string }[];
@@ -38,7 +43,8 @@ export function EntryForm({
   );
   const [detected, setDetected] = useState<Set<string>>(new Set());
   const [ocrMsg, setOcrMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [processing, startProcessing] = useTransition();
+  const [ocrPending, setOcrPending] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState<number | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [state, action, saving] = useActionState(saveEntryAction, init);
 
@@ -46,38 +52,94 @@ export function EntryForm({
   const categories = categoriesFor(type);
   const showPhoto = type === "EGRESO" || compra;
 
-  function onReadTicket() {
+  function applyTicket(d: TicketDraft, detectedKeys: string[], rawText: string) {
+    setValues((p) => ({
+      ...p,
+      ...(d.amount != null ? { amount: String(d.amount) } : {}),
+      ...(d.date ? { date: d.date } : {}),
+      ...(d.folio ? { folio: d.folio } : {}),
+      ...(d.rfc ? { rfc: d.rfc } : {}),
+      ...(d.supplier ? { supplier: d.supplier } : {}),
+      rawText,
+    }));
+    setDetected(new Set(detectedKeys));
+    setSource("OCR");
+    const n = detectedKeys.length;
+    setOcrMsg({
+      ok: true,
+      text: `Se leyeron ${n} dato${n === 1 ? "" : "s"} del ticket. Revísalos y completa lo que falte.`,
+    });
+  }
+
+  async function onReadTicket() {
     const file = fileRef.current?.files?.[0];
     if (!file) {
       setOcrMsg({ ok: false, text: "Selecciona una foto del ticket primero." });
       return;
     }
-    const fd = new FormData();
-    fd.set("photo", file);
-    startProcessing(async () => {
-      const res = await processTicketAction(fd);
-      if (!res.ok) {
-        setOcrMsg({ ok: false, text: res.error });
-        return;
-      }
-      const d = res.draft;
-      setValues((p) => ({
-        ...p,
-        ...(d.amount != null ? { amount: String(d.amount) } : {}),
-        ...(d.date ? { date: d.date } : {}),
-        ...(d.folio ? { folio: d.folio } : {}),
-        ...(d.rfc ? { rfc: d.rfc } : {}),
-        ...(d.supplier ? { supplier: d.supplier } : {}),
-        rawText: res.rawText,
-      }));
-      setDetected(new Set(res.detected));
-      setSource("OCR");
-      const n = res.detected.length;
-      setOcrMsg({
-        ok: true,
-        text: `Se leyeron ${n} dato${n === 1 ? "" : "s"} del ticket. Revísalos y completa lo que falte.`,
+
+    setOcrPending(true);
+    setOcrProgress(0);
+    setOcrMsg(null);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), OCR_TIMEOUT_MS);
+
+    try {
+      const fd = new FormData();
+      fd.set("photo", file);
+      const res = await fetch("/api/entries/ocr", {
+        method: "POST",
+        body: fd,
+        signal: controller.signal,
       });
-    });
+      if (!res.body) throw new Error("Sin respuesta del servidor.");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        let idx: number;
+        while ((idx = buf.indexOf("\n")) >= 0) {
+          const raw = buf.slice(0, idx);
+          buf = buf.slice(idx + 1);
+          if (!raw.trim()) continue;
+          const evt = JSON.parse(raw) as
+            | { type: "progress"; progress: number }
+            | { type: "done"; ok: true; result: { draft: TicketDraft; detected: string[]; rawText: string } }
+            | { type: "done"; ok: false; error: string };
+
+          if (evt.type === "progress") {
+            setOcrProgress(Math.max(0, Math.min(100, Math.round(evt.progress * 100))));
+          } else if (evt.ok) {
+            applyTicket(evt.result.draft, evt.result.detected, evt.result.rawText);
+          } else {
+            setOcrMsg({ ok: false, text: evt.error });
+          }
+        }
+      }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setOcrMsg({
+          ok: false,
+          text: "El procesamiento tardó demasiado. Intenta con una foto más ligera/nítida o captura los datos manualmente.",
+        });
+      } else {
+        console.error("Error OCR:", err);
+        setOcrMsg({
+          ok: false,
+          text: "No se pudo leer el ticket. Intenta de nuevo o captura los datos manualmente.",
+        });
+      }
+    } finally {
+      clearTimeout(timeoutId);
+      setOcrPending(false);
+      setOcrProgress(null);
+    }
   }
 
   const field = (
@@ -165,9 +227,9 @@ export function EntryForm({
                 className="input file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
               />
             </div>
-            <button type="button" onClick={onReadTicket} disabled={processing} className="btn-ghost">
+            <button type="button" onClick={onReadTicket} disabled={ocrPending} className="btn-ghost">
               <ScanLine className="h-4 w-4" />
-              {processing ? "Leyendo…" : "Leer ticket"}
+              {ocrPending ? `Leyendo… ${ocrProgress ?? 0}%` : "Leer ticket"}
             </button>
           </div>
           {ocrMsg && (
