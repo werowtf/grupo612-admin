@@ -174,7 +174,7 @@ export function EntryForm({
   };
 
   return (
-    <form action={action} className="space-y-5" encType="multipart/form-data">
+    <form action={action} className="space-y-5">
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <input type="hidden" name="source" value={source} />
       <input type="hidden" name="rawText" value={values.rawText ?? ""} />

@@ -27,7 +27,7 @@ export function DocumentUploadForm({
   const [state, action, pending] = useActionState(uploadDocumentAction, init);
 
   return (
-    <form action={action} className="card space-y-4 p-5" encType="multipart/form-data">
+    <form action={action} className="card space-y-4 p-5">
       {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
       {corteId && <input type="hidden" name="corteId" value={corteId} />}
       {entryId && <input type="hidden" name="entryId" value={entryId} />}
