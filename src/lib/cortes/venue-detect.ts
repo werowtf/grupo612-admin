@@ -13,7 +13,12 @@ function normalize(text: string): string {
   return text
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
-    .toUpperCase();
+    .toUpperCase()
+    // Los encabezados suelen imprimirse centrados en varias líneas (p.ej.
+    // "ROOF" y "EXPERIENCE" en renglones separados); sin colapsar los
+    // espacios en blanco, una frase de varias palabras nunca calzaría.
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /** Infiere la sucursal a partir del texto OCR del encabezado del ticket. */
