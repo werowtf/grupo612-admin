@@ -57,4 +57,6 @@ export interface CorteExtraction {
   raw?: Record<string, unknown>;
   /** Campos que sí se pudieron detectar (para resaltar en la revisión). */
   detected: (keyof CorteDraft)[];
+  /** Sucursal inferida del encabezado del ticket (OCR), si se reconoció alguna. */
+  detectedVenueName?: string;
 }

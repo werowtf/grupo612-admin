@@ -1,5 +1,6 @@
 import type { CorteExtraction } from "./types";
 import { extractCorteFromLines } from "./extract";
+import { detectVenueFromText } from "./venue-detect";
 import { createOcrWorker, type OcrProgress } from "@/lib/ocr-worker";
 
 /**
@@ -18,7 +19,8 @@ export async function parseCorteImage(
     const { data } = await worker.recognize(buffer);
     const text = data.text ?? "";
     const { draft, detected } = extractCorteFromLines(text.split(/\r?\n/));
-    return { source: "OCR", draft, rawText: text, detected };
+    const detectedVenueName = detectVenueFromText(text);
+    return { source: "OCR", draft, rawText: text, detected, detectedVenueName };
   } finally {
     await worker.terminate();
   }

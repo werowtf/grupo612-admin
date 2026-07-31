@@ -56,12 +56,22 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
     detectedKeys: string[],
     extractionSource: CorteSource,
     name: string,
+    detectedVenueName?: string,
   ) {
     setValues((v) => ({ ...v, ...draftToValues(draft) }));
     setDetected(new Set(detectedKeys));
     setSource(extractionSource);
     setFileName(name);
     const n = detectedKeys.length;
+
+    if (detectedVenueName && detectedVenueName !== venueName) {
+      setProcMsg({
+        ok: false,
+        text: `El ticket parece ser de ${detectedVenueName}, pero estás capturando en ${venueName}. Cambia de sucursal (arriba) antes de guardar, o verifica la foto.`,
+      });
+      return;
+    }
+
     setProcMsg({
       ok: true,
       text: `Se detectaron ${n} campo${n === 1 ? "" : "s"}. Revísalos y corrige lo necesario antes de guardar.`,
@@ -139,13 +149,23 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
           if (!raw.trim()) continue;
           const evt = JSON.parse(raw) as
             | { type: "progress"; progress: number }
-            | { type: "done"; ok: true; result: { draft: CorteDraft; detected: string[]; source: CorteSource } }
+            | {
+                type: "done";
+                ok: true;
+                result: { draft: CorteDraft; detected: string[]; source: CorteSource; detectedVenueName?: string };
+              }
             | { type: "done"; ok: false; error: string };
 
           if (evt.type === "progress") {
             setOcrProgress(Math.max(0, Math.min(100, Math.round(evt.progress * 100))));
           } else if (evt.ok) {
-            applyExtraction(evt.result.draft, evt.result.detected, evt.result.source, file.name);
+            applyExtraction(
+              evt.result.draft,
+              evt.result.detected,
+              evt.result.source,
+              file.name,
+              evt.result.detectedVenueName,
+            );
           } else {
             setProcMsg({ ok: false, text: evt.error });
           }
