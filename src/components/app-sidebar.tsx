@@ -43,7 +43,7 @@ export function AppSidebar({ role }: { role: UserRole }) {
 
   return (
     <aside className="hidden w-60 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-surface)] md:flex md:flex-col print:hidden">
-      <div className="flex h-14 items-center border-b border-[var(--color-border)] px-4">
+      <div className="flex h-14 items-center justify-center border-b border-[var(--color-border)] px-4">
         <Logo className="h-9 w-auto" />
       </div>
 

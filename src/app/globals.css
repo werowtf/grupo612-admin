@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #f6f7f9;
-  --color-surface: #ffffff;
+  --color-bg: #F4F5FB;
+  --color-surface: #FBFCFE;
   --color-border: #e5e7eb;
   --color-muted: #6b7280;
-  --color-fg: #111827;
+  --color-fg: #534C71;
 
-  --color-brand-50: #ecfdf5;
-  --color-brand-100: #d1fae5;
-  --color-brand-500: #10b981;
-  --color-brand-600: #059669;
-  --color-brand-700: #047857;
+  --color-brand-50: #F3F0FA;
+  --color-brand-100: #F3F0FA; 
+  --color-brand-500: #6243ED;
+  --color-brand-600: #48BC93;
+  --color-brand-700: #755ED9;
 
-  --color-danger: #dc2626;
-  --color-danger-bg: #fef2f2;
-  --color-warning: #d97706;
+  --color-danger: #EE4273;
+  --color-danger-bg: #F8D2DD;
+  --color-warning: #DA4F76;
   --color-warning-bg: #fffbeb;
   --color-info: #2563eb;
   --color-info-bg: #eff6ff;
@@ -40,13 +40,13 @@ body {
    @layer components, por eso las variantes de botón repiten la base. */
 @layer components {
   .card {
-    @apply rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm;
+    @apply rounded-xl  bg-[var(--color-surface)] shadow-lg;
   }
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-brand-600 text-white hover:bg-brand-700;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-brand-500 text-white hover:bg-brand-700;
   }
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-[var(--color-border)] bg-white text-[var(--color-fg)] hover:bg-gray-50;
@@ -56,5 +56,8 @@ body {
   }
   .label {
     @apply mb-1 block text-sm font-medium text-[var(--color-fg)];
+  }
+  .logo {
+    @apply h-12 w-auto;
   }
 }

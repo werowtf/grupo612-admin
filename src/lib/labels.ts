@@ -35,6 +35,16 @@ export const categoryBadge: Record<TxCategory, string> = {
   OTRO: "bg-gray-100 text-gray-600",
 };
 
+/** Color sólido por categoría, para barras y gráficas (mismo tono que el badge). */
+export const categoryBar: Record<TxCategory, string> = {
+  TRANSFERENCIA: "bg-[var(--color-info)]",
+  CHEQUE: "bg-purple-500",
+  DEPOSITO: "bg-brand-500",
+  COMISION: "bg-[var(--color-warning)]",
+  GASTO_TARJETA: "bg-rose-500",
+  OTRO: "bg-gray-400",
+};
+
 export const statusLabels: Record<TxStatus, string> = {
   PENDIENTE: "Pendiente",
   CONCILIADO: "Conciliado",

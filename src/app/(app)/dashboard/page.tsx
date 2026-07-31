@@ -4,8 +4,8 @@ import { getAppContext } from "@/lib/context";
 import { getVenueSummary, getVenueStatements } from "@/lib/queries";
 import { StatCard } from "@/components/stat-card";
 import { CategoryBadge } from "@/components/badges";
-import { formatMXN, formatDate } from "@/lib/utils";
-import { bankLabels } from "@/lib/labels";
+import { formatMXN, formatDate, cn } from "@/lib/utils";
+import { bankLabels, categoryBar } from "@/lib/labels";
 
 export default async function DashboardPage() {
   const { selected } = await getAppContext();
@@ -139,7 +139,7 @@ function CategoryBreakdown({
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
             <div
-              className="h-full rounded-full bg-brand-500"
+              className={cn("h-full rounded-full", categoryBar[i.category])}
               style={{ width: `${(i.total / max) * 100}%` }}
             />
           </div>
