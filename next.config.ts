@@ -11,9 +11,17 @@ const nextConfig: NextConfig = {
   // (+ la red del propio Vercel) puede tardar más que el timeout, dejando el
   // OCR colgado. Empaquetamos el archivo localmente (ver ocr-worker.ts) y
   // forzamos su inclusión en el bundle de las rutas de OCR.
+  //
+  // Además, `worker-script/node/index.js` de tesseract.js hace `require('..')`
+  // (resuelve a `worker-script/index.js`, un nivel arriba). El trazador de
+  // archivos de Vercel no sigue ese patrón de forma confiable, así que ese
+  // archivo quedaba fuera del bundle en producción: el worker_threads.Worker
+  // crasheaba al cargar ("Cannot find module '..'") antes de poder avisar,
+  // y la petición se quedaba colgada hasta el timeout propio. Se fuerza la
+  // inclusión completa de tesseract.js y tesseract.js-core para evitarlo.
   outputFileTracingIncludes: {
-    "/api/cortes/ocr": ["./tessdata/**"],
-    "/api/entries/ocr": ["./tessdata/**"],
+    "/api/cortes/ocr": ["./tessdata/**", "./node_modules/tesseract.js/**", "./node_modules/tesseract.js-core/**"],
+    "/api/entries/ocr": ["./tessdata/**", "./node_modules/tesseract.js/**", "./node_modules/tesseract.js-core/**"],
   },
 };
 
