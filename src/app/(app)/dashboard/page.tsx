@@ -83,7 +83,7 @@ export default async function DashboardPage() {
                 <h2 className="text-base font-semibold">Estados de cuenta recientes</h2>
                 <Link
                   href="/conciliacion"
-                  className="text-sm text-brand-600 hover:underline"
+                  className="text-sm text-brand-500 hover:underline"
                 >
                   Ver todos
                 </Link>

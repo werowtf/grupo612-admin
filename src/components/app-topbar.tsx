@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, ChevronDown, LogOut } from "lucide-react";
 import { logoutAction, selectVenueAction } from "@/app/(app)/actions";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface VenueOption {
   id: string;
@@ -22,8 +23,7 @@ export function AppTopbar({ venues, selectedVenueId, userName, roleLabel }: Prop
   const [pending, startTransition] = useTransition();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  function onVenueChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const id = e.target.value;
+  function onVenueChange(id: string) {
     startTransition(async () => {
       await selectVenueAction(id);
       router.refresh();
@@ -35,18 +35,18 @@ export function AppTopbar({ venues, selectedVenueId, userName, roleLabel }: Prop
       <div className="flex items-center gap-2">
         <Building2 className="h-4 w-4 text-brand-500" />
         {venues.length > 0 ? (
-          <select
-            value={selectedVenueId ?? ""}
-            onChange={onVenueChange}
-            disabled={pending || venues.length === 0}
-            className="rounded-lg border border-brand-500 bg-brand-500 px-2 py-1.5 text-sm font-medium text-white outline-none focus:border-brand-700"
-          >
-            {venues.map((v) => (
-              <option key={v.id} value={v.id} className="bg-white text-[var(--color-fg)]">
-                {v.name}
-              </option>
-            ))}
-          </select>
+          <Select value={selectedVenueId ?? undefined} onValueChange={onVenueChange} disabled={pending}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {venues.map((v) => (
+                <SelectItem key={v.id} value={v.id}>
+                  {v.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         ) : (
           <span className="text-sm text-[var(--color-muted)]">Sin negocios</span>
         )}

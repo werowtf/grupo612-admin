@@ -105,7 +105,7 @@ export default async function ConciliacionPage() {
             <h2 className="text-base font-semibold">Movimientos recientes</h2>
             <Link
               href="/movimientos"
-              className="inline-flex items-center gap-1 text-sm text-brand-600 hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-brand-500 hover:underline"
             >
               Ver todos ({recent.total}) <ArrowRight className="h-4 w-4" />
             </Link>
