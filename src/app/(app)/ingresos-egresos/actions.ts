@@ -47,11 +47,11 @@ export async function saveEntryAction(
 
   const entryId = textOrNull(formData, "entryId");
   const venueId = String(formData.get("venueId") ?? "");
-  if (!venueId) return { error: "Selecciona la sucursal." };
+  if (!venueId) return { error: "Selecciona el negocio." };
   try {
     await assertVenueAccess(user, venueId);
   } catch {
-    return { error: "No tienes acceso a esta sucursal." };
+    return { error: "No tienes acceso a este negocio." };
   }
 
   // Tipo: la persona de Compras sólo registra egresos.

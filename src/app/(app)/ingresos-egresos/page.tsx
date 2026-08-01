@@ -6,6 +6,7 @@ import { EntriesTable } from "@/components/entries-table";
 import { StatCard } from "@/components/stat-card";
 import { EGRESO_CATEGORIES, INGRESO_CATEGORIES } from "@/lib/entries/config";
 import { formatMXN } from "@/lib/utils";
+import { VenueTag } from "@/components/venue-tag";
 import type { EntryType } from "@/generated/prisma/enums";
 
 const ALL_CATEGORIES = [...new Set([...EGRESO_CATEGORIES, ...INGRESO_CATEGORIES])];
@@ -21,7 +22,7 @@ export default async function IngresosEgresosPage({
   if (!selected) {
     return (
       <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
-        Tu usuario no tiene sucursales asignadas.
+        Tu usuario no tiene negocios asignados.
       </div>
     );
   }
@@ -44,7 +45,7 @@ export default async function IngresosEgresosPage({
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold">Ingresos y egresos</h1>
-          <p className="text-sm text-[var(--color-muted)]">{selected.name}</p>
+          <p className="text-sm text-[var(--color-muted)]"><VenueTag name={selected.name} /></p>
         </div>
         <Link href="/ingresos-egresos/nuevo" className="btn-primary">
           <Plus className="h-4 w-4" />

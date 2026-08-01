@@ -2,13 +2,14 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { EntryForm } from "@/components/entry-form";
+import { VenueTag } from "@/components/venue-tag";
 
 export default async function NuevoMovimientoPage() {
   const { selected } = await getAppContext();
   if (!selected) {
     return (
       <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
-        Tu usuario no tiene sucursales asignadas.
+        Tu usuario no tiene negocios asignados.
       </div>
     );
   }
@@ -22,7 +23,7 @@ export default async function NuevoMovimientoPage() {
           Ingresos y egresos
         </Link>
         <h1 className="mt-1 text-xl font-semibold">Nuevo movimiento</h1>
-        <p className="text-sm text-[var(--color-muted)]">{selected.name}</p>
+        <p className="text-sm text-[var(--color-muted)]"><VenueTag name={selected.name} /></p>
       </div>
 
       <EntryForm

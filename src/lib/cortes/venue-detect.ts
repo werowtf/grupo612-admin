@@ -1,5 +1,5 @@
 /**
- * Frases del encabezado del ticket Corte Z que identifican a cada sucursal.
+ * Frases del encabezado del ticket Corte Z que identifican a cada negocio.
  * El OCR es ruidoso (mayúsculas mal leídas, acentos perdidos), así que se
  * compara sobre texto normalizado (mayúsculas, sin acentos).
  */
@@ -21,7 +21,7 @@ function normalize(text: string): string {
     .trim();
 }
 
-/** Infiere la sucursal a partir del texto OCR del encabezado del ticket. */
+/** Infiere el negocio a partir del texto OCR del encabezado del ticket. */
 export function detectVenueFromText(rawText: string): string | undefined {
   const normalized = normalize(rawText);
   for (const { venueName, hints } of VENUE_HEADER_HINTS) {

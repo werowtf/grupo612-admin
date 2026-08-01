@@ -89,7 +89,7 @@ export function AppSidebar({ role }: { role: UserRole }) {
       </nav>
 
       <div className="border-t border-[var(--color-border)] p-3 text-[11px] text-[var(--color-muted)]">
-        Plataforma v0.1 — Conciliación
+        Grupo612 Admin v0.1
       </div>
     </aside>
   );

@@ -32,7 +32,7 @@ export async function GET(req: Request) {
     scopeName = "Todas";
   } else {
     const venue = venues.find((v) => v.id === venueParam) ?? venues[0];
-    if (!venue) return new Response("Sin sucursales", { status: 400 });
+    if (!venue) return new Response("Sin negocios", { status: 400 });
     venueIds = [venue.id];
     scopeName = venue.name;
   }

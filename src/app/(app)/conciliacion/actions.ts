@@ -43,7 +43,7 @@ export async function importStatementAction(
   try {
     await assertVenueAccess(user, account.venueId);
   } catch {
-    return { error: "No tienes acceso a esta sucursal." };
+    return { error: "No tienes acceso a este negocio." };
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());

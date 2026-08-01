@@ -5,6 +5,7 @@ import { getVenueTransactions, type TxFilters } from "@/lib/queries";
 import { TransactionsTable } from "@/components/transactions-table";
 import { toTxRow } from "@/lib/serialize";
 import { categoryLabels, statusLabels } from "@/lib/labels";
+import { VenueTag } from "@/components/venue-tag";
 import type {
   TxCategory,
   TxDirection,
@@ -36,7 +37,7 @@ export default async function MovimientosPage({
   if (!selected) {
     return (
       <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
-        Tu usuario no tiene sucursales asignadas.
+        Tu usuario no tiene negocios asignados.
       </div>
     );
   }
@@ -58,8 +59,8 @@ export default async function MovimientosPage({
     <div className="space-y-6">
       <header>
         <h1 className="text-xl font-semibold">Movimientos</h1>
-        <p className="text-sm text-[var(--color-muted)]">
-          {selected.name} · {total} movimiento{total === 1 ? "" : "s"}
+        <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+          <VenueTag name={selected.name} /> {total} movimiento{total === 1 ? "" : "s"}
           {hasFilters ? " (filtrados)" : ""}
         </p>
       </header>

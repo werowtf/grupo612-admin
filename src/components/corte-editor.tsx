@@ -67,7 +67,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
     if (detectedVenueName && detectedVenueName !== venueName) {
       setProcMsg({
         ok: false,
-        text: `El ticket parece ser de ${detectedVenueName}, pero estás capturando en ${venueName}. Cambia de sucursal (arriba) antes de guardar, o verifica la foto.`,
+        text: `El ticket parece ser de ${detectedVenueName}, pero estás capturando en ${venueName}. Cambia de negocio (arriba) antes de guardar, o verifica la foto.`,
       });
       return;
     }
@@ -337,7 +337,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
         )}
 
         <div className="flex items-center justify-between">
-          <p className="text-xs text-[var(--color-muted)]">Sucursal: {venueName}</p>
+          <p className="text-xs text-[var(--color-muted)]">Negocio: {venueName}</p>
           <button type="submit" disabled={saving} className="btn-primary">
             <Save className="h-4 w-4" />
             {saving ? "Guardando…" : "Guardar corte"}

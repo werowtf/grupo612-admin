@@ -43,7 +43,7 @@ export async function destroySession(): Promise<void> {
   store.delete(sessionCookie.name);
 }
 
-/** Devuelve el usuario autenticado (con sucursales), o null. */
+/** Devuelve el usuario autenticado (con negocios), o null. */
 export async function getCurrentUser() {
   const session = await getSession();
   if (!session) return null;
@@ -57,7 +57,7 @@ export async function getCurrentUser() {
 
 export type CurrentUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 
-/** Sucursales accesibles: ADMIN ve todas; el resto sólo las asignadas. */
+/** Negocios accesibles: ADMIN ve todos; el resto sólo los asignados. */
 export async function getAccessibleVenues(user: CurrentUser) {
   if (user.role === "ADMIN") {
     return prisma.venue.findMany({

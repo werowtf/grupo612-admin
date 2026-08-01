@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { CorteEditor } from "@/components/corte-editor";
+import { VenueTag } from "@/components/venue-tag";
 
 export default async function NuevoCortePage() {
   const { selected } = await getAppContext();
@@ -9,7 +10,7 @@ export default async function NuevoCortePage() {
   if (!selected) {
     return (
       <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
-        Tu usuario no tiene sucursales asignadas.
+        Tu usuario no tiene negocios asignados.
       </div>
     );
   }
@@ -27,7 +28,7 @@ export default async function NuevoCortePage() {
           Cortes de caja
         </Link>
         <h1 className="mt-1 text-xl font-semibold">Nuevo corte de caja</h1>
-        <p className="text-sm text-[var(--color-muted)]">{selected.name}</p>
+        <p className="text-sm text-[var(--color-muted)]"><VenueTag name={selected.name} /></p>
       </div>
 
       <CorteEditor

@@ -46,7 +46,7 @@ export async function createUserAction(
   if (!emailParsed.success) return { error: emailParsed.error.issues[0]?.message ?? "Correo inválido" };
   if (password.length < 8) return { error: "La contraseña debe tener al menos 8 caracteres." };
   if (role !== "ADMIN" && venueIds.length === 0) {
-    return { error: "Selecciona al menos una sucursal para este rol." };
+    return { error: "Selecciona al menos un negocio para este rol." };
   }
 
   const existing = await prisma.user.findUnique({ where: { email: emailRaw } });
@@ -75,7 +75,7 @@ export async function createUserAction(
   redirect("/usuarios");
 }
 
-/** Edita nombre, rol, sucursales y estado activo de un usuario. */
+/** Edita nombre, rol, negocios y estado activo de un usuario. */
 export async function updateUserAction(
   _prev: UserFormState,
   formData: FormData,
@@ -94,7 +94,7 @@ export async function updateUserAction(
   const active = formData.get("active") === "on";
 
   if (role !== "ADMIN" && venueIds.length === 0) {
-    return { error: "Selecciona al menos una sucursal para este rol." };
+    return { error: "Selecciona al menos un negocio para este rol." };
   }
 
   // No permitir que el único admin activo se quite el rol o se desactive.

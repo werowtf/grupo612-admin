@@ -6,14 +6,15 @@ import { StatCard } from "@/components/stat-card";
 import { CategoryBadge } from "@/components/badges";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
 import { bankLabels, categoryBar } from "@/lib/labels";
+import { VenueTag } from "@/components/venue-tag";
 
 export default async function DashboardPage() {
   const { selected } = await getAppContext();
 
   if (!selected) {
     return (
-      <EmptyMessage title="Sin sucursales asignadas">
-        Tu usuario aún no tiene sucursales asignadas. Contacta al administrador.
+      <EmptyMessage title="Sin negocios asignados">
+        Tu usuario aún no tiene negocios asignados. Contacta al administrador.
       </EmptyMessage>
     );
   }
@@ -27,8 +28,8 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-xl font-semibold">Dashboard</h1>
-        <p className="text-sm text-[var(--color-muted)]">
-          Resumen financiero de {selected.name}
+        <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+          Resumen financiero de <VenueTag name={selected.name} />
         </p>
       </header>
 

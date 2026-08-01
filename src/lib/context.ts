@@ -15,7 +15,7 @@ export interface AppContext {
   selected: Venue | null;
 }
 
-/** Contexto de la app para server components: usuario, sucursales y selección. */
+/** Contexto de la app para server components: usuario, negocios y selección. */
 export async function getAppContext(): Promise<AppContext> {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
@@ -24,17 +24,17 @@ export async function getAppContext(): Promise<AppContext> {
   return { user, venues, selected };
 }
 
-/** Verifica que el usuario tenga acceso a la sucursal indicada. */
+/** Verifica que el usuario tenga acceso al negocio indicado. */
 export async function assertVenueAccess(
   user: CurrentUser,
   venueId: string,
 ): Promise<void> {
   if (user.role === "ADMIN") return;
   const has = user.venues.some((uv) => uv.venueId === venueId);
-  if (!has) throw new Error("Sin acceso a esta sucursal");
+  if (!has) throw new Error("Sin acceso a este negocio");
 }
 
-/** Cuentas bancarias de una sucursal. */
+/** Cuentas bancarias de un negocio. */
 export async function getVenueBankAccounts(venueId: string) {
   return prisma.bankAccount.findMany({
     where: { venueId },

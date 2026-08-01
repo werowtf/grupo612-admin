@@ -29,7 +29,7 @@ export default async function ComprasPage() {
 
       {venues.length === 0 ? (
         <div className="card p-8 text-center text-sm text-[var(--color-muted)]">
-          No tienes sucursales asignadas. Contacta al administrador.
+          No tienes negocios asignados. Contacta al administrador.
         </div>
       ) : (
         <EntryForm

@@ -8,7 +8,7 @@ export default async function NuevoDocumentoPage() {
   if (!selected) {
     return (
       <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
-        Tu usuario no tiene sucursales asignadas.
+        Tu usuario no tiene negocios asignados.
       </div>
     );
   }

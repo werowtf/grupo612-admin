@@ -34,7 +34,7 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
   if (accounts.length === 0) {
     return (
       <div className="card p-6 text-sm text-[var(--color-muted)]">
-        Esta sucursal no tiene cuentas bancarias configuradas.
+        Este negocio no tiene cuentas bancarias configuradas.
       </div>
     );
   }

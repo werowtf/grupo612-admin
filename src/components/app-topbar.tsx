@@ -33,22 +33,22 @@ export function AppTopbar({ venues, selectedVenueId, userName, roleLabel }: Prop
   return (
     <header className="flex h-14 items-center justify-between gap-4 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 print:hidden">
       <div className="flex items-center gap-2">
-        <Building2 className="h-4 w-4 text-[var(--color-muted)]" />
+        <Building2 className="h-4 w-4 text-brand-500" />
         {venues.length > 0 ? (
           <select
             value={selectedVenueId ?? ""}
             onChange={onVenueChange}
             disabled={pending || venues.length === 0}
-            className="rounded-lg border border-[var(--color-border)] bg-white px-2 py-1.5 text-sm font-medium outline-none focus:border-brand-500"
+            className="rounded-lg border border-brand-500 bg-brand-500 px-2 py-1.5 text-sm font-medium text-white outline-none focus:border-brand-700"
           >
             {venues.map((v) => (
-              <option key={v.id} value={v.id}>
+              <option key={v.id} value={v.id} className="bg-white text-[var(--color-fg)]">
                 {v.name}
               </option>
             ))}
           </select>
         ) : (
-          <span className="text-sm text-[var(--color-muted)]">Sin sucursales</span>
+          <span className="text-sm text-[var(--color-muted)]">Sin negocios</span>
         )}
       </div>
 

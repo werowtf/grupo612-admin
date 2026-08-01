@@ -6,6 +6,9 @@ import { BarList, Donut } from "@/components/charts";
 import { ReportActions } from "@/components/report-actions";
 import { categoryLabels } from "@/lib/labels";
 import { formatMXN } from "@/lib/utils";
+import { VenueTag } from "@/components/venue-tag";
+import { MonthPicker } from "@/components/month-picker";
+import { VenueSelect } from "@/components/venue-select";
 import type { TxCategory } from "@/generated/prisma/enums";
 
 function parseMonth(mes: string | undefined): { year: number; month: number } {
@@ -26,7 +29,7 @@ export default async function ReportesPage({
   if (!selected) {
     return (
       <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
-        Tu usuario no tiene sucursales asignadas.
+        Tu usuario no tiene negocios asignados.
       </div>
     );
   }
@@ -39,7 +42,7 @@ export default async function ReportesPage({
     ? venues.map((v) => v.id)
     : [venues.find((v) => v.id === venueParam)?.id ?? selected.id];
   const scopeName = consolidado
-    ? "Todas las sucursales"
+    ? "Todos los negocios"
     : venues.find((v) => v.id === venueIds[0])?.name ?? selected.name;
 
   const report = await getMonthlyReport(venueIds, year, month);
@@ -55,8 +58,8 @@ export default async function ReportesPage({
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold">Reportes</h1>
-          <p className="text-sm text-[var(--color-muted)]">
-            {scopeName} · {report.period.label}
+          <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+            <VenueTag name={scopeName} /> {report.period.label}
           </p>
         </div>
         <ReportActions exportHref={exportHref} />
@@ -64,17 +67,19 @@ export default async function ReportesPage({
 
       <form method="get" className="card flex flex-wrap items-end gap-3 p-4 print:hidden">
         <div>
-          <label className="label" htmlFor="mes">Mes</label>
-          <input id="mes" name="mes" type="month" defaultValue={mesValue} className="input" />
+          <label className="label">Mes</label>
+          <MonthPicker name="mes" defaultValue={mesValue} />
         </div>
         <div>
-          <label className="label" htmlFor="venue">Sucursal</label>
-          <select id="venue" name="venue" defaultValue={consolidado ? "todas" : venueIds[0]} className="input">
-            {venues.map((v) => (
-              <option key={v.id} value={v.id}>{v.name}</option>
-            ))}
-            {venues.length > 1 && <option value="todas">Todas (consolidado)</option>}
-          </select>
+          <label className="label">Negocio</label>
+          <VenueSelect
+            name="venue"
+            defaultValue={consolidado ? "todas" : venueIds[0]}
+            options={[
+              ...venues.map((v) => ({ value: v.id, label: v.name })),
+              ...(venues.length > 1 ? [{ value: "todas", label: "Todas (consolidado)" }] : []),
+            ]}
+          />
         </div>
         <button type="submit" className="btn-primary">Ver</button>
       </form>

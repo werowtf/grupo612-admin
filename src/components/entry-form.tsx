@@ -250,7 +250,7 @@ export function EntryForm({
         {venues.length > 1 ? (
           <div>
             <label className="label" htmlFor="venueId">
-              Sucursal
+              Negocio
             </label>
             <select
               id="venueId"

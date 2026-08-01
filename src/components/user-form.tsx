@@ -98,7 +98,7 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
 
       {role !== "ADMIN" && (
         <div className="card p-5">
-          <label className="label">Sucursales con acceso</label>
+          <label className="label">Negocios con acceso</label>
           <div className="grid gap-2 sm:grid-cols-2">
             {venues.map((v) => (
               <label key={v.id} className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm">
@@ -118,7 +118,7 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
       )}
       {role === "ADMIN" && (
         <p className="text-xs text-[var(--color-muted)]">
-          El rol Administrador tiene acceso a todas las sucursales automáticamente.
+          El rol Administrador tiene acceso a todos los negocios automáticamente.
         </p>
       )}
 

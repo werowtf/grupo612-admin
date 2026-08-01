@@ -4,6 +4,7 @@ import { getAppContext } from "@/lib/context";
 import { getVenueDocuments, type DocumentFilters } from "@/lib/documents/queries";
 import { DocumentsList } from "@/components/documents-list";
 import { DOCUMENT_CATEGORIES, documentCategoryLabels } from "@/lib/labels";
+import { VenueTag } from "@/components/venue-tag";
 import type { DocumentCategory } from "@/generated/prisma/enums";
 
 export default async function DocumentosPage({
@@ -17,7 +18,7 @@ export default async function DocumentosPage({
   if (!selected) {
     return (
       <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
-        Tu usuario no tiene sucursales asignadas.
+        Tu usuario no tiene negocios asignados.
       </div>
     );
   }
@@ -38,7 +39,7 @@ export default async function DocumentosPage({
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold">Documentos</h1>
-          <p className="text-sm text-[var(--color-muted)]">{selected.name}</p>
+          <p className="text-sm text-[var(--color-muted)]"><VenueTag name={selected.name} /></p>
         </div>
         <Link href="/documentos/nuevo" className="btn-primary">
           <Plus className="h-4 w-4" />

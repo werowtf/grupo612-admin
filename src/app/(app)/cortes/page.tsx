@@ -3,6 +3,7 @@ import { Plus, Receipt } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { prisma } from "@/lib/prisma";
 import { formatMXN, formatDate } from "@/lib/utils";
+import { VenueTag } from "@/components/venue-tag";
 
 const sourceLabels: Record<string, string> = {
   MANUAL: "Manual",
@@ -16,7 +17,7 @@ export default async function CortesPage() {
   if (!selected) {
     return (
       <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
-        Tu usuario no tiene sucursales asignadas.
+        Tu usuario no tiene negocios asignados.
       </div>
     );
   }
@@ -32,8 +33,8 @@ export default async function CortesPage() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold">Cortes de caja</h1>
-          <p className="text-sm text-[var(--color-muted)]">
-            {selected.name} · {cortes.length} corte{cortes.length === 1 ? "" : "s"}
+          <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+            <VenueTag name={selected.name} /> {cortes.length} corte{cortes.length === 1 ? "" : "s"}
           </p>
         </div>
         <Link href="/cortes/nuevo" className="btn-primary">

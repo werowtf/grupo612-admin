@@ -7,6 +7,7 @@ import { TransactionsTable } from "@/components/transactions-table";
 import { toTxRow } from "@/lib/serialize";
 import { formatDate, formatMXN } from "@/lib/utils";
 import { bankLabels } from "@/lib/labels";
+import { VenueTag } from "@/components/venue-tag";
 
 export default async function ConciliacionPage() {
   const { selected } = await getAppContext();
@@ -14,7 +15,7 @@ export default async function ConciliacionPage() {
   if (!selected) {
     return (
       <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
-        Tu usuario no tiene sucursales asignadas.
+        Tu usuario no tiene negocios asignados.
       </div>
     );
   }
@@ -29,8 +30,8 @@ export default async function ConciliacionPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-xl font-semibold">Conciliación bancaria</h1>
-        <p className="text-sm text-[var(--color-muted)]">
-          {selected.name} · importa y clasifica los movimientos bancarios
+        <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+          <VenueTag name={selected.name} /> importa y clasifica los movimientos bancarios
         </p>
       </header>
 

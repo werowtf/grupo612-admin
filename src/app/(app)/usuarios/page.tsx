@@ -38,7 +38,7 @@ export default async function UsuariosPage() {
                 <th className="px-3 py-2 font-medium">Nombre</th>
                 <th className="px-3 py-2 font-medium">Correo</th>
                 <th className="px-3 py-2 font-medium">Rol</th>
-                <th className="px-3 py-2 font-medium">Sucursales</th>
+                <th className="px-3 py-2 font-medium">Negocios</th>
                 <th className="px-3 py-2 font-medium">Estado</th>
                 <th className="px-3 py-2 font-medium"></th>
               </tr>

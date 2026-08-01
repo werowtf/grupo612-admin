@@ -5,8 +5,8 @@ import type { Venue } from "@/generated/prisma/client";
 export const VENUE_COOKIE = "g612_venue";
 
 /**
- * Devuelve la sucursal seleccionada (por cookie) validada contra las accesibles.
- * Si no hay cookie válida, usa la primera accesible.
+ * Devuelve el negocio seleccionado (por cookie) validado contra los accesibles.
+ * Si no hay cookie válida, usa el primero accesible.
  */
 export async function getSelectedVenue(
   accessibleVenues: Venue[],

@@ -43,7 +43,7 @@ export function DocumentUploadForm({
 
         {venues.length > 1 ? (
           <div>
-            <label className="label" htmlFor="venueId">Sucursal</label>
+            <label className="label" htmlFor="venueId">Negocio</label>
             <select id="venueId" name="venueId" defaultValue={defaultVenueId} className="input">
               {venues.map((v) => (
                 <option key={v.id} value={v.id}>{v.name}</option>

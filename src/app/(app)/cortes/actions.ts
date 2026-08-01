@@ -66,12 +66,12 @@ export async function saveCorteAction(
 
   const venueId = String(formData.get("venueId") ?? "");
   const corteId = textOrNull(formData, "corteId");
-  if (!venueId) return { error: "Falta la sucursal." };
+  if (!venueId) return { error: "Falta el negocio." };
 
   try {
     await assertVenueAccess(user, venueId);
   } catch {
-    return { error: "No tienes acceso a esta sucursal." };
+    return { error: "No tienes acceso a este negocio." };
   }
 
   const dateStr = String(formData.get("date") ?? "").trim();
@@ -137,7 +137,7 @@ export async function saveCorteAction(
   } catch (err) {
     // Violación de folio único
     if (typeof err === "object" && err && "code" in err && (err as { code: string }).code === "P2002") {
-      return { error: "Ya existe un corte con ese folio en esta sucursal." };
+      return { error: "Ya existe un corte con ese folio en este negocio." };
     }
     console.error("Error al guardar corte:", err);
     return { error: "No se pudo guardar el corte." };
@@ -163,7 +163,7 @@ export async function linkDepositAction(corteId: string, txId: string) {
     }),
   ]);
   if (!corte || !tx) return;
-  if (tx.bankAccount.venueId !== corte.venueId) return; // misma sucursal
+  if (tx.bankAccount.venueId !== corte.venueId) return; // mismo negocio
   await assertVenueAccess(user, corte.venueId);
 
   await prisma.bankTransaction.update({
