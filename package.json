@@ -25,6 +25,7 @@
     "date-fns": "^4.4.0",
     "embedded-postgres": "^18.4.0-beta.17",
     "exceljs": "^4.4.0",
+    "geist": "^1.7.2",
     "jose": "^6.2.5",
     "lucide-react": "^1.27.0",
     "next": "16.2.12",
