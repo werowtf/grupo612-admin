@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { UploadCloud, AlertCircle } from "lucide-react";
 import { uploadDocumentAction, type DocumentFormState } from "@/app/(app)/documentos/actions";
 import { DOCUMENT_CATEGORIES, documentCategoryLabels } from "@/lib/labels";
@@ -25,6 +25,8 @@ export function DocumentUploadForm({
   bankTransactionId,
 }: Props) {
   const [state, action, pending] = useActionState(uploadDocumentAction, init);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [fileName, setFileName] = useState<string>("");
 
   return (
     <form action={action} className="card space-y-4 p-5">
@@ -64,12 +66,26 @@ export function DocumentUploadForm({
         <div className="sm:col-span-2">
           <label className="label" htmlFor="file">Archivo</label>
           <input
+            ref={fileRef}
             id="file"
             name="file"
             type="file"
             required
-            className="input file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
+            className="sr-only"
+            onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
           />
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="rounded bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700 hover:bg-brand-100"
+            >
+              Elegir archivo
+            </button>
+            <span className="text-sm text-[var(--color-muted)]">
+              {fileName || "Ningún archivo seleccionado"}
+            </span>
+          </div>
         </div>
 
         <div>
