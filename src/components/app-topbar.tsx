@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, ChevronDown, LogOut } from "lucide-react";
+import { Building2, ChevronDown, LogOut, Menu } from "lucide-react";
 import { logoutAction, selectVenueAction } from "@/app/(app)/actions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -16,9 +16,10 @@ interface Props {
   selectedVenueId: string | null;
   userName: string;
   roleLabel: string;
+  onOpenMobileNav?: () => void;
 }
 
-export function AppTopbar({ venues, selectedVenueId, userName, roleLabel }: Props) {
+export function AppTopbar({ venues, selectedVenueId, userName, roleLabel, onOpenMobileNav }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -33,7 +34,15 @@ export function AppTopbar({ venues, selectedVenueId, userName, roleLabel }: Prop
   return (
     <header className="flex h-14 items-center justify-between gap-4 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 print:hidden">
       <div className="flex items-center gap-2">
-        <Building2 className="h-4 w-4 text-brand-500" />
+        <button
+          type="button"
+          onClick={onOpenMobileNav}
+          aria-label="Abrir menú"
+          className="-ml-1.5 rounded-lg p-1.5 text-[var(--color-muted)] hover:bg-gray-100 md:hidden"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <Building2 className="hidden h-4 w-4 text-brand-500 sm:block" />
         {venues.length > 0 ? (
           <Select value={selectedVenueId ?? undefined} onValueChange={onVenueChange} disabled={pending}>
             <SelectTrigger>
