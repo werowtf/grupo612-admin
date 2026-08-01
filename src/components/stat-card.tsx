@@ -12,7 +12,7 @@ const toneClass: Record<NonNullable<Props["tone"]>, string> = {
   default: "text-[var(--color-fg)]",
   positive: "text-brand-600",
   negative: "text-[var(--color-danger)]",
-  warning: "text-[var(--color-warning)]",
+  warning: "text-orange-500",
 };
 
 export function StatCard({ label, value, hint, icon, tone = "default" }: Props) {
