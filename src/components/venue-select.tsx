@@ -12,10 +12,12 @@ interface Props {
 export function VenueSelect({ name, defaultValue, options }: Props) {
   const [value, setValue] = useState(defaultValue);
 
+  const label = options.find((o) => o.value === value)?.label ?? value;
+
   return (
     <Select name={name} value={value} onValueChange={setValue}>
       <SelectTrigger>
-        <SelectValue />
+        <SelectValue>{label}</SelectValue>
       </SelectTrigger>
       <SelectContent>
         {options.map((o) => (

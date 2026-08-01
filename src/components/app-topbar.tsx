@@ -37,7 +37,7 @@ export function AppTopbar({ venues, selectedVenueId, userName, roleLabel }: Prop
         {venues.length > 0 ? (
           <Select value={selectedVenueId ?? undefined} onValueChange={onVenueChange} disabled={pending}>
             <SelectTrigger>
-              <SelectValue />
+              <SelectValue>{venues.find((v) => v.id === selectedVenueId)?.name}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {venues.map((v) => (

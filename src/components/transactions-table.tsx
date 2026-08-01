@@ -101,7 +101,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                           : "border-[var(--color-border)] font-medium",
                       )}
                     >
-                      <SelectValue />
+                      <SelectValue>{categoryLabels[r.category]}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {CATEGORIES.map((c) => (
@@ -135,7 +135,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                     disabled={pending}
                   >
                     <SelectTrigger className="border border-[var(--color-border)] bg-white px-2 py-1 text-xs text-[var(--color-fg)] hover:bg-gray-50">
-                      <SelectValue />
+                      <SelectValue>{statusLabels[r.status]}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {STATUSES.map((s) => (
