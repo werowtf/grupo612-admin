@@ -8,6 +8,7 @@ import {
 } from "@/app/(app)/conciliacion/actions";
 import { categoryLabels, statusLabels } from "@/lib/labels";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type {
   TxCategory,
   TxStatus,
@@ -86,24 +87,30 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                   <span className="line-clamp-2">{r.description}</span>
                 </td>
                 <td className="px-3 py-2">
-                  <select
+                  <Select
                     value={r.category}
-                    onChange={(e) => onCategory(r.id, e.target.value)}
+                    onValueChange={(value) => onCategory(r.id, value)}
                     disabled={pending}
-                    title={r.autoCategorized ? "Clasificación automática" : "Ajustada manualmente"}
-                    className={cn(
-                      "rounded-md border px-2 py-1 text-xs",
-                      r.autoCategorized
-                        ? "border-dashed border-[var(--color-border)] text-[var(--color-muted)]"
-                        : "border-[var(--color-border)] font-medium",
-                    )}
                   >
-                    {CATEGORIES.map((c) => (
-                      <option key={c} value={c}>
-                        {categoryLabels[c]}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger
+                      title={r.autoCategorized ? "Clasificación automática" : "Ajustada manualmente"}
+                      className={cn(
+                        "border bg-white px-2 py-1 text-xs text-[var(--color-fg)] hover:bg-gray-50",
+                        r.autoCategorized
+                          ? "border-dashed border-[var(--color-border)] text-[var(--color-muted)]"
+                          : "border-[var(--color-border)] font-medium",
+                      )}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {categoryLabels[c]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </td>
                 <td className="whitespace-nowrap px-3 py-2 text-right tabular-nums">
                   {r.direction === "CARGO" ? (
@@ -122,18 +129,22 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                   )}
                 </td>
                 <td className="px-3 py-2">
-                  <select
+                  <Select
                     value={r.status}
-                    onChange={(e) => onStatus(r.id, e.target.value)}
+                    onValueChange={(value) => onStatus(r.id, value)}
                     disabled={pending}
-                    className="rounded-md border border-[var(--color-border)] px-2 py-1 text-xs"
                   >
-                    {STATUSES.map((s) => (
-                      <option key={s} value={s}>
-                        {statusLabels[s]}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="border border-[var(--color-border)] bg-white px-2 py-1 text-xs text-[var(--color-fg)] hover:bg-gray-50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATUSES.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {statusLabels[s]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </td>
               </tr>
             ))}
