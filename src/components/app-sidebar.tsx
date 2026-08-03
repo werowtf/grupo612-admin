@@ -40,7 +40,11 @@ const NAV: NavItem[] = [
 
 function NavLinks({ role, onNavigate }: { role: UserRole; onNavigate?: () => void }) {
   const pathname = usePathname();
-  const items = NAV.filter((i) => !i.roles || i.roles.includes(role));
+  // Cajero sólo interactúa con Cortes de caja (ver también proxy.ts, que
+  // confina su navegación al mismo alcance a nivel de ruta).
+  const items = NAV.filter((i) => !i.roles || i.roles.includes(role)).filter(
+    (i) => role !== "CAJERO" || i.href === "/cortes",
+  );
 
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto p-3">

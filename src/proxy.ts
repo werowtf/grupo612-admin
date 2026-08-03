@@ -12,10 +12,16 @@ export async function proxy(request: NextRequest) {
 
   const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
 
-  // Roles restringidos: sólo pueden usar su área asignada.
+  // Roles restringidos a un área fuera del panel principal (además, nadie
+  // más puede entrar a esa área: es exclusiva del rol).
   const RESTRICTED: Record<string, string> = {
     CONTADOR_EXTERNO: "/portal",
     COMPRAS: "/compras",
+  };
+  // Roles confinados a una sola sección DENTRO del panel principal, sin
+  // volverla exclusiva: los demás roles siguen entrando normalmente.
+  const CONFINED: Record<string, string> = {
+    CAJERO: "/cortes",
   };
   const restrictedAreas = Object.values(RESTRICTED);
   const inArea = (base: string) => pathname === base || pathname.startsWith(base + "/");
@@ -29,7 +35,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (session) {
-    const home = RESTRICTED[session.role]; // área del rol restringido, o undefined
+    const home = RESTRICTED[session.role] ?? CONFINED[session.role]; // área del rol, o undefined
     const redirectTo = (path: string) => {
       const url = request.nextUrl.clone();
       url.pathname = path;
