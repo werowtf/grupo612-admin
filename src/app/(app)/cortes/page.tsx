@@ -61,7 +61,7 @@ export default async function CortesPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-sm">
               <thead>
-                <tr className="border-b border-[var(--color-border)] bg-gray-50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+                <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
                   <th className="px-3 py-2 font-medium">Fecha</th>
                   <th className="px-3 py-2 font-medium">Turno</th>
                   <th className="px-3 py-2 font-medium">Folio Z</th>
@@ -75,7 +75,7 @@ export default async function CortesPage() {
                 {cortes.map((c) => {
                   const sf = Number(c.sobranteFaltante.toString());
                   return (
-                    <tr key={c.id} className="hover:bg-gray-50/60">
+                    <tr key={c.id} className="hover:bg-muted/60">
                       <td className="whitespace-nowrap px-3 py-2">
                         <Link href={`/cortes/${c.id}`} className="font-medium text-brand-700 hover:underline">
                           {formatDate(c.date)}
@@ -89,7 +89,7 @@ export default async function CortesPage() {
                         {formatMXN(sf)}
                       </td>
                       <td className="px-3 py-2">
-                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                           {sourceLabels[c.source] ?? c.source}
                         </span>
                       </td>

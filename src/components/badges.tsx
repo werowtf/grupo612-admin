@@ -16,9 +16,9 @@ export function CategoryBadge({ category }: { category: TxCategory }) {
 }
 
 const statusStyle: Record<TxStatus, string> = {
-  PENDIENTE: "bg-gray-100 text-gray-600",
+  PENDIENTE: "bg-muted text-muted-foreground",
   CONCILIADO: "bg-brand-50 text-brand-700",
-  IGNORADO: "bg-gray-100 text-gray-400 line-through",
+  IGNORADO: "bg-muted text-gray-400 line-through",
 };
 
 export function StatusBadge({ status }: { status: TxStatus }) {

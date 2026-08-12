@@ -53,10 +53,10 @@ body {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-brand-500 text-white hover:bg-brand-700;
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-[var(--color-border)] bg-white text-[var(--color-fg)] hover:bg-gray-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-fg)] hover:bg-muted;
   }
   .input {
-    @apply w-full rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
+    @apply w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
   }
   .label {
     @apply mb-1 block text-sm font-medium text-[var(--color-fg)];
@@ -180,6 +180,18 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Tokens propios de la app (fuera del sistema semántico de shadcn):
+     mismo gris por defecto que shadcn trae para su modo oscuro, para
+     que el fondo, las tarjetas (.card) y los bordes sigan el toggle. */
+  --color-bg: oklch(0.145 0 0);
+  --color-surface: oklch(0.205 0 0);
+  --color-border: oklch(1 0 0 / 10%);
+  --color-muted: oklch(0.708 0 0);
+  --color-fg: oklch(0.985 0 0);
+  --color-danger-bg: oklch(0.396 0.141 25.723);
+  --color-warning-bg: oklch(0.279 0.077 76.958 / 40%);
+  --color-info-bg: oklch(0.282 0.091 267.935 / 40%);
 }
 
 @layer base {

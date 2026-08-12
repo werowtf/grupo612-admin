@@ -214,7 +214,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
               onClick={() => setMethod(m.id)}
               className={cn(
                 "card flex items-start gap-3 p-4 text-left transition-colors",
-                active ? "ring-2 ring-brand-500" : "hover:bg-gray-50",
+                active ? "ring-2 ring-brand-500" : "hover:bg-muted/50",
               )}
             >
               <Icon className={cn("mt-0.5 h-5 w-5", active ? "text-brand-600" : "text-[var(--color-muted)]")} />

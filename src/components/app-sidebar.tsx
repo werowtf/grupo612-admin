@@ -60,7 +60,7 @@ function NavLinks({ role, onNavigate }: { role: UserRole; onNavigate?: () => voi
             >
               <Icon className="h-4 w-4" />
               <span className="flex-1">{item.label}</span>
-              <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-gray-400">
+              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-gray-400">
                 Pronto
               </span>
             </div>
@@ -76,7 +76,7 @@ function NavLinks({ role, onNavigate }: { role: UserRole; onNavigate?: () => voi
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               active
                 ? "bg-brand-50 text-brand-700"
-                : "text-gray-600 hover:bg-gray-50 hover:text-[var(--color-fg)]",
+                : "text-muted-foreground hover:bg-muted/50 hover:text-[var(--color-fg)]",
             )}
           >
             <Icon className="h-4 w-4" />
@@ -123,7 +123,7 @@ export function AppSidebar({ role, mobileOpen = false, onCloseMobile }: Props) {
                 type="button"
                 onClick={onCloseMobile}
                 aria-label="Cerrar menú"
-                className="rounded-lg p-1.5 text-[var(--color-muted)] hover:bg-gray-100"
+                className="rounded-lg p-1.5 text-[var(--color-muted)] hover:bg-muted"
               >
                 <X className="h-5 w-5" />
               </button>

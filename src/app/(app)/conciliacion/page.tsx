@@ -50,7 +50,7 @@ export default async function ConciliacionPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
-                  <tr className="border-b border-[var(--color-border)] bg-gray-50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+                  <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
                     <th className="px-3 py-2 font-medium">Archivo</th>
                     <th className="px-3 py-2 font-medium">Banco</th>
                     <th className="px-3 py-2 font-medium">Periodo</th>
@@ -62,7 +62,7 @@ export default async function ConciliacionPage() {
                 </thead>
                 <tbody className="divide-y divide-[var(--color-border)]">
                   {statements.map((s) => (
-                    <tr key={s.id} className="hover:bg-gray-50/60">
+                    <tr key={s.id} className="hover:bg-muted/60">
                       <td className="max-w-[240px] px-3 py-2">
                         <span className="line-clamp-1 font-medium">{s.fileName}</span>
                       </td>

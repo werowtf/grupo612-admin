@@ -139,7 +139,7 @@ function CategoryBreakdown({
               <span className="text-xs">({i.count})</span>
             </span>
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
             <div
               className={cn("h-full rounded-full", categoryBar[i.category])}
               style={{ width: `${(i.total / max) * 100}%` }}

@@ -120,7 +120,7 @@ export default async function BitacoraPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b border-[var(--color-border)] bg-gray-50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+              <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
                 <th className="px-3 py-2 font-medium">Fecha</th>
                 <th className="px-3 py-2 font-medium">Usuario</th>
                 <th className="px-3 py-2 font-medium">Acción</th>
@@ -136,7 +136,7 @@ export default async function BitacoraPage() {
                 </tr>
               ) : (
                 logs.map((l) => (
-                  <tr key={l.id} className="hover:bg-gray-50/60">
+                  <tr key={l.id} className="hover:bg-muted/60">
                     <td className="whitespace-nowrap px-3 py-2 text-[var(--color-muted)]">
                       {formatDate(l.createdAt)}{" "}
                       {l.createdAt.toLocaleTimeString("es-MX", {

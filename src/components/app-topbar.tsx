@@ -1,11 +1,13 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import Link from "next/link";
-import { Building2, ChevronDown, LogOut, Menu, ScrollText, Users } from "lucide-react";
+import { Building2, ChevronDown, LogOut, Menu, Moon, ScrollText, Sun, Users } from "lucide-react";
 import { logoutAction, selectVenueAction } from "@/app/(app)/actions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +34,10 @@ interface Props {
 export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, onOpenMobileNav }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   function onVenueChange(id: string) {
     startTransition(async () => {
@@ -47,7 +53,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
           type="button"
           onClick={onOpenMobileNav}
           aria-label="Abrir menú"
-          className="-ml-1.5 rounded-lg p-1.5 text-[var(--color-muted)] hover:bg-gray-100 md:hidden"
+          className="-ml-1.5 rounded-lg p-1.5 text-[var(--color-muted)] hover:bg-muted md:hidden"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -70,8 +76,23 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
         )}
       </div>
 
+      <div className="flex items-center gap-1">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label={mounted && resolvedTheme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+        onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      >
+        {mounted && resolvedTheme === "dark" ? (
+          <Sun className="h-4 w-4" />
+        ) : (
+          <Moon className="h-4 w-4" />
+        )}
+      </Button>
+
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-gray-50">
+        <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-muted/50">
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-700">
             {userName.slice(0, 1).toUpperCase()}
           </span>
@@ -105,6 +126,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      </div>
     </header>
   );
 }

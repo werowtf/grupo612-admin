@@ -24,7 +24,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
-            <tr className="border-b border-[var(--color-border)] bg-gray-50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+            <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
               <th className="px-3 py-2 font-medium">Fecha</th>
               <th className="px-3 py-2 font-medium">Tipo</th>
               <th className="px-3 py-2 font-medium">Categoría</th>
@@ -45,7 +45,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
                 <span className="font-medium">{formatDate(e.date)}</span>
               );
               return (
-                <tr key={e.id} className="hover:bg-gray-50/60">
+                <tr key={e.id} className="hover:bg-muted/60">
                   <td className="whitespace-nowrap px-3 py-2">{dateCell}</td>
                   <td className="px-3 py-2">
                     <span

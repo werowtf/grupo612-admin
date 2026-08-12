@@ -35,7 +35,7 @@ export default async function UsuariosPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
             <thead>
-              <tr className="border-b border-[var(--color-border)] bg-gray-50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+              <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
                 <th className="px-3 py-2 font-medium">Nombre</th>
                 <th className="px-3 py-2 font-medium">Correo</th>
                 <th className="px-3 py-2 font-medium">Rol</th>
@@ -46,7 +46,7 @@ export default async function UsuariosPage() {
             </thead>
             <tbody className="divide-y divide-[var(--color-border)]">
               {users.map((u) => (
-                <tr key={u.id} className="hover:bg-gray-50/60">
+                <tr key={u.id} className="hover:bg-muted/60">
                   <td className="px-3 py-2 font-medium">
                     <Link href={`/usuarios/${u.id}/editar`} className="hover:text-brand-700 hover:underline">
                       {u.name}

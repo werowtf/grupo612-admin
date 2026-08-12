@@ -66,7 +66,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1080px] text-sm">
           <thead>
-            <tr className="border-b border-[var(--color-border)] bg-gray-50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+            <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
               <th className="px-3 py-2 font-medium">Fecha</th>
               <th className="px-3 py-2 font-medium">Descripción</th>
               {CATEGORIES.map((c) => (
@@ -79,7 +79,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
           </thead>
           <tbody className={cn("divide-y divide-[var(--color-border)]", pending && "opacity-60")}>
             {rows.map((r) => (
-              <tr key={r.id} className="hover:bg-gray-50/60">
+              <tr key={r.id} className="hover:bg-muted/60">
                 <td className="whitespace-nowrap px-3 py-2 text-[var(--color-muted)]">
                   <div>{formatDate(r.date)}</div>
                   {r.time && <div className="text-[11px]">{r.time}</div>}
@@ -99,7 +99,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                           hideIcon
                           title={r.autoCategorized ? "Clasificación automática" : "Ajustada manualmente"}
                           className={cn(
-                            "ml-auto justify-end border-0 bg-transparent px-1.5 py-1 text-sm font-medium hover:bg-gray-100",
+                            "ml-auto justify-end border-0 bg-transparent px-1.5 py-1 text-sm font-medium hover:bg-muted",
                             r.direction === "CARGO" ? "text-[var(--color-danger)]" : "text-brand-600",
                           )}
                         >
@@ -124,7 +124,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                     onValueChange={(value) => onStatus(r.id, value)}
                     disabled={pending}
                   >
-                    <SelectTrigger className="border border-[var(--color-border)] bg-white px-2 py-1 text-xs text-[var(--color-fg)] hover:bg-gray-50">
+                    <SelectTrigger className="border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1 text-xs text-[var(--color-fg)] hover:bg-muted/50">
                       <SelectValue>{statusLabels[r.status]}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>

@@ -29,7 +29,7 @@ export default async function ComprasLayout({
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-[var(--color-muted)] hover:bg-gray-50 hover:text-[var(--color-fg)]"
+                className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-[var(--color-muted)] hover:bg-muted/50 hover:text-[var(--color-fg)]"
               >
                 <LogOut className="h-4 w-4" />
                 Salir

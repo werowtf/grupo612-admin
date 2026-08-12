@@ -39,7 +39,7 @@ export function BarList({
             <span className="truncate pr-2">{i.label}</span>
             <span className="shrink-0 tabular-nums text-[var(--color-muted)]">{format(i.value)}</span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
               className="h-full rounded-full"
               style={{
@@ -87,7 +87,7 @@ export function Donut({ items, size = 160 }: { items: ChartItem[]; size?: number
     <div className="flex flex-wrap items-center gap-5">
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0">
         <g transform={`rotate(-90 ${cx} ${cx})`}>
-          <circle cx={cx} cy={cx} r={radius} fill="none" stroke="#f1f2f4" strokeWidth={stroke} />
+          <circle cx={cx} cy={cx} r={radius} fill="none" stroke="var(--color-border)" strokeWidth={stroke} />
           {segments.map((s) => (
             <circle
               key={s.label}

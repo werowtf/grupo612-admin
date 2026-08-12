@@ -40,7 +40,7 @@ export function MonthPicker({ name, defaultValue }: Props) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-white px-3 py-1.5 text-sm outline-none focus:border-brand-500"
+          className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-sm outline-none focus:border-brand-500"
         >
           <CalendarIcon className="h-4 w-4 text-[var(--color-muted)]" />
           {label}
@@ -51,7 +51,7 @@ export function MonthPicker({ name, defaultValue }: Props) {
           <button
             type="button"
             onClick={() => setViewYear((y) => y - 1)}
-            className="rounded p-1 hover:bg-gray-100"
+            className="rounded p-1 hover:bg-muted"
             aria-label="Año anterior"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -60,7 +60,7 @@ export function MonthPicker({ name, defaultValue }: Props) {
           <button
             type="button"
             onClick={() => setViewYear((y) => y + 1)}
-            className="rounded p-1 hover:bg-gray-100"
+            className="rounded p-1 hover:bg-muted"
             aria-label="Año siguiente"
           >
             <ChevronRight className="h-4 w-4" />
