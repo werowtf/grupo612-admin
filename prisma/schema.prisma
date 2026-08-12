@@ -123,14 +123,15 @@ enum TxDirection {
   ABONO // entrada (+)
 }
 
-// Clasificación del cliente: TRANSFERENCIA / CHEQUE / DEPOSITO / COMISION / GASTO_TARJETA (+ OTRO)
+// Clasificación del cliente: TRANSFERENCIA / CHEQUE / DEPOSITO / COMISION / GASTO_TARJETA.
+// El estado de cuenta es el de la tarjeta del negocio: todo cargo/abono que no
+// calce con una regla más específica se clasifica como GASTO_TARJETA (antes OTRO).
 enum TxCategory {
   TRANSFERENCIA
   CHEQUE
   DEPOSITO
   COMISION
   GASTO_TARJETA
-  OTRO
 }
 
 enum TxStatus {
@@ -154,12 +155,15 @@ model BankTransaction {
   balance          Decimal?      @db.Decimal(14, 2)
   reference        String?
   concept          String?
-  category         TxCategory    @default(OTRO)
+  category         TxCategory    @default(GASTO_TARJETA)
   autoCategorized  Boolean       @default(true) // false si un humano la ajustó
   counterpartyName String?
   counterpartyRfc  String?
   trackingKey      String? // clave de rastreo SPEI
-  status           TxStatus      @default(PENDIENTE)
+  // El estado de cuenta ES la tarjeta del negocio: todo cargo/abono importado
+  // pertenece a la conciliación, así que entra ya conciliado (ver proyecto:
+  // conversación con el cliente sobre el alcance de la conciliación bancaria).
+  status           TxStatus      @default(CONCILIADO)
   note             String?
   dedupeHash       String
   raw              Json?

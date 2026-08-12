@@ -156,7 +156,6 @@ const categorySchema = z.enum([
   "DEPOSITO",
   "COMISION",
   "GASTO_TARJETA",
-  "OTRO",
 ]);
 const statusSchema = z.enum(["PENDIENTE", "CONCILIADO", "IGNORADO"]);
 

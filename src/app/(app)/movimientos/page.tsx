@@ -18,7 +18,6 @@ const CATEGORIES: TxCategory[] = [
   "CHEQUE",
   "COMISION",
   "GASTO_TARJETA",
-  "OTRO",
 ];
 const STATUSES: TxStatus[] = ["PENDIENTE", "CONCILIADO", "IGNORADO"];
 

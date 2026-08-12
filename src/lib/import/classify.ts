@@ -6,7 +6,9 @@ import type { TxCategory, TxDirection } from "@/generated/prisma/enums";
  * un "mejor esfuerzo" que el usuario puede corregir manualmente.
  *
  * Basado en el criterio de la contadora de Grupo 612 (Santander / BanBajío):
- * TRANSFERENCIA · CHEQUE · DEPOSITO · COMISION · COMPRA · OTRO.
+ * TRANSFERENCIA · CHEQUE · DEPOSITO · COMISION · TARJETA. El estado de cuenta
+ * es el de la tarjeta del negocio, así que ya no existe una categoría "Otro":
+ * lo que no calce con una regla más específica se clasifica como TARJETA.
  */
 export function classifyTransaction(
   description: string,
@@ -46,8 +48,8 @@ export function classifyTransaction(
     return "GASTO_TARJETA";
   }
 
-  // Sin coincidencia: los abonos se asumen depósitos; los cargos, otros.
-  return direction === "ABONO" ? "DEPOSITO" : "OTRO";
+  // Sin coincidencia: los abonos se asumen depósitos; los cargos, tarjeta.
+  return direction === "ABONO" ? "DEPOSITO" : "GASTO_TARJETA";
 }
 
 /** Normaliza texto para comparar: mayúsculas y sin acentos. */
