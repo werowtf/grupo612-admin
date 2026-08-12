@@ -2,9 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, ChevronDown, LogOut, Menu } from "lucide-react";
+import Link from "next/link";
+import { Building2, ChevronDown, LogOut, Menu, ScrollText, Users } from "lucide-react";
 import { logoutAction, selectVenueAction } from "@/app/(app)/actions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { UserRole } from "@/generated/prisma/enums";
 
 interface VenueOption {
   id: string;
@@ -12,6 +14,7 @@ interface VenueOption {
 }
 
 interface Props {
+  role: UserRole;
   venues: VenueOption[];
   selectedVenueId: string | null;
   userName: string;
@@ -19,7 +22,7 @@ interface Props {
   onOpenMobileNav?: () => void;
 }
 
-export function AppTopbar({ venues, selectedVenueId, userName, roleLabel, onOpenMobileNav }: Props) {
+export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, onOpenMobileNav }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -80,6 +83,27 @@ export function AppTopbar({ venues, selectedVenueId, userName, roleLabel, onOpen
 
         {menuOpen && (
           <div className="absolute right-0 top-full z-20 mt-1 w-44 rounded-lg border border-[var(--color-border)] bg-white py-1 shadow-lg">
+            {role === "ADMIN" && (
+              <>
+                <Link
+                  href="/bitacora"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--color-fg)] hover:bg-gray-50"
+                >
+                  <ScrollText className="h-4 w-4" />
+                  Logs
+                </Link>
+                <Link
+                  href="/usuarios"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--color-fg)] hover:bg-gray-50"
+                >
+                  <Users className="h-4 w-4" />
+                  Usuarios
+                </Link>
+                <div className="my-1 border-t border-[var(--color-border)]" />
+              </>
+            )}
             <form action={logoutAction}>
               <button
                 type="submit"

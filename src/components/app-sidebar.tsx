@@ -1,20 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Landmark,
   ListOrdered,
-  ScrollText,
-  Users,
   Receipt,
   Wallet,
   FileText,
   BarChart3,
-  ShieldUser,
-  ChevronDown,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -29,20 +24,8 @@ interface NavItem {
   soon?: boolean; // módulo del roadmap, aún no disponible
 }
 
-interface NavGroup {
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  roles?: UserRole[];
-  children: NavItem[];
-}
-
-type NavEntry = NavItem | NavGroup;
-
-function isGroup(entry: NavEntry): entry is NavGroup {
-  return "children" in entry;
-}
-
-const NAV: NavEntry[] = [
+// Logs y Usuarios viven en el menú del usuario (arriba a la derecha), no aquí.
+const NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/conciliacion", label: "Estados de cuenta", icon: Landmark },
   { href: "/movimientos", label: "Movimientos", icon: ListOrdered },
@@ -50,45 +33,22 @@ const NAV: NavEntry[] = [
   { href: "/ingresos-egresos", label: "Ingresos y egresos", icon: Wallet },
   { href: "/reportes", label: "Reportes", icon: BarChart3 },
   { href: "/documentos", label: "Documentos", icon: FileText },
-  {
-    label: "Administrador",
-    icon: ShieldUser,
-    roles: ["ADMIN"],
-    children: [
-      { href: "/bitacora", label: "Logs", icon: ScrollText },
-      { href: "/usuarios", label: "Usuarios", icon: Users },
-    ],
-  },
 ];
-
-function isActive(pathname: string, href: string): boolean {
-  return pathname === href || pathname.startsWith(href + "/");
-}
 
 function NavLinks({ role, onNavigate }: { role: UserRole; onNavigate?: () => void }) {
   const pathname = usePathname();
   // Cajero sólo interactúa con Cortes de caja (ver también proxy.ts, que
   // confina su navegación al mismo alcance a nivel de ruta).
-  const entries = NAV.filter((e) => !e.roles || e.roles.includes(role)).filter(
-    (e) => role !== "CAJERO" || (!isGroup(e) && e.href === "/cortes"),
+  const items = NAV.filter((i) => !i.roles || i.roles.includes(role)).filter(
+    (i) => role !== "CAJERO" || i.href === "/cortes",
   );
 
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-      {entries.map((entry) => {
-        if (isGroup(entry)) {
-          return (
-            <NavGroupItem
-              key={entry.label}
-              group={entry}
-              pathname={pathname}
-              onNavigate={onNavigate}
-            />
-          );
-        }
-
-        const item = entry;
-        const active = !item.soon && isActive(pathname, item.href);
+      {items.map((item) => {
+        const active =
+          !item.soon &&
+          (pathname === item.href || pathname.startsWith(item.href + "/"));
         const Icon = item.icon;
 
         if (item.soon) {
@@ -125,63 +85,6 @@ function NavLinks({ role, onNavigate }: { role: UserRole; onNavigate?: () => voi
         );
       })}
     </nav>
-  );
-}
-
-function NavGroupItem({
-  group,
-  pathname,
-  onNavigate,
-}: {
-  group: NavGroup;
-  pathname: string;
-  onNavigate?: () => void;
-}) {
-  const groupActive = group.children.some((c) => isActive(pathname, c.href));
-  const [open, setOpen] = useState(groupActive);
-  const Icon = group.icon;
-
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className={cn(
-          "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-          groupActive
-            ? "text-brand-700"
-            : "text-gray-600 hover:bg-gray-50 hover:text-[var(--color-fg)]",
-        )}
-      >
-        <Icon className="h-4 w-4" />
-        <span className="flex-1 text-left">{group.label}</span>
-        <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
-      </button>
-      {open && (
-        <div className="ml-4 mt-1 space-y-1 border-l border-[var(--color-border)] pl-3">
-          {group.children.map((item) => {
-            const active = isActive(pathname, item.href);
-            const ItemIcon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onNavigate}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-brand-50 text-brand-700"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-[var(--color-fg)]",
-                )}
-              >
-                <ItemIcon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-      )}
-    </div>
   );
 }
 

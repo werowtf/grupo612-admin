@@ -22,6 +22,7 @@ export function AppShell({ role, venues, selectedVenueId, userName, roleLabel, c
       <AppSidebar role={role} mobileOpen={mobileNavOpen} onCloseMobile={() => setMobileNavOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <AppTopbar
+          role={role}
           venues={venues}
           selectedVenueId={selectedVenueId}
           userName={userName}
