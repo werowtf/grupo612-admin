@@ -64,14 +64,16 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
   return (
     <div className="card overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[820px] text-sm">
+        <table className="w-full min-w-[1080px] text-sm">
           <thead>
             <tr className="border-b border-[var(--color-border)] bg-gray-50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
               <th className="px-3 py-2 font-medium">Fecha</th>
               <th className="px-3 py-2 font-medium">Descripción</th>
-              <th className="px-3 py-2 font-medium">Categoría</th>
-              <th className="px-3 py-2 text-right font-medium">Cargo</th>
-              <th className="px-3 py-2 text-right font-medium">Abono</th>
+              {CATEGORIES.map((c) => (
+                <th key={c} className="px-3 py-2 text-right font-medium">
+                  {categoryLabels[c]}
+                </th>
+              ))}
               <th className="px-3 py-2 font-medium">Estatus</th>
             </tr>
           </thead>
@@ -85,48 +87,37 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                 <td className="max-w-[320px] px-3 py-2">
                   <span className="line-clamp-2">{r.description}</span>
                 </td>
-                <td className="px-3 py-2">
-                  <Select
-                    value={r.category}
-                    onValueChange={(value) => onCategory(r.id, value)}
-                    disabled={pending}
-                  >
-                    <SelectTrigger
-                      title={r.autoCategorized ? "Clasificación automática" : "Ajustada manualmente"}
-                      className={cn(
-                        "border bg-white px-2 py-1 text-xs text-[var(--color-fg)] hover:bg-gray-50",
-                        r.autoCategorized
-                          ? "border-dashed border-[var(--color-border)] text-[var(--color-muted)]"
-                          : "border-[var(--color-border)] font-medium",
-                      )}
-                    >
-                      <SelectValue>{categoryLabels[r.category]}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIES.map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {categoryLabels[c]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-right tabular-nums">
-                  {r.direction === "CARGO" ? (
-                    <span className="text-[var(--color-danger)]">
-                      {formatMXN(r.amount)}
-                    </span>
+                {CATEGORIES.map((c) =>
+                  c === r.category ? (
+                    <td key={c} className="whitespace-nowrap px-3 py-2 text-right tabular-nums">
+                      <Select
+                        value={r.category}
+                        onValueChange={(value) => onCategory(r.id, value)}
+                        disabled={pending}
+                      >
+                        <SelectTrigger
+                          title={r.autoCategorized ? "Clasificación automática" : "Ajustada manualmente"}
+                          className={cn(
+                            "ml-auto justify-end border-0 bg-transparent px-1.5 py-1 text-sm font-medium hover:bg-gray-100",
+                            r.autoCategorized && "border-b border-dashed border-[var(--color-border)] rounded-none",
+                            r.direction === "CARGO" ? "text-[var(--color-danger)]" : "text-brand-600",
+                          )}
+                        >
+                          <SelectValue>{formatMXN(r.amount)}</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CATEGORIES.map((opt) => (
+                            <SelectItem key={opt} value={opt}>
+                              {categoryLabels[opt]}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </td>
                   ) : (
-                    <span className="text-gray-300">—</span>
-                  )}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-right tabular-nums">
-                  {r.direction === "ABONO" ? (
-                    <span className="text-brand-600">{formatMXN(r.amount)}</span>
-                  ) : (
-                    <span className="text-gray-300">—</span>
-                  )}
-                </td>
+                    <td key={c} className="px-3 py-2 text-right text-gray-300">—</td>
+                  ),
+                )}
                 <td className="px-3 py-2">
                   <Select
                     value={r.status}
