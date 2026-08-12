@@ -11,8 +11,9 @@ export const SelectValue = SelectPrimitive.Value;
 export function SelectTrigger({
   className,
   children,
+  hideIcon,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Trigger>) {
+}: React.ComponentProps<typeof SelectPrimitive.Trigger> & { hideIcon?: boolean }) {
   return (
     <SelectPrimitive.Trigger
       className={cn(
@@ -22,9 +23,11 @@ export function SelectTrigger({
       {...props}
     >
       {children}
-      <SelectPrimitive.Icon asChild>
-        <ChevronDown className="h-4 w-4 opacity-90" />
-      </SelectPrimitive.Icon>
+      {!hideIcon && (
+        <SelectPrimitive.Icon asChild>
+          <ChevronDown className="h-4 w-4 opacity-90" />
+        </SelectPrimitive.Icon>
+      )}
     </SelectPrimitive.Trigger>
   );
 }

@@ -96,10 +96,10 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                         disabled={pending}
                       >
                         <SelectTrigger
+                          hideIcon
                           title={r.autoCategorized ? "Clasificación automática" : "Ajustada manualmente"}
                           className={cn(
                             "ml-auto justify-end border-0 bg-transparent px-1.5 py-1 text-sm font-medium hover:bg-gray-100",
-                            r.autoCategorized && "border-b border-dashed border-[var(--color-border)] rounded-none",
                             r.direction === "CARGO" ? "text-[var(--color-danger)]" : "text-brand-600",
                           )}
                         >
