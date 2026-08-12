@@ -24,7 +24,7 @@ export default async function BitacoraPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-semibold">Bitácora</h1>
+        <h1 className="text-xl font-semibold">Logs</h1>
         <p className="text-sm text-[var(--color-muted)]">
           Registro de acciones realizadas en la plataforma
         </p>
