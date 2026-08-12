@@ -7,7 +7,7 @@ export default async function NuevoDocumentoPage() {
   const { venues, selected } = await getAppContext();
   if (!selected) {
     return (
-      <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
+      <div className="card p-10 text-center text-sm text-muted-foreground">
         Tu usuario no tiene negocios asignados.
       </div>
     );
@@ -16,7 +16,7 @@ export default async function NuevoDocumentoPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/documentos" className="inline-flex items-center gap-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-fg)]">
+        <Link href="/documentos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]">
           <ArrowLeft className="h-4 w-4" />
           Documentos
         </Link>

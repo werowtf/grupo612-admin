@@ -29,7 +29,7 @@ export default async function ReportesPage({
 
   if (!selected) {
     return (
-      <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
+      <div className="card p-10 text-center text-sm text-muted-foreground">
         Tu usuario no tiene negocios asignados.
       </div>
     );
@@ -59,7 +59,7 @@ export default async function ReportesPage({
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold">Reportes</h1>
-          <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <VenueTag name={scopeName} /> {report.period.label}
           </p>
         </div>
@@ -139,15 +139,15 @@ export default async function ReportesPage({
         <h2 className="mb-4 text-base font-semibold">Conciliación de ventas con tarjeta</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-lg border border-[var(--color-border)] p-3">
-            <div className="text-xs text-[var(--color-muted)]">Tarjeta esperada (cortes)</div>
+            <div className="text-xs text-muted-foreground">Tarjeta esperada (cortes)</div>
             <div className="mt-0.5 text-lg font-semibold tabular-nums">{formatMXN(report.conciliacion.tarjetaEsperada)}</div>
           </div>
           <div className="rounded-lg border border-[var(--color-border)] p-3">
-            <div className="text-xs text-[var(--color-muted)]">Depositado en banco</div>
+            <div className="text-xs text-muted-foreground">Depositado en banco</div>
             <div className="mt-0.5 text-lg font-semibold tabular-nums text-brand-600">{formatMXN(report.conciliacion.depositado)}</div>
           </div>
           <div className="rounded-lg border border-[var(--color-border)] p-3">
-            <div className="text-xs text-[var(--color-muted)]">Diferencia (≈ comisión)</div>
+            <div className="text-xs text-muted-foreground">Diferencia (≈ comisión)</div>
             <div className="mt-0.5 text-lg font-semibold tabular-nums text-[var(--color-warning)]">
               {formatMXN(report.conciliacion.tarjetaEsperada - report.conciliacion.depositado)}
             </div>
@@ -155,7 +155,7 @@ export default async function ReportesPage({
         </div>
       </section>
 
-      <p className="text-xs text-[var(--color-muted)]">
+      <p className="text-xs text-muted-foreground">
         Ventas e IVA provienen de los cortes de caja; comisiones y flujo, de los estados de cuenta;
         egresos, de los movimientos registrados. Los importes reflejan lo capturado en el periodo.
       </p>

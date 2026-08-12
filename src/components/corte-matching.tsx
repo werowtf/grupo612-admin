@@ -38,7 +38,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
     return (
       <div className="card p-5">
         <h2 className="text-base font-semibold">Conciliación con banco</h2>
-        <p className="mt-2 text-sm text-[var(--color-muted)]">
+        <p className="mt-2 text-sm text-muted-foreground">
           Este corte no registra ventas con tarjeta (Visa/Mastercard/Amex), por lo que
           no hay depósitos que conciliar.
         </p>
@@ -51,7 +51,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold">Conciliación con banco</h2>
-          <p className="text-sm text-[var(--color-muted)]">
+          <p className="text-sm text-muted-foreground">
             Ventas con tarjeta del corte vs. depósitos recibidos en el banco.
           </p>
         </div>
@@ -93,7 +93,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
               <li key={d.id} className="flex items-center justify-between gap-3 px-3 py-2 text-sm">
                 <div className="min-w-0">
                   <div className="truncate">{d.description}</div>
-                  <div className="text-xs text-[var(--color-muted)]">
+                  <div className="text-xs text-muted-foreground">
                     {formatDate(d.date)} · {d.accountAlias}
                   </div>
                 </div>
@@ -105,7 +105,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
                     type="button"
                     onClick={() => run(() => unlinkDepositAction(d.id))}
                     disabled={pending}
-                    className="text-[var(--color-muted)] hover:text-[var(--color-danger)]"
+                    className="text-muted-foreground hover:text-[var(--color-danger)]"
                     title="Desvincular"
                   >
                     <Unlink className="h-4 w-4" />
@@ -121,12 +121,12 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
       <div>
         <h3 className="mb-2 text-sm font-medium">
           Depósitos sugeridos{" "}
-          <span className="font-normal text-[var(--color-muted)]">
+          <span className="font-normal text-muted-foreground">
             (mismo periodo, sin conciliar)
           </span>
         </h3>
         {suggestions.length === 0 ? (
-          <p className="text-sm text-[var(--color-muted)]">
+          <p className="text-sm text-muted-foreground">
             No hay depósitos sin conciliar en el rango de fechas del corte.
           </p>
         ) : (
@@ -137,7 +137,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
                 <li key={d.id} className="flex items-center justify-between gap-3 px-3 py-2 text-sm">
                   <div className="min-w-0">
                     <div className="truncate">{d.description}</div>
-                    <div className="text-xs text-[var(--color-muted)]">
+                    <div className="text-xs text-muted-foreground">
                       {formatDate(d.date)} · {d.accountAlias}
                     </div>
                   </div>
@@ -162,7 +162,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
         )}
       </div>
 
-      <p className="flex items-center gap-1 text-xs text-[var(--color-muted)]">
+      <p className="flex items-center gap-1 text-xs text-muted-foreground">
         <ArrowRight className="h-3 w-3" />
         La diferencia suele corresponder a la comisión del banco (tasa de descuento + IVA).
       </p>
@@ -189,9 +189,9 @@ function Summary({
   }[tone];
   return (
     <div className="rounded-lg border border-[var(--color-border)] p-3">
-      <div className="text-xs text-[var(--color-muted)]">{label}</div>
+      <div className="text-xs text-muted-foreground">{label}</div>
       <div className={cn("mt-0.5 text-lg font-semibold tabular-nums", toneClass)}>{value}</div>
-      {hint && <div className="text-[11px] text-[var(--color-muted)]">{hint}</div>}
+      {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
     </div>
   );
 }

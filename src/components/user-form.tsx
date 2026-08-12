@@ -119,7 +119,7 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
         </div>
       )}
       {role === "ADMIN" && (
-        <p className="text-xs text-[var(--color-muted)]">
+        <p className="text-xs text-muted-foreground">
           El rol Administrador tiene acceso a todos los negocios automáticamente.
         </p>
       )}

@@ -29,7 +29,7 @@ export function BarList({
 }) {
   const max = Math.max(...items.map((i) => i.value), 1);
   if (items.length === 0) {
-    return <p className="text-sm text-[var(--color-muted)]">Sin datos en el periodo.</p>;
+    return <p className="text-sm text-muted-foreground">Sin datos en el periodo.</p>;
   }
   return (
     <ul className="space-y-2.5">
@@ -37,7 +37,7 @@ export function BarList({
         <li key={i.label}>
           <div className="mb-1 flex items-center justify-between text-sm">
             <span className="truncate pr-2">{i.label}</span>
-            <span className="shrink-0 tabular-nums text-[var(--color-muted)]">{format(i.value)}</span>
+            <span className="shrink-0 tabular-nums text-muted-foreground">{format(i.value)}</span>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
@@ -64,7 +64,7 @@ export function Donut({ items, size = 160 }: { items: ChartItem[]; size?: number
   const circumference = 2 * Math.PI * radius;
 
   if (total <= 0) {
-    return <p className="text-sm text-[var(--color-muted)]">Sin datos en el periodo.</p>;
+    return <p className="text-sm text-muted-foreground">Sin datos en el periodo.</p>;
   }
 
   let offset = 0;
@@ -105,7 +105,7 @@ export function Donut({ items, size = 160 }: { items: ChartItem[]; size?: number
         <text x={cx} y={cx - 4} textAnchor="middle" className="fill-[var(--color-fg)] text-sm font-semibold">
           {formatMXN(total)}
         </text>
-        <text x={cx} y={cx + 14} textAnchor="middle" className="fill-[var(--color-muted)] text-[10px]">
+        <text x={cx} y={cx + 14} textAnchor="middle" className="fill-muted-foreground text-[10px]">
           total
         </text>
       </svg>
@@ -114,7 +114,7 @@ export function Donut({ items, size = 160 }: { items: ChartItem[]; size?: number
           <li key={s.label} className="flex items-center gap-2">
             <span className="h-3 w-3 shrink-0 rounded-sm" style={{ backgroundColor: s.color }} />
             <span className="flex-1">{s.label}</span>
-            <span className="tabular-nums text-[var(--color-muted)]">
+            <span className="tabular-nums text-muted-foreground">
               {formatMXN(s.value)} · {s.pct}%
             </span>
           </li>

@@ -217,10 +217,10 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                 active ? "ring-2 ring-brand-500" : "hover:bg-muted/50",
               )}
             >
-              <Icon className={cn("mt-0.5 h-5 w-5", active ? "text-brand-600" : "text-[var(--color-muted)]")} />
+              <Icon className={cn("mt-0.5 h-5 w-5", active ? "text-brand-600" : "text-muted-foreground")} />
               <span>
                 <span className="block text-sm font-medium">{m.label}</span>
-                <span className="block text-xs text-[var(--color-muted)]">{m.hint}</span>
+                <span className="block text-xs text-muted-foreground">{m.hint}</span>
               </span>
             </button>
           );
@@ -253,7 +253,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
             </Button>
           </div>
           {method === "OCR" && (
-            <p className="text-xs text-[var(--color-muted)]">
+            <p className="text-xs text-muted-foreground">
               El OCR es un apoyo: en fotos de baja calidad algunos campos pueden salir mal. Revísalos siempre.
             </p>
           )}
@@ -334,7 +334,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
         )}
 
         <div className="flex items-center justify-between">
-          <p className="text-xs text-[var(--color-muted)]">Negocio: {venueName}</p>
+          <p className="text-xs text-muted-foreground">Negocio: {venueName}</p>
           <Button type="submit" disabled={saving}>
             <Save className="h-4 w-4" />
             {saving ? "Guardando…" : "Guardar corte"}

@@ -19,7 +19,7 @@ export default async function DocumentosPage({
 
   if (!selected) {
     return (
-      <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
+      <div className="card p-10 text-center text-sm text-muted-foreground">
         Tu usuario no tiene negocios asignados.
       </div>
     );
@@ -41,7 +41,7 @@ export default async function DocumentosPage({
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold">Documentos</h1>
-          <p className="text-sm text-[var(--color-muted)]"><VenueTag name={selected.name} /></p>
+          <p className="text-sm text-muted-foreground"><VenueTag name={selected.name} /></p>
         </div>
         <Link href="/documentos/nuevo" className={buttonVariants()}>
           <Plus className="h-4 w-4" />
@@ -73,7 +73,7 @@ export default async function DocumentosPage({
         </div>
       </form>
 
-      <div className="text-sm text-[var(--color-muted)]">
+      <div className="text-sm text-muted-foreground">
         {total} documento{total === 1 ? "" : "s"}{hasFilters ? " (filtrados)" : ""}
       </div>
       <DocumentsList rows={rows} emptyText="No hay documentos que coincidan." />

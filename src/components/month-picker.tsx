@@ -42,7 +42,7 @@ export function MonthPicker({ name, defaultValue }: Props) {
           type="button"
           className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-sm outline-none focus:border-brand-500"
         >
-          <CalendarIcon className="h-4 w-4 text-[var(--color-muted)]" />
+          <CalendarIcon className="h-4 w-4 text-muted-foreground" />
           {label}
         </button>
       </PopoverTrigger>

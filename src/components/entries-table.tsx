@@ -13,7 +13,7 @@ interface Props {
 export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
   if (rows.length === 0) {
     return (
-      <div className="card p-8 text-center text-sm text-[var(--color-muted)]">
+      <div className="card p-8 text-center text-sm text-muted-foreground">
         {emptyText ?? "No hay movimientos."}
       </div>
     );
@@ -24,7 +24,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
-            <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+            <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <th className="px-3 py-2 font-medium">Fecha</th>
               <th className="px-3 py-2 font-medium">Tipo</th>
               <th className="px-3 py-2 font-medium">Categoría</th>
@@ -57,15 +57,15 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
                     </span>
                   </td>
                   <td className="px-3 py-2">{e.category}</td>
-                  <td className="max-w-[200px] px-3 py-2 text-[var(--color-muted)]">
+                  <td className="max-w-[200px] px-3 py-2 text-muted-foreground">
                     <span className="line-clamp-1">{e.supplier ?? "—"}</span>
                   </td>
-                  <td className="px-3 py-2 text-[var(--color-muted)]">{paymentLabels[e.paymentMethod]}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{paymentLabels[e.paymentMethod]}</td>
                   <td className={`px-3 py-2 text-right tabular-nums font-medium ${isEgreso ? "text-[var(--color-danger)]" : "text-brand-600"}`}>
                     {isEgreso ? "−" : "+"}
                     {formatMXN(e.amount)}
                   </td>
-                  <td className="px-3 py-2 text-[var(--color-muted)]">
+                  <td className="px-3 py-2 text-muted-foreground">
                     {e.photoMime && <ImageIcon className="h-4 w-4" />}
                   </td>
                 </tr>

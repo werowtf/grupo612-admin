@@ -17,7 +17,7 @@ export default async function CortesPage() {
 
   if (!selected) {
     return (
-      <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
+      <div className="card p-10 text-center text-sm text-muted-foreground">
         Tu usuario no tiene negocios asignados.
       </div>
     );
@@ -34,7 +34,7 @@ export default async function CortesPage() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold">Cortes de caja</h1>
-          <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <VenueTag name={selected.name} /> {cortes.length} corte{cortes.length === 1 ? "" : "s"}
           </p>
         </div>
@@ -46,8 +46,8 @@ export default async function CortesPage() {
 
       {cortes.length === 0 ? (
         <div className="card flex flex-col items-center gap-3 p-10 text-center">
-          <Receipt className="h-8 w-8 text-[var(--color-muted)]" />
-          <p className="text-sm text-[var(--color-muted)]">
+          <Receipt className="h-8 w-8 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
             Aún no hay cortes de caja. Sube el Excel de Soft Restaurant, una foto del
             ticket, o captúralo manualmente.
           </p>
@@ -61,7 +61,7 @@ export default async function CortesPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-sm">
               <thead>
-                <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+                <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-3 py-2 font-medium">Fecha</th>
                   <th className="px-3 py-2 font-medium">Turno</th>
                   <th className="px-3 py-2 font-medium">Folio Z</th>
@@ -81,11 +81,11 @@ export default async function CortesPage() {
                           {formatDate(c.date)}
                         </Link>
                       </td>
-                      <td className="px-3 py-2 text-[var(--color-muted)]">{c.turno ?? "—"}</td>
-                      <td className="px-3 py-2 text-[var(--color-muted)]">{c.folioCorteZ ?? "—"}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{c.turno ?? "—"}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{c.folioCorteZ ?? "—"}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(c.totalVenta)}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(c.totalPropinas)}</td>
-                      <td className={`px-3 py-2 text-right tabular-nums ${sf < 0 ? "text-[var(--color-danger)]" : sf > 0 ? "text-brand-600" : "text-[var(--color-muted)]"}`}>
+                      <td className={`px-3 py-2 text-right tabular-nums ${sf < 0 ? "text-[var(--color-danger)]" : sf > 0 ? "text-brand-600" : "text-muted-foreground"}`}>
                         {formatMXN(sf)}
                       </td>
                       <td className="px-3 py-2">

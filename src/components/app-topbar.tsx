@@ -53,7 +53,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
           type="button"
           onClick={onOpenMobileNav}
           aria-label="Abrir menú"
-          className="-ml-1.5 rounded-lg p-1.5 text-[var(--color-muted)] hover:bg-muted md:hidden"
+          className="-ml-1.5 rounded-lg p-1.5 text-muted-foreground hover:bg-muted md:hidden"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -72,7 +72,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
             </SelectContent>
           </Select>
         ) : (
-          <span className="text-sm text-[var(--color-muted)]">Sin negocios</span>
+          <span className="text-sm text-muted-foreground">Sin negocios</span>
         )}
       </div>
 
@@ -98,11 +98,11 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
           </span>
           <span className="hidden text-left sm:block">
             <span className="block font-medium leading-tight">{userName}</span>
-            <span className="block text-[11px] leading-tight text-[var(--color-muted)]">
+            <span className="block text-[11px] leading-tight text-muted-foreground">
               {roleLabel}
             </span>
           </span>
-          <ChevronDown className="h-4 w-4 text-[var(--color-muted)]" />
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-44">
           {role === "ADMIN" && (

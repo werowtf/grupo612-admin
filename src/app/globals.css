@@ -8,7 +8,6 @@
   --color-bg: var(--background);
   --color-surface: var(--card);
   --color-border: var(--border);
-  --color-muted: var(--muted-foreground);
   --color-fg: var(--foreground);
 
   --color-brand-50: oklch(0.962 0.018 272.314);

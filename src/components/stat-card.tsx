@@ -19,13 +19,13 @@ export function StatCard({ label, value, hint, icon, tone = "default" }: Props) 
   return (
     <div className="card p-4">
       <div className="flex items-center justify-between">
-        <span className="text-sm text-[var(--color-muted)]">{label}</span>
-        {icon && <span className="text-[var(--color-muted)]">{icon}</span>}
+        <span className="text-sm text-muted-foreground">{label}</span>
+        {icon && <span className="text-muted-foreground">{icon}</span>}
       </div>
       <p className={cn("mt-2 text-2xl font-semibold tabular-nums", toneClass[tone])}>
         {value}
       </p>
-      {hint && <p className="mt-1 text-xs text-[var(--color-muted)]">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }

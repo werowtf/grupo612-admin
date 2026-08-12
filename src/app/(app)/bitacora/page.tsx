@@ -111,7 +111,7 @@ export default async function BitacoraPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-xl font-semibold">Logs</h1>
-        <p className="text-sm text-[var(--color-muted)]">
+        <p className="text-sm text-muted-foreground">
           Registro de acciones realizadas en la plataforma
         </p>
       </header>
@@ -120,7 +120,7 @@ export default async function BitacoraPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+              <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="px-3 py-2 font-medium">Fecha</th>
                 <th className="px-3 py-2 font-medium">Usuario</th>
                 <th className="px-3 py-2 font-medium">Acción</th>
@@ -130,14 +130,14 @@ export default async function BitacoraPage() {
             <tbody className="divide-y divide-[var(--color-border)]">
               {logs.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-3 py-8 text-center text-[var(--color-muted)]">
+                  <td colSpan={4} className="px-3 py-8 text-center text-muted-foreground">
                     Sin registros.
                   </td>
                 </tr>
               ) : (
                 logs.map((l) => (
                   <tr key={l.id} className="hover:bg-muted/60">
-                    <td className="whitespace-nowrap px-3 py-2 text-[var(--color-muted)]">
+                    <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
                       {formatDate(l.createdAt)}{" "}
                       {l.createdAt.toLocaleTimeString("es-MX", {
                         hour: "2-digit",
@@ -146,7 +146,7 @@ export default async function BitacoraPage() {
                     </td>
                     <td className="px-3 py-2">{l.user?.name ?? "—"}</td>
                     <td className="px-3 py-2">{actionLabels[l.action] ?? l.action}</td>
-                    <td className="px-3 py-2 text-[var(--color-muted)]">
+                    <td className="px-3 py-2 text-muted-foreground">
                       {formatDetail(l.action, l.meta)}
                     </td>
                   </tr>

@@ -38,12 +38,12 @@ export default async function DocumentDetailPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href="/documentos" className="inline-flex items-center gap-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-fg)]">
+          <Link href="/documentos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]">
             <ArrowLeft className="h-4 w-4" />
             Documentos
           </Link>
           <h1 className="mt-1 text-xl font-semibold">{doc.title}</h1>
-          <p className="text-sm text-[var(--color-muted)]">
+          <p className="text-sm text-muted-foreground">
             {doc.venue.name} · {documentCategoryLabels[doc.category]}
             {doc.uploadedBy?.name ? ` · subido por ${doc.uploadedBy.name}` : ""}
           </p>
@@ -70,7 +70,7 @@ export default async function DocumentDetailPage({
 
           {(doc.corte || doc.entry || doc.bankTransaction) && (
             <div className="mt-4 border-t border-[var(--color-border)] pt-3">
-              <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+              <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <Link2 className="h-3.5 w-3.5" />
                 Vinculado a
               </h3>
@@ -94,7 +94,7 @@ export default async function DocumentDetailPage({
         </div>
 
         <div className="card p-5">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Vista previa
           </h2>
           {doc.mime.startsWith("image/") ? (
@@ -103,7 +103,7 @@ export default async function DocumentDetailPage({
           ) : doc.mime === "application/pdf" ? (
             <iframe src={fileUrl} title={doc.title} className="h-[480px] w-full rounded-lg border border-[var(--color-border)]" />
           ) : (
-            <p className="text-sm text-[var(--color-muted)]">
+            <p className="text-sm text-muted-foreground">
               Vista previa no disponible para este tipo de archivo. Usa &quot;Descargar&quot;.
             </p>
           )}
@@ -116,7 +116,7 @@ export default async function DocumentDetailPage({
 function Row({ k, v }: { k: string; v: string }) {
   return (
     <div className="flex items-center justify-between py-1.5">
-      <dt className="text-[var(--color-muted)]">{k}</dt>
+      <dt className="text-muted-foreground">{k}</dt>
       <dd className="font-medium">{v}</dd>
     </div>
   );

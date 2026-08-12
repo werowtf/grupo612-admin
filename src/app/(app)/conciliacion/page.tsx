@@ -14,7 +14,7 @@ export default async function ConciliacionPage() {
 
   if (!selected) {
     return (
-      <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
+      <div className="card p-10 text-center text-sm text-muted-foreground">
         Tu usuario no tiene negocios asignados.
       </div>
     );
@@ -30,7 +30,7 @@ export default async function ConciliacionPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-xl font-semibold">Estados de cuenta</h1>
-        <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <VenueTag name={selected.name} /> sube y administra los estados de cuenta bancarios
         </p>
       </header>
@@ -42,7 +42,7 @@ export default async function ConciliacionPage() {
       <section className="space-y-3">
         <h2 className="text-base font-semibold">Estados de cuenta importados</h2>
         {statements.length === 0 ? (
-          <div className="card p-6 text-sm text-[var(--color-muted)]">
+          <div className="card p-6 text-sm text-muted-foreground">
             Todavía no has importado estados de cuenta.
           </div>
         ) : (
@@ -50,7 +50,7 @@ export default async function ConciliacionPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
-                  <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+                  <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
                     <th className="px-3 py-2 font-medium">Archivo</th>
                     <th className="px-3 py-2 font-medium">Banco</th>
                     <th className="px-3 py-2 font-medium">Periodo</th>
@@ -67,7 +67,7 @@ export default async function ConciliacionPage() {
                         <span className="line-clamp-1 font-medium">{s.fileName}</span>
                       </td>
                       <td className="px-3 py-2">{bankLabels[s.bank]}</td>
-                      <td className="whitespace-nowrap px-3 py-2 text-[var(--color-muted)]">
+                      <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
                         {s.periodStart && s.periodEnd
                           ? `${formatDate(s.periodStart)} – ${formatDate(s.periodEnd)}`
                           : "—"}
@@ -75,7 +75,7 @@ export default async function ConciliacionPage() {
                       <td className="px-3 py-2 text-right tabular-nums">
                         {s.importedCount}
                         {s.duplicateCount > 0 && (
-                          <span className="ml-1 text-xs text-[var(--color-muted)]">
+                          <span className="ml-1 text-xs text-muted-foreground">
                             (+{s.duplicateCount} dup)
                           </span>
                         )}
@@ -86,7 +86,7 @@ export default async function ConciliacionPage() {
                       <td className="px-3 py-2 text-right tabular-nums text-[var(--color-danger)]">
                         {formatMXN(s.totalCargos)}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-2 text-[var(--color-muted)]">
+                      <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
                         {formatDate(s.createdAt)}
                         {s.importedBy?.name ? ` · ${s.importedBy.name}` : ""}
                       </td>

@@ -19,17 +19,17 @@ export default async function ComprasLayout({
         <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <Logo className="h-8 w-auto" />
-            <div className="flex items-center gap-1 text-[11px] text-[var(--color-muted)]">
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
               <ShoppingCart className="h-3.5 w-3.5" />
               Registro de compras
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-[var(--color-muted)] sm:block">{user.name}</span>
+            <span className="hidden text-sm text-muted-foreground sm:block">{user.name}</span>
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-[var(--color-muted)] hover:bg-muted/50 hover:text-[var(--color-fg)]"
+                className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-muted/50 hover:text-[var(--color-fg)]"
               >
                 <LogOut className="h-4 w-4" />
                 Salir

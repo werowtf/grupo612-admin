@@ -103,7 +103,7 @@ export function AppSidebar({ role, mobileOpen = false, onCloseMobile }: Props) {
           <Logo className="h-9 w-auto" />
         </div>
         <NavLinks role={role} />
-        <div className="border-t border-[var(--color-border)] p-3 text-[11px] text-[var(--color-muted)]">
+        <div className="border-t border-[var(--color-border)] p-3 text-[11px] text-muted-foreground">
           Grupo612 Admin v0.1
         </div>
       </aside>
@@ -123,13 +123,13 @@ export function AppSidebar({ role, mobileOpen = false, onCloseMobile }: Props) {
                 type="button"
                 onClick={onCloseMobile}
                 aria-label="Cerrar menú"
-                className="rounded-lg p-1.5 text-[var(--color-muted)] hover:bg-muted"
+                className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             <NavLinks role={role} onNavigate={onCloseMobile} />
-            <div className="border-t border-[var(--color-border)] p-3 text-[11px] text-[var(--color-muted)]">
+            <div className="border-t border-[var(--color-border)] p-3 text-[11px] text-muted-foreground">
               Grupo612 Admin v0.1
             </div>
           </aside>

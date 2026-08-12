@@ -21,7 +21,7 @@ export default async function UsuariosPage() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold">Usuarios</h1>
-          <p className="text-sm text-[var(--color-muted)]">
+          <p className="text-sm text-muted-foreground">
             Usuarios con acceso a la plataforma
           </p>
         </div>
@@ -35,7 +35,7 @@ export default async function UsuariosPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
             <thead>
-              <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-[var(--color-muted)]">
+              <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="px-3 py-2 font-medium">Nombre</th>
                 <th className="px-3 py-2 font-medium">Correo</th>
                 <th className="px-3 py-2 font-medium">Rol</th>
@@ -52,12 +52,12 @@ export default async function UsuariosPage() {
                       {u.name}
                     </Link>
                     {u.id === user.id && (
-                      <span className="ml-1.5 text-xs text-[var(--color-muted)]">(tú)</span>
+                      <span className="ml-1.5 text-xs text-muted-foreground">(tú)</span>
                     )}
                   </td>
-                  <td className="px-3 py-2 text-[var(--color-muted)]">{u.email}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{u.email}</td>
                   <td className="px-3 py-2">{roleLabels[u.role]}</td>
-                  <td className="px-3 py-2 text-[var(--color-muted)]">
+                  <td className="px-3 py-2 text-muted-foreground">
                     {u.role === "ADMIN"
                       ? "Todas"
                       : u.venues.map((v) => v.venue.name).join(", ") || "—"}

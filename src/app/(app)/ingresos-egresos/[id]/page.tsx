@@ -42,14 +42,14 @@ export default async function EntryDetailPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href="/ingresos-egresos" className="inline-flex items-center gap-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-fg)]">
+          <Link href="/ingresos-egresos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]">
             <ArrowLeft className="h-4 w-4" />
             Ingresos y egresos
           </Link>
           <h1 className="mt-1 text-xl font-semibold">
             {entryTypeLabels[entry.type]} · {formatDate(entry.date)}
           </h1>
-          <p className="text-sm text-[var(--color-muted)]">
+          <p className="text-sm text-muted-foreground">
             {entry.venue.name}
             {entry.createdBy?.name ? ` · registró ${entry.createdBy.name}` : ""}
           </p>
@@ -72,7 +72,7 @@ export default async function EntryDetailPage({
           <dl className="divide-y divide-[var(--color-border)]">
             {rows.map(([k, v]) => (
               <div key={k} className="flex items-center justify-between py-1.5 text-sm">
-                <dt className="text-[var(--color-muted)]">{k}</dt>
+                <dt className="text-muted-foreground">{k}</dt>
                 <dd className="font-medium">{v}</dd>
               </div>
             ))}
@@ -83,13 +83,13 @@ export default async function EntryDetailPage({
             </p>
           )}
           {entry.notes && (
-            <p className="mt-2 text-sm text-[var(--color-muted)]">Notas: {entry.notes}</p>
+            <p className="mt-2 text-sm text-muted-foreground">Notas: {entry.notes}</p>
           )}
         </div>
 
         {entry.photoMime && (
           <div className="card p-5">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Ticket
             </h2>
             {/* eslint-disable-next-line @next/next/no-img-element */}

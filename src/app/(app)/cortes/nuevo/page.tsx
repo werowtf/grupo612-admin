@@ -9,7 +9,7 @@ export default async function NuevoCortePage() {
 
   if (!selected) {
     return (
-      <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
+      <div className="card p-10 text-center text-sm text-muted-foreground">
         Tu usuario no tiene negocios asignados.
       </div>
     );
@@ -22,13 +22,13 @@ export default async function NuevoCortePage() {
       <div>
         <Link
           href="/cortes"
-          className="inline-flex items-center gap-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-fg)]"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Cortes de caja
         </Link>
         <h1 className="mt-1 text-xl font-semibold">Nuevo corte de caja</h1>
-        <p className="text-sm text-[var(--color-muted)]"><VenueTag name={selected.name} /></p>
+        <p className="text-sm text-muted-foreground"><VenueTag name={selected.name} /></p>
       </div>
 
       <CorteEditor

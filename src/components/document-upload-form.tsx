@@ -84,7 +84,7 @@ export function DocumentUploadForm({
             >
               Elegir archivo
             </button>
-            <span className="text-sm text-[var(--color-muted)]">
+            <span className="text-sm text-muted-foreground">
               {fileName || "Ningún archivo seleccionado"}
             </span>
           </div>

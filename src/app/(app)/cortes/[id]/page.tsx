@@ -53,7 +53,7 @@ export default async function CorteDetailPage({
         <div>
           <Link
             href="/cortes"
-            className="inline-flex items-center gap-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-fg)]"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]"
           >
             <ArrowLeft className="h-4 w-4" />
             Cortes de caja
@@ -61,7 +61,7 @@ export default async function CorteDetailPage({
           <h1 className="mt-1 text-xl font-semibold">
             Corte {corte.folioCorteZ ? `#${corte.folioCorteZ}` : ""} · {formatDate(corte.date)}
           </h1>
-          <p className="text-sm text-[var(--color-muted)]">
+          <p className="text-sm text-muted-foreground">
             {corte.venue.name} · {sourceLabels[corte.source] ?? corte.source}
             {corte.createdBy?.name ? ` · por ${corte.createdBy.name}` : ""}
           </p>
@@ -86,13 +86,13 @@ export default async function CorteDetailPage({
       <div className="grid gap-6 lg:grid-cols-2">
         {CORTE_SECTIONS.map((section) => (
           <div key={section.title} className="card p-5">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               {section.title}
             </h2>
             <dl className="divide-y divide-[var(--color-border)]">
               {section.fields.map((f) => (
                 <div key={f.key} className="flex items-center justify-between py-1.5 text-sm">
-                  <dt className="text-[var(--color-muted)]">{f.label}</dt>
+                  <dt className="text-muted-foreground">{f.label}</dt>
                   <dd className="tabular-nums font-medium">{format(f.key, f.type)}</dd>
                 </div>
               ))}
@@ -103,7 +103,7 @@ export default async function CorteDetailPage({
 
       {corte.notes && (
         <div className="card p-5">
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Notas
           </h2>
           <p className="text-sm">{corte.notes}</p>

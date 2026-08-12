@@ -28,12 +28,12 @@ export default async function EditarUsuarioPage({
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/usuarios" className="inline-flex items-center gap-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-fg)]">
+        <Link href="/usuarios" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]">
           <ArrowLeft className="h-4 w-4" />
           Usuarios
         </Link>
         <h1 className="mt-1 text-xl font-semibold">Editar usuario</h1>
-        <p className="text-sm text-[var(--color-muted)]">{target.email}</p>
+        <p className="text-sm text-muted-foreground">{target.email}</p>
       </div>
 
       <UserForm

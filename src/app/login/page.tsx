@@ -20,7 +20,7 @@ export default async function LoginPage({
           <LoginForm next={next ?? "/dashboard"} />
         </div>
 
-        <p className="mt-4 text-center text-xs text-[var(--color-muted)]">
+        <p className="mt-4 text-center text-xs text-muted-foreground">
           Acceso restringido al personal autorizado.
         </p>
       </div>

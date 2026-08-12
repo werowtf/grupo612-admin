@@ -29,7 +29,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-xl font-semibold">Dashboard</h1>
-        <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
           Resumen financiero de <VenueTag name={selected.name} />
         </p>
       </header>
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
                 </Link>
               </div>
               {statements.length === 0 ? (
-                <p className="text-sm text-[var(--color-muted)]">Ninguno todavía.</p>
+                <p className="text-sm text-muted-foreground">Ninguno todavía.</p>
               ) : (
                 <ul className="space-y-2">
                   {statements.slice(0, 6).map((s) => (
@@ -100,7 +100,7 @@ export default async function DashboardPage() {
                     >
                       <div className="min-w-0">
                         <div className="truncate font-medium">{s.fileName}</div>
-                        <div className="text-xs text-[var(--color-muted)]">
+                        <div className="text-xs text-muted-foreground">
                           {bankLabels[s.bank]} ·{" "}
                           {s.periodStart && s.periodEnd
                             ? `${formatDate(s.periodStart)} – ${formatDate(s.periodEnd)}`
@@ -134,7 +134,7 @@ function CategoryBreakdown({
         <li key={i.category}>
           <div className="mb-1 flex items-center justify-between text-sm">
             <CategoryBadge category={i.category} />
-            <span className="tabular-nums text-[var(--color-muted)]">
+            <span className="tabular-nums text-muted-foreground">
               {formatMXN(i.total)}{" "}
               <span className="text-xs">({i.count})</span>
             </span>
@@ -161,7 +161,7 @@ function EmptyMessage({
   return (
     <div className="card p-10 text-center">
       <h2 className="text-lg font-semibold">{title}</h2>
-      <div className="mx-auto mt-2 max-w-md text-sm text-[var(--color-muted)]">
+      <div className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
         {children}
       </div>
     </div>

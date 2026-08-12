@@ -28,7 +28,7 @@ export default async function PortalPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-2xl font-semibold">Hola, {user.name.split(" ")[0]}</h1>
-        <p className="mt-1 text-[var(--color-muted)]">
+        <p className="mt-1 text-muted-foreground">
           Sube aquí los estados de cuenta mensuales de cada negocio. Selecciona la
           cuenta correspondiente y el archivo del banco; el sistema los registra al
           instante y queda constancia de cada envío.
@@ -47,8 +47,8 @@ export default async function PortalPage() {
         <h2 className="mb-3 text-base font-semibold">Estados de cuenta enviados</h2>
         {statements.length === 0 ? (
           <div className="card flex flex-col items-center gap-2 p-8 text-center">
-            <FileUp className="h-7 w-7 text-[var(--color-muted)]" />
-            <p className="text-sm text-[var(--color-muted)]">
+            <FileUp className="h-7 w-7 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
               Aún no has enviado estados de cuenta. Los que subas aparecerán aquí como
               comprobante.
             </p>
@@ -64,7 +64,7 @@ export default async function PortalPage() {
                   <CheckCircle2 className="h-5 w-5 shrink-0 text-brand-600" />
                   <div className="min-w-0">
                     <div className="truncate text-sm font-medium">{s.fileName}</div>
-                    <div className="text-xs text-[var(--color-muted)]">
+                    <div className="text-xs text-muted-foreground">
                       {s.bankAccount.venue.name} · {bankLabels[s.bank]}
                       {s.periodStart && s.periodEnd
                         ? ` · ${formatDate(s.periodStart)} – ${formatDate(s.periodEnd)}`
@@ -76,7 +76,7 @@ export default async function PortalPage() {
                   <div className="text-sm font-medium tabular-nums">
                     {s.importedCount} movimientos
                   </div>
-                  <div className="text-xs text-[var(--color-muted)]">
+                  <div className="text-xs text-muted-foreground">
                     Enviado {formatDate(s.createdAt)}
                   </div>
                 </div>

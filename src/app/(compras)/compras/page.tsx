@@ -21,14 +21,14 @@ export default async function ComprasPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-2xl font-semibold">Registrar compra</h1>
-        <p className="mt-1 text-[var(--color-muted)]">
+        <p className="mt-1 text-muted-foreground">
           Captura la compra del día. Puedes tomar una <strong>foto del ticket</strong> para
           llenar los datos automáticamente, o escribirlos a mano.
         </p>
       </header>
 
       {venues.length === 0 ? (
-        <div className="card p-8 text-center text-sm text-[var(--color-muted)]">
+        <div className="card p-8 text-center text-sm text-muted-foreground">
           No tienes negocios asignados. Contacta al administrador.
         </div>
       ) : (

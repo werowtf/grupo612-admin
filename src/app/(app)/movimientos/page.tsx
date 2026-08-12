@@ -39,7 +39,7 @@ export default async function MovimientosPage({
 
   if (!selected) {
     return (
-      <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
+      <div className="card p-10 text-center text-sm text-muted-foreground">
         Tu usuario no tiene negocios asignados.
       </div>
     );
@@ -67,7 +67,7 @@ export default async function MovimientosPage({
     <div className="space-y-6">
       <header>
         <h1 className="text-xl font-semibold">Movimientos</h1>
-        <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <VenueTag name={selected.name} /> {total} movimiento{total === 1 ? "" : "s"}
           {hasFilters ? " (filtrados)" : ""}
         </p>
@@ -85,7 +85,7 @@ export default async function MovimientosPage({
             Buscar
           </label>
           <div className="relative">
-            <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-[var(--color-muted)]" />
+            <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="search"
               name="search"

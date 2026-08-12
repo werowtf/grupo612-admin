@@ -8,5 +8,5 @@ export function DocumentIcon({ mime, className }: { mime: string; className?: st
   if (mime.includes("sheet") || mime.includes("excel") || mime === "text/csv") {
     return <FileSpreadsheet className={cn(cls, "text-brand-600")} />;
   }
-  return <File className={cn(cls, "text-[var(--color-muted)]")} />;
+  return <File className={cn(cls, "text-muted-foreground")} />;
 }

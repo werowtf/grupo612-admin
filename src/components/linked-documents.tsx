@@ -31,7 +31,7 @@ export async function LinkedDocuments({ venues, venueId, redirectTo, corteId, en
               >
                 <DocumentIcon mime={d.mime} className="h-4 w-4 shrink-0" />
                 <span className="min-w-0 flex-1 truncate">{d.title}</span>
-                <span className="shrink-0 text-xs text-[var(--color-muted)]">
+                <span className="shrink-0 text-xs text-muted-foreground">
                   {documentCategoryLabels[d.category]} · {formatFileSize(d.size)}
                 </span>
               </Link>

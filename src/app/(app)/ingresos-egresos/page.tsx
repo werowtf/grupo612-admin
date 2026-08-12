@@ -23,7 +23,7 @@ export default async function IngresosEgresosPage({
 
   if (!selected) {
     return (
-      <div className="card p-10 text-center text-sm text-[var(--color-muted)]">
+      <div className="card p-10 text-center text-sm text-muted-foreground">
         Tu usuario no tiene negocios asignados.
       </div>
     );
@@ -47,7 +47,7 @@ export default async function IngresosEgresosPage({
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold">Ingresos y egresos</h1>
-          <p className="text-sm text-[var(--color-muted)]"><VenueTag name={selected.name} /></p>
+          <p className="text-sm text-muted-foreground"><VenueTag name={selected.name} /></p>
         </div>
         <Link href="/ingresos-egresos/nuevo" className={buttonVariants()}>
           <Plus className="h-4 w-4" />
@@ -93,7 +93,7 @@ export default async function IngresosEgresosPage({
         </div>
       </form>
 
-      <div className="text-sm text-[var(--color-muted)]">
+      <div className="text-sm text-muted-foreground">
         {total} movimiento{total === 1 ? "" : "s"}{hasFilters ? " (filtrados)" : ""}
       </div>
       <EntriesTable rows={rows} hrefBase="/ingresos-egresos" emptyText="No hay movimientos que coincidan." />

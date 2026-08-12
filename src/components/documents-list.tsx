@@ -19,7 +19,7 @@ export interface DocRow {
 export function DocumentsList({ rows, emptyText }: { rows: DocRow[]; emptyText?: string }) {
   if (rows.length === 0) {
     return (
-      <div className="card p-8 text-center text-sm text-[var(--color-muted)]">
+      <div className="card p-8 text-center text-sm text-muted-foreground">
         {emptyText ?? "No hay documentos."}
       </div>
     );
@@ -33,17 +33,17 @@ export function DocumentsList({ rows, emptyText }: { rows: DocRow[]; emptyText?:
             <DocumentIcon mime={d.mime} className="mt-0.5 h-6 w-6 shrink-0" />
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-medium">{d.title}</div>
-              <div className="mt-0.5 text-xs text-[var(--color-muted)]">
+              <div className="mt-0.5 text-xs text-muted-foreground">
                 {documentCategoryLabels[d.category]} · {formatFileSize(d.size)}
               </div>
-              <div className="text-xs text-[var(--color-muted)]">{formatDate(d.createdAt)}</div>
+              <div className="text-xs text-muted-foreground">{formatDate(d.createdAt)}</div>
             </div>
           </Link>
           <div className="mt-3 flex items-center justify-between border-t border-[var(--color-border)] pt-2">
-            <span className="truncate text-xs text-[var(--color-muted)]">{d.fileName}</span>
+            <span className="truncate text-xs text-muted-foreground">{d.fileName}</span>
             <a
               href={`/api/documents/${d.id}/file?download=1`}
-              className="shrink-0 text-[var(--color-muted)] hover:text-brand-600"
+              className="shrink-0 text-muted-foreground hover:text-brand-600"
               title="Descargar"
             >
               <Download className="h-4 w-4" />

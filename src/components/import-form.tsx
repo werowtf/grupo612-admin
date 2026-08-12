@@ -35,7 +35,7 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
 
   if (accounts.length === 0) {
     return (
-      <div className="card p-6 text-sm text-[var(--color-muted)]">
+      <div className="card p-6 text-sm text-muted-foreground">
         Este negocio no tiene cuentas bancarias configuradas.
       </div>
     );
@@ -45,7 +45,7 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
     <form ref={formRef} action={action} className="card space-y-4 p-6">
       <div>
         <h2 className="text-base font-semibold">Importar estado de cuenta</h2>
-        <p className="text-sm text-[var(--color-muted)]">
+        <p className="text-sm text-muted-foreground">
           Sube el archivo del banco (CSV de Santander o Excel de BanBajío). Los
           movimientos se clasifican automáticamente y se omiten duplicados.
         </p>
