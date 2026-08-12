@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Scale,
+  Landmark,
   ListOrdered,
   ScrollText,
   Users,
@@ -28,7 +28,7 @@ interface NavItem {
 
 const NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/conciliacion", label: "Conciliación bancaria", icon: Scale },
+  { href: "/conciliacion", label: "Estados de cuenta", icon: Landmark },
   { href: "/movimientos", label: "Movimientos", icon: ListOrdered },
   { href: "/cortes", label: "Cortes de caja", icon: Receipt },
   { href: "/ingresos-egresos", label: "Ingresos y egresos", icon: Wallet },

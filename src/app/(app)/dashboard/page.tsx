@@ -38,7 +38,7 @@ export default async function DashboardPage() {
           Importa el primer estado de cuenta para ver el resumen financiero.
           <div className="mt-4">
             <Link href="/conciliacion" className="btn-primary">
-              Ir a conciliación <ArrowRight className="h-4 w-4" />
+              Ir a estados de cuenta <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </EmptyMessage>
