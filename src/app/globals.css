@@ -5,17 +5,17 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-bg: #F4F5FB;
-  --color-surface: #FBFCFE;
-  --color-border: #e5e7eb;
-  --color-muted: #6b7280;
-  --color-fg: #534C71;
+  --color-bg: var(--background);
+  --color-surface: var(--card);
+  --color-border: var(--border);
+  --color-muted: var(--muted-foreground);
+  --color-fg: var(--foreground);
 
-  --color-brand-50: #F3F0FA;
-  --color-brand-100: #F3F0FA; 
-  --color-brand-500: #6243ED;
+  --color-brand-50: oklch(0.962 0.018 272.314);
+  --color-brand-100: oklch(0.962 0.018 272.314);
+  --color-brand-500: oklch(0.457 0.24 277.023);
   --color-brand-600: #48BC93;
-  --color-brand-700: #755ED9;
+  --color-brand-700: oklch(0.398 0.195 277.366);
 
   --color-danger: #EE4273;
   --color-danger-bg: #F8D2DD;
@@ -108,86 +108,80 @@ body {
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Tokens semánticos de shadcn/ui remapeados a la paleta de marca ya
-   definida arriba (--color-*), para que Button/Card/Dialog/etc. salgan
-   con el mismo violeta/blanco del resto de la app en vez del gris por
-   defecto de shadcn. */
+/* Paleta experimental "b38CyBLgR" del catálogo de shadcn (ui.shadcn.com/themes).
+   --color-bg/--color-surface/--color-border/--color-muted/--color-fg (arriba)
+   ahora son alias de estos tokens semánticos, así que toda la app (no sólo
+   Button/Card/Dialog) sigue este esquema automáticamente. */
 :root {
-  --background: var(--color-bg);
-  --foreground: var(--color-fg);
-  --card: var(--color-surface);
-  --card-foreground: var(--color-fg);
-  --popover: var(--color-surface);
-  --popover-foreground: var(--color-fg);
-  --primary: var(--color-brand-500);
-  --primary-foreground: #ffffff;
-  --secondary: var(--color-brand-50);
-  --secondary-foreground: var(--color-brand-700);
-  --muted: #F3F4F6;
-  --muted-foreground: var(--color-muted);
-  --accent: var(--color-brand-50);
-  --accent-foreground: var(--color-brand-700);
-  --destructive: var(--color-danger);
-  --border: var(--color-border);
-  --input: var(--color-border);
-  --ring: var(--color-brand-500);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.148 0.004 228.8);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.148 0.004 228.8);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.148 0.004 228.8);
+  --primary: oklch(0.457 0.24 277.023);
+  --primary-foreground: oklch(0.962 0.018 272.314);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.963 0.002 197.1);
+  --muted-foreground: oklch(0.56 0.021 213.5);
+  --accent: oklch(0.963 0.002 197.1);
+  --accent-foreground: oklch(0.218 0.008 223.9);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.925 0.005 214.3);
+  --input: oklch(0.925 0.005 214.3);
+  --ring: oklch(0.723 0.014 214.4);
+  --chart-1: oklch(0.785 0.115 274.713);
+  --chart-2: oklch(0.585 0.233 277.117);
+  --chart-3: oklch(0.511 0.262 276.966);
+  --chart-4: oklch(0.457 0.24 277.023);
+  --chart-5: oklch(0.398 0.195 277.366);
+  --radius: 0.875rem;
+  --sidebar: oklch(0.987 0.002 197.1);
+  --sidebar-foreground: oklch(0.148 0.004 228.8);
+  --sidebar-primary: oklch(0.511 0.262 276.966);
+  --sidebar-primary-foreground: oklch(0.962 0.018 272.314);
+  --sidebar-accent: oklch(0.963 0.002 197.1);
+  --sidebar-accent-foreground: oklch(0.218 0.008 223.9);
+  --sidebar-border: oklch(0.925 0.005 214.3);
+  --sidebar-ring: oklch(0.723 0.014 214.4);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  --background: oklch(0.148 0.004 228.8);
+  --foreground: oklch(0.987 0.002 197.1);
+  --card: oklch(0.218 0.008 223.9);
+  --card-foreground: oklch(0.987 0.002 197.1);
+  --popover: oklch(0.218 0.008 223.9);
+  --popover-foreground: oklch(0.987 0.002 197.1);
+  --primary: oklch(0.398 0.195 277.366);
+  --primary-foreground: oklch(0.962 0.018 272.314);
+  --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.275 0.011 216.9);
+  --muted-foreground: oklch(0.723 0.014 214.4);
+  --accent: oklch(0.275 0.011 216.9);
+  --accent-foreground: oklch(0.987 0.002 197.1);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.56 0.021 213.5);
+  --chart-1: oklch(0.785 0.115 274.713);
+  --chart-2: oklch(0.585 0.233 277.117);
+  --chart-3: oklch(0.511 0.262 276.966);
+  --chart-4: oklch(0.457 0.24 277.023);
+  --chart-5: oklch(0.398 0.195 277.366);
+  --sidebar: oklch(0.218 0.008 223.9);
+  --sidebar-foreground: oklch(0.987 0.002 197.1);
+  --sidebar-primary: oklch(0.585 0.233 277.117);
+  --sidebar-primary-foreground: oklch(0.962 0.018 272.314);
+  --sidebar-accent: oklch(0.275 0.011 216.9);
+  --sidebar-accent-foreground: oklch(0.987 0.002 197.1);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.56 0.021 213.5);
 
-  /* Tokens propios de la app (fuera del sistema semántico de shadcn):
-     mismo gris por defecto que shadcn trae para su modo oscuro, para
-     que el fondo, las tarjetas (.card) y los bordes sigan el toggle. */
-  --color-bg: oklch(0.145 0 0);
-  --color-surface: oklch(0.205 0 0);
-  --color-border: oklch(1 0 0 / 10%);
-  --color-muted: oklch(0.708 0 0);
-  --color-fg: oklch(0.985 0 0);
+  /* Tokens propios de la app sin equivalente directo en el sistema
+     semántico de shadcn. */
   --color-danger-bg: oklch(0.396 0.141 25.723);
   --color-warning-bg: oklch(0.279 0.077 76.958 / 40%);
   --color-info-bg: oklch(0.282 0.091 267.935 / 40%);
