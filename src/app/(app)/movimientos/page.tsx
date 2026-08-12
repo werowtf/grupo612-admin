@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { getAppContext } from "@/lib/context";
-import { getVenueTransactions, type TxFilters } from "@/lib/queries";
+import { getVenueTransactions, getCategoryTotals, type TxFilters } from "@/lib/queries";
 import { TransactionsTable } from "@/components/transactions-table";
+import { StatCard } from "@/components/stat-card";
 import { toTxRow } from "@/lib/serialize";
 import { categoryLabels, statusLabels } from "@/lib/labels";
+import { formatMXN } from "@/lib/utils";
 import { VenueTag } from "@/components/venue-tag";
 import type {
   TxCategory,
@@ -50,6 +52,11 @@ export default async function MovimientosPage({
   };
 
   const { rows, total } = await getVenueTransactions(selected.id, filters);
+  const categoryTotals = await getCategoryTotals(selected.id, {
+    direction: filters.direction,
+    status: filters.status,
+    search: filters.search,
+  });
   const hasFilters = Boolean(
     filters.category || filters.direction || filters.status || filters.search,
   );
@@ -63,6 +70,12 @@ export default async function MovimientosPage({
           {hasFilters ? " (filtrados)" : ""}
         </p>
       </header>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {CATEGORIES.map((c) => (
+          <StatCard key={c} label={categoryLabels[c]} value={formatMXN(categoryTotals[c])} />
+        ))}
+      </div>
 
       <form method="get" className="card flex flex-wrap items-end gap-3 p-4">
         <div className="min-w-[180px] flex-1">

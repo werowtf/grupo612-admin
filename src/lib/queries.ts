@@ -80,8 +80,11 @@ export interface TxFilters {
   take?: number;
 }
 
-export async function getVenueTransactions(venueId: string, filters: TxFilters = {}) {
-  const where: Prisma.BankTransactionWhereInput = {
+function buildTxWhere(
+  venueId: string,
+  filters: Omit<TxFilters, "take">,
+): Prisma.BankTransactionWhereInput {
+  return {
     bankAccount: { venueId },
     ...(filters.category ? { category: filters.category } : {}),
     ...(filters.direction ? { direction: filters.direction } : {}),
@@ -96,6 +99,10 @@ export async function getVenueTransactions(venueId: string, filters: TxFilters =
         }
       : {}),
   };
+}
+
+export async function getVenueTransactions(venueId: string, filters: TxFilters = {}) {
+  const where = buildTxWhere(venueId, filters);
 
   const [rows, total] = await Promise.all([
     prisma.bankTransaction.findMany({
@@ -107,4 +114,30 @@ export async function getVenueTransactions(venueId: string, filters: TxFilters =
   ]);
 
   return { rows, total };
+}
+
+/**
+ * Suma por categoría respetando los filtros activos (búsqueda, tipo,
+ * estatus), pero ignorando el filtro de categoría: siempre regresa las 5,
+ * aunque alguna quede en $0, para poder mostrarlas todas como tarjetas.
+ */
+export async function getCategoryTotals(
+  venueId: string,
+  filters: Omit<TxFilters, "category" | "take"> = {},
+): Promise<Record<TxCategory, number>> {
+  const where = buildTxWhere(venueId, filters);
+  const grouped = await prisma.bankTransaction.groupBy({
+    by: ["category"],
+    where,
+    _sum: { amount: true },
+  });
+  const totals = {
+    TRANSFERENCIA: 0,
+    CHEQUE: 0,
+    DEPOSITO: 0,
+    COMISION: 0,
+    GASTO_TARJETA: 0,
+  } satisfies Record<TxCategory, number>;
+  for (const g of grouped) totals[g.category] = num(g._sum.amount);
+  return totals;
 }
