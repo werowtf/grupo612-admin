@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { documentCategoryLabels } from "@/lib/labels";
 import { formatDate, formatFileSize } from "@/lib/utils";
 import { DeleteDocumentButton } from "@/components/delete-document-button";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function DocumentDetailPage({
   params,
@@ -48,7 +49,7 @@ export default async function DocumentDetailPage({
           </p>
         </div>
         <div className="flex gap-2">
-          <a href={`${fileUrl}?download=1`} className="btn-ghost">
+          <a href={`${fileUrl}?download=1`} className={buttonVariants({ variant: "outline" })}>
             <Download className="h-4 w-4" /> Descargar
           </a>
           <DeleteDocumentButton documentId={doc.id} />

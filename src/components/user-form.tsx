@@ -5,6 +5,8 @@ import { Save, AlertCircle } from "lucide-react";
 import { createUserAction, updateUserAction, type UserFormState } from "@/app/(app)/usuarios/actions";
 import { roleLabels } from "@/lib/labels";
 import type { UserRole } from "@/generated/prisma/enums";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const ROLES: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR", "CONTADOR_EXTERNO", "COMPRAS", "CAJERO"];
 
@@ -49,18 +51,18 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
       <div className="card grid gap-4 p-5 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="name">Nombre</label>
-          <input id="name" name="name" required defaultValue={initial?.name} className="input" />
+          <Input id="name" name="name" required defaultValue={initial?.name} />
         </div>
 
         {mode === "create" ? (
           <div>
             <label className="label" htmlFor="email">Correo</label>
-            <input id="email" name="email" type="email" required className="input" />
+            <Input id="email" name="email" type="email" required />
           </div>
         ) : (
           <div>
             <label className="label">Correo</label>
-            <input value={initial?.email} disabled className="input bg-gray-50 text-[var(--color-muted)]" />
+            <Input value={initial?.email} disabled />
           </div>
         )}
 
@@ -82,7 +84,7 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
         {mode === "create" && (
           <div>
             <label className="label" htmlFor="password">Contraseña</label>
-            <input id="password" name="password" type="password" required minLength={8} className="input" placeholder="Mínimo 8 caracteres" />
+            <Input id="password" name="password" type="password" required minLength={8} placeholder="Mínimo 8 caracteres" />
           </div>
         )}
 
@@ -130,10 +132,10 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
       )}
 
       <div className="flex justify-end">
-        <button type="submit" disabled={pending} className="btn-primary">
+        <Button type="submit" disabled={pending}>
           <Save className="h-4 w-4" />
           {pending ? "Guardando…" : mode === "create" ? "Crear usuario" : "Guardar cambios"}
-        </button>
+        </Button>
       </div>
     </form>
   );

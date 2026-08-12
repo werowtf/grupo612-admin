@@ -1,11 +1,18 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Building2, ChevronDown, LogOut, Menu, ScrollText, Users } from "lucide-react";
 import { logoutAction, selectVenueAction } from "@/app/(app)/actions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { UserRole } from "@/generated/prisma/enums";
 
 interface VenueOption {
@@ -25,7 +32,6 @@ interface Props {
 export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, onOpenMobileNav }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [menuOpen, setMenuOpen] = useState(false);
 
   function onVenueChange(id: string) {
     startTransition(async () => {
@@ -64,11 +70,8 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
         )}
       </div>
 
-      <div className="relative">
-        <button
-          onClick={() => setMenuOpen((o) => !o)}
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-gray-50"
-        >
+      <DropdownMenu>
+        <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-gray-50">
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-700">
             {userName.slice(0, 1).toUpperCase()}
           </span>
@@ -79,43 +82,29 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
             </span>
           </span>
           <ChevronDown className="h-4 w-4 text-[var(--color-muted)]" />
-        </button>
-
-        {menuOpen && (
-          <div className="absolute right-0 top-full z-20 mt-1 w-44 rounded-lg border border-[var(--color-border)] bg-white py-1 shadow-lg">
-            {role === "ADMIN" && (
-              <>
-                <Link
-                  href="/bitacora"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--color-fg)] hover:bg-gray-50"
-                >
-                  <ScrollText className="h-4 w-4" />
-                  Logs
-                </Link>
-                <Link
-                  href="/usuarios"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--color-fg)] hover:bg-gray-50"
-                >
-                  <Users className="h-4 w-4" />
-                  Usuarios
-                </Link>
-                <div className="my-1 border-t border-[var(--color-border)]" />
-              </>
-            )}
-            <form action={logoutAction}>
-              <button
-                type="submit"
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[var(--color-danger)] hover:bg-[var(--color-danger-bg)]"
-              >
-                <LogOut className="h-4 w-4" />
-                Cerrar sesión
-              </button>
-            </form>
-          </div>
-        )}
-      </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-44">
+          {role === "ADMIN" && (
+            <>
+              <DropdownMenuItem render={<Link href="/bitacora" />}>
+                <ScrollText className="h-4 w-4" />
+                Logs
+              </DropdownMenuItem>
+              <DropdownMenuItem render={<Link href="/usuarios" />}>
+                <Users className="h-4 w-4" />
+                Usuarios
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
+          <DropdownMenuItem variant="destructive" render={<form action={logoutAction} />}>
+            <button type="submit" className="flex w-full items-center gap-2">
+              <LogOut className="h-4 w-4" />
+              Cerrar sesión
+            </button>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </header>
   );
 }

@@ -7,6 +7,7 @@ import { entryTypeLabels, paymentLabels, sourceLabels } from "@/lib/entries/conf
 import { formatMXN, formatDate } from "@/lib/utils";
 import { DeleteEntryButton } from "@/components/delete-entry-button";
 import { LinkedDocuments } from "@/components/linked-documents";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function EntryDetailPage({
   params,
@@ -54,7 +55,7 @@ export default async function EntryDetailPage({
           </p>
         </div>
         <div className="flex gap-2">
-          <Link href={`/ingresos-egresos/${entry.id}/editar`} className="btn-ghost">
+          <Link href={`/ingresos-egresos/${entry.id}/editar`} className={buttonVariants({ variant: "outline" })}>
             <Pencil className="h-4 w-4" /> Editar
           </Link>
           <DeleteEntryButton entryId={entry.id} />

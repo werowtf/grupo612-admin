@@ -7,6 +7,9 @@ import { categoriesFor, PAYMENT_METHODS, paymentLabels } from "@/lib/entries/con
 import type { EntryType } from "@/generated/prisma/enums";
 import type { TicketDraft } from "@/lib/entries/ticket";
 import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 type Values = Record<string, string>;
 
@@ -159,7 +162,7 @@ export function EntryForm({
             </span>
           )}
         </label>
-        <input
+        <Input
           id={key}
           name={key}
           type={type}
@@ -167,7 +170,7 @@ export function EntryForm({
           placeholder={opts?.placeholder}
           value={values[key] ?? ""}
           onChange={(e) => set(key, e.target.value)}
-          className={cn("input", was && "border-brand-500")}
+          className={cn(was && "border-brand-500")}
         />
       </div>
     );
@@ -192,12 +195,12 @@ export function EntryForm({
                 type="button"
                 onClick={() => setType(t)}
                 className={cn(
-                  "btn flex-1 border",
-                  active
-                    ? t === "EGRESO"
-                      ? "border-rose-300 bg-rose-50 text-rose-700"
-                      : "border-brand-300 bg-brand-50 text-brand-700"
-                    : "border-[var(--color-border)] bg-white text-[var(--color-muted)]",
+                  buttonVariants({ variant: "outline" }),
+                  "flex-1",
+                  active &&
+                    (t === "EGRESO"
+                      ? "border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-50"
+                      : "border-brand-300 bg-brand-50 text-brand-700 hover:bg-brand-50"),
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -217,20 +220,20 @@ export function EntryForm({
               <label className="label" htmlFor="photo">
                 Foto del ticket (opcional)
               </label>
-              <input
+              <Input
                 ref={fileRef}
                 id="photo"
                 name="photo"
                 type="file"
                 accept="image/*"
                 capture="environment"
-                className="input file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
+                className="file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
               />
             </div>
-            <button type="button" onClick={onReadTicket} disabled={ocrPending} className="btn-ghost">
+            <Button type="button" variant="outline" onClick={onReadTicket} disabled={ocrPending}>
               <ScanLine className="h-4 w-4" />
               {ocrPending ? `Leyendo… ${ocrProgress ?? 0}%` : "Leer ticket"}
-            </button>
+            </Button>
           </div>
           {ocrMsg && (
             <p
@@ -324,13 +327,12 @@ export function EntryForm({
         <label className="label" htmlFor="notes">
           Notas
         </label>
-        <textarea
+        <Textarea
           id="notes"
           name="notes"
           rows={2}
           value={values.notes ?? ""}
           onChange={(e) => set("notes", e.target.value)}
-          className="input"
         />
       </div>
 
@@ -342,10 +344,10 @@ export function EntryForm({
       )}
 
       <div className="flex justify-end">
-        <button type="submit" disabled={saving} className="btn-primary">
+        <Button type="submit" disabled={saving}>
           <Save className="h-4 w-4" />
           {saving ? "Guardando…" : compra ? "Registrar compra" : "Guardar movimiento"}
-        </button>
+        </Button>
       </div>
     </form>
   );

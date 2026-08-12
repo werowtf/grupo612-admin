@@ -3,6 +3,8 @@
 import { useActionState } from "react";
 import { KeyRound, AlertCircle, CheckCircle2 } from "lucide-react";
 import { resetPasswordAction, type UserFormState } from "@/app/(app)/usuarios/actions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const init: UserFormState = {};
 
@@ -15,7 +17,7 @@ export function ResetPasswordForm({ userId, justReset }: { userId: string; justR
       <h2 className="text-base font-semibold">Restablecer contraseña</h2>
       <div>
         <label className="label" htmlFor="password">Nueva contraseña</label>
-        <input id="password" name="password" type="password" minLength={8} required className="input" placeholder="Mínimo 8 caracteres" />
+        <Input id="password" name="password" type="password" minLength={8} required placeholder="Mínimo 8 caracteres" />
       </div>
       {state.error && (
         <p className="flex items-center gap-2 rounded-lg bg-[var(--color-danger-bg)] px-3 py-2 text-sm text-[var(--color-danger)]">
@@ -29,10 +31,10 @@ export function ResetPasswordForm({ userId, justReset }: { userId: string; justR
           Contraseña actualizada.
         </p>
       )}
-      <button type="submit" disabled={pending} className="btn-ghost">
+      <Button type="submit" variant="outline" disabled={pending}>
         <KeyRound className="h-4 w-4" />
         {pending ? "Actualizando…" : "Restablecer"}
-      </button>
+      </Button>
     </form>
   );
 }

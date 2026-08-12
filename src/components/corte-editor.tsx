@@ -7,6 +7,9 @@ import { CORTE_SECTIONS } from "@/lib/cortes/fields";
 import type { CorteDraft } from "@/lib/cortes/types";
 import type { CorteSource } from "@/generated/prisma/enums";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 type Values = Record<string, string>;
 type Method = "MANUAL" | "EXCEL" | "OCR";
@@ -232,27 +235,22 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
               <label className="label" htmlFor="corte-file">
                 {method === "EXCEL" ? "Archivo Excel (.xlsx)" : "Foto del ticket (.jpg / .png)"}
               </label>
-              <input
+              <Input
                 ref={fileRef}
                 id="corte-file"
                 type="file"
                 accept={method === "EXCEL" ? ".xlsx,.xls" : "image/*"}
-                className="input file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
+                className="file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
               />
             </div>
-            <button
-              type="button"
-              onClick={onProcess}
-              disabled={processing || ocrPending}
-              className="btn-primary"
-            >
+            <Button type="button" onClick={onProcess} disabled={processing || ocrPending}>
               <UploadCloud className="h-4 w-4" />
               {ocrPending
                 ? `Procesando… ${ocrProgress ?? 0}%`
                 : processing
                   ? "Procesando…"
                   : "Procesar archivo"}
-            </button>
+            </Button>
           </div>
           {method === "OCR" && (
             <p className="text-xs text-[var(--color-muted)]">
@@ -298,14 +296,14 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                         </span>
                       )}
                     </label>
-                    <input
+                    <Input
                       id={f.key}
                       name={f.key}
                       type={f.type === "date" ? "date" : f.type === "text" ? "text" : "number"}
                       step={f.type === "money" ? "0.01" : f.type === "int" ? "1" : undefined}
                       value={values[f.key] ?? ""}
                       onChange={(e) => setField(f.key, e.target.value)}
-                      className={cn("input", wasDetected && "border-brand-500")}
+                      className={cn(wasDetected && "border-brand-500")}
                     />
                   </div>
                 );
@@ -318,13 +316,12 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
           <label className="label" htmlFor="notes">
             Notas
           </label>
-          <textarea
+          <Textarea
             id="notes"
             name="notes"
             rows={2}
             value={values.notes ?? ""}
             onChange={(e) => setField("notes", e.target.value)}
-            className="input"
             placeholder="Observaciones del corte…"
           />
         </div>
@@ -338,10 +335,10 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
 
         <div className="flex items-center justify-between">
           <p className="text-xs text-[var(--color-muted)]">Negocio: {venueName}</p>
-          <button type="submit" disabled={saving} className="btn-primary">
+          <Button type="submit" disabled={saving}>
             <Save className="h-4 w-4" />
             {saving ? "Guardando…" : "Guardar corte"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

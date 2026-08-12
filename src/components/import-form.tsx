@@ -9,6 +9,8 @@ import {
 } from "@/app/(app)/conciliacion/actions";
 import { bankLabels } from "@/lib/labels";
 import { formatMXN } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import type { Bank } from "@/generated/prisma/enums";
 
 interface AccountOption {
@@ -67,13 +69,13 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
           <label className="label" htmlFor="file">
             Archivo
           </label>
-          <input
+          <Input
             id="file"
             name="file"
             type="file"
             accept=".csv,.xlsx,.xls"
             required
-            className="input file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
+            className="file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
           />
         </div>
       </div>
@@ -102,10 +104,10 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
         </div>
       )}
 
-      <button type="submit" disabled={pending} className="btn-primary">
+      <Button type="submit" disabled={pending}>
         <UploadCloud className="h-4 w-4" />
         {pending ? "Procesando…" : "Importar"}
-      </button>
+      </Button>
     </form>
   );
 }

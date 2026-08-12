@@ -4,6 +4,8 @@ import { useActionState, useRef, useState } from "react";
 import { UploadCloud, AlertCircle } from "lucide-react";
 import { uploadDocumentAction, type DocumentFormState } from "@/app/(app)/documentos/actions";
 import { DOCUMENT_CATEGORIES, documentCategoryLabels } from "@/lib/labels";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface Props {
   venues: { id: string; name: string }[];
@@ -38,7 +40,7 @@ export function DocumentUploadForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label className="label" htmlFor="title">Título</label>
-          <input id="title" name="title" required className="input" placeholder="p.ej. Factura renta julio 2026" />
+          <Input id="title" name="title" required placeholder="p.ej. Factura renta julio 2026" />
         </div>
 
         {venues.length > 1 ? (
@@ -90,11 +92,11 @@ export function DocumentUploadForm({
 
         <div>
           <label className="label" htmlFor="tags">Etiquetas (opcional)</label>
-          <input id="tags" name="tags" className="input" placeholder="separadas, por, coma" />
+          <Input id="tags" name="tags" placeholder="separadas, por, coma" />
         </div>
         <div>
           <label className="label" htmlFor="notes">Notas (opcional)</label>
-          <input id="notes" name="notes" className="input" />
+          <Input id="notes" name="notes" />
         </div>
       </div>
 
@@ -106,10 +108,10 @@ export function DocumentUploadForm({
       )}
 
       <div className="flex justify-end">
-        <button type="submit" disabled={pending} className="btn-primary">
+        <Button type="submit" disabled={pending}>
           <UploadCloud className="h-4 w-4" />
           {pending ? "Subiendo…" : "Subir documento"}
-        </button>
+        </Button>
       </div>
     </form>
   );

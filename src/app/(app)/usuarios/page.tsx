@@ -5,6 +5,7 @@ import { getAppContext } from "@/lib/context";
 import { prisma } from "@/lib/prisma";
 import { roleLabels } from "@/lib/labels";
 import { ToggleActiveButton } from "@/components/toggle-active-button";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function UsuariosPage() {
   const { user } = await getAppContext();
@@ -24,7 +25,7 @@ export default async function UsuariosPage() {
             Usuarios con acceso a la plataforma
           </p>
         </div>
-        <Link href="/usuarios/nuevo" className="btn-primary">
+        <Link href="/usuarios/nuevo" className={buttonVariants()}>
           <Plus className="h-4 w-4" />
           Nuevo usuario
         </Link>

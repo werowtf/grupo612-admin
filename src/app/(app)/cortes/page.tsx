@@ -4,6 +4,7 @@ import { getAppContext } from "@/lib/context";
 import { prisma } from "@/lib/prisma";
 import { formatMXN, formatDate } from "@/lib/utils";
 import { VenueTag } from "@/components/venue-tag";
+import { buttonVariants } from "@/components/ui/button";
 
 const sourceLabels: Record<string, string> = {
   MANUAL: "Manual",
@@ -37,7 +38,7 @@ export default async function CortesPage() {
             <VenueTag name={selected.name} /> {cortes.length} corte{cortes.length === 1 ? "" : "s"}
           </p>
         </div>
-        <Link href="/cortes/nuevo" className="btn-primary">
+        <Link href="/cortes/nuevo" className={buttonVariants()}>
           <Plus className="h-4 w-4" />
           Nuevo corte
         </Link>
@@ -50,7 +51,7 @@ export default async function CortesPage() {
             Aún no hay cortes de caja. Sube el Excel de Soft Restaurant, una foto del
             ticket, o captúralo manualmente.
           </p>
-          <Link href="/cortes/nuevo" className="btn-primary">
+          <Link href="/cortes/nuevo" className={buttonVariants()}>
             <Plus className="h-4 w-4" />
             Nuevo corte
           </Link>

@@ -8,6 +8,8 @@ import { toTxRow } from "@/lib/serialize";
 import { categoryLabels, statusLabels } from "@/lib/labels";
 import { formatMXN } from "@/lib/utils";
 import { VenueTag } from "@/components/venue-tag";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import type {
   TxCategory,
   TxDirection,
@@ -84,12 +86,12 @@ export default async function MovimientosPage({
           </label>
           <div className="relative">
             <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-[var(--color-muted)]" />
-            <input
+            <Input
               id="search"
               name="search"
               defaultValue={filters.search ?? ""}
               placeholder="Descripción, referencia…"
-              className="input pl-8"
+              className="pl-8"
             />
           </div>
         </div>
@@ -134,11 +136,9 @@ export default async function MovimientosPage({
         </div>
 
         <div className="flex gap-2">
-          <button type="submit" className="btn-primary">
-            Filtrar
-          </button>
+          <Button type="submit">Filtrar</Button>
           {hasFilters && (
-            <Link href="/movimientos" className="btn-ghost">
+            <Link href="/movimientos" className={buttonVariants({ variant: "outline" })}>
               <X className="h-4 w-4" />
               Limpiar
             </Link>

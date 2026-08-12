@@ -7,6 +7,7 @@ import { CategoryBadge } from "@/components/badges";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
 import { bankLabels, categoryBar } from "@/lib/labels";
 import { VenueTag } from "@/components/venue-tag";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function DashboardPage() {
   const { selected } = await getAppContext();
@@ -37,7 +38,7 @@ export default async function DashboardPage() {
         <EmptyMessage title="Aún no hay movimientos">
           Importa el primer estado de cuenta para ver el resumen financiero.
           <div className="mt-4">
-            <Link href="/conciliacion" className="btn-primary">
+            <Link href="/conciliacion" className={buttonVariants()}>
               Ir a estados de cuenta <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

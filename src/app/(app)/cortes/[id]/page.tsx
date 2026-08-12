@@ -10,6 +10,7 @@ import { DeleteCorteButton } from "@/components/delete-corte-button";
 import { CorteMatching } from "@/components/corte-matching";
 import { LinkedDocuments } from "@/components/linked-documents";
 import { getAccessibleVenues } from "@/lib/auth";
+import { buttonVariants } from "@/components/ui/button";
 
 const sourceLabels: Record<string, string> = {
   MANUAL: "Captura manual",
@@ -66,7 +67,7 @@ export default async function CorteDetailPage({
           </p>
         </div>
         <div className="flex gap-2">
-          <Link href={`/cortes/${corte.id}/editar`} className="btn-ghost">
+          <Link href={`/cortes/${corte.id}/editar`} className={buttonVariants({ variant: "outline" })}>
             <Pencil className="h-4 w-4" />
             Editar
           </Link>

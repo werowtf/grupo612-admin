@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Grupo 612 — Plataforma Administrativa",
@@ -16,7 +17,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", GeistSans.variable, GeistMono.variable)}
     >
       <body className="min-h-full">{children}</body>
     </html>

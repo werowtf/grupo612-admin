@@ -9,6 +9,7 @@ import { formatMXN } from "@/lib/utils";
 import { VenueTag } from "@/components/venue-tag";
 import { MonthPicker } from "@/components/month-picker";
 import { VenueSelect } from "@/components/venue-select";
+import { Button } from "@/components/ui/button";
 import type { TxCategory } from "@/generated/prisma/enums";
 
 function parseMonth(mes: string | undefined): { year: number; month: number } {
@@ -81,7 +82,7 @@ export default async function ReportesPage({
             ]}
           />
         </div>
-        <button type="submit" className="btn-primary">Ver</button>
+        <Button type="submit">Ver</Button>
       </form>
 
       {/* KPIs */}

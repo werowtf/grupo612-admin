@@ -10,6 +10,7 @@ import {
 } from "@/app/(app)/cortes/actions";
 import type { DepositRow } from "@/lib/cortes/matching";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   corteId: string;
@@ -54,15 +55,15 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
             Ventas con tarjeta del corte vs. depósitos recibidos en el banco.
           </p>
         </div>
-        <button
+        <Button
           type="button"
+          variant="outline"
           onClick={() => run(() => autoMatchCorteAction(corteId))}
           disabled={pending}
-          className="btn-ghost"
         >
           <Sparkles className="h-4 w-4" />
           Auto-conciliar
-        </button>
+        </Button>
       </div>
 
       {/* Resumen */}

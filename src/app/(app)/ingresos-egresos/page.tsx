@@ -8,6 +8,8 @@ import { EGRESO_CATEGORIES, INGRESO_CATEGORIES } from "@/lib/entries/config";
 import { formatMXN } from "@/lib/utils";
 import { VenueTag } from "@/components/venue-tag";
 import type { EntryType } from "@/generated/prisma/enums";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const ALL_CATEGORIES = [...new Set([...EGRESO_CATEGORIES, ...INGRESO_CATEGORIES])];
 
@@ -47,7 +49,7 @@ export default async function IngresosEgresosPage({
           <h1 className="text-xl font-semibold">Ingresos y egresos</h1>
           <p className="text-sm text-[var(--color-muted)]"><VenueTag name={selected.name} /></p>
         </div>
-        <Link href="/ingresos-egresos/nuevo" className="btn-primary">
+        <Link href="/ingresos-egresos/nuevo" className={buttonVariants()}>
           <Plus className="h-4 w-4" />
           Nuevo movimiento
         </Link>
@@ -62,7 +64,7 @@ export default async function IngresosEgresosPage({
       <form method="get" className="card flex flex-wrap items-end gap-3 p-4">
         <div className="min-w-[160px] flex-1">
           <label className="label" htmlFor="search">Buscar</label>
-          <input id="search" name="search" defaultValue={filters.search ?? ""} placeholder="Proveedor, folio…" className="input" />
+          <Input id="search" name="search" defaultValue={filters.search ?? ""} placeholder="Proveedor, folio…" />
         </div>
         <div>
           <label className="label" htmlFor="type">Tipo</label>
@@ -82,9 +84,9 @@ export default async function IngresosEgresosPage({
           </select>
         </div>
         <div className="flex gap-2">
-          <button type="submit" className="btn-primary">Filtrar</button>
+          <Button type="submit">Filtrar</Button>
           {hasFilters && (
-            <Link href="/ingresos-egresos" className="btn-ghost">
+            <Link href="/ingresos-egresos" className={buttonVariants({ variant: "outline" })}>
               <X className="h-4 w-4" /> Limpiar
             </Link>
           )}

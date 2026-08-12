@@ -3,6 +3,8 @@
 import { useActionState } from "react";
 import { LogIn } from "lucide-react";
 import { loginAction, type LoginState } from "./actions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const initialState: LoginState = {};
 
@@ -17,13 +19,12 @@ export function LoginForm({ next }: { next: string }) {
         <label className="label" htmlFor="email">
           Correo
         </label>
-        <input
+        <Input
           id="email"
           name="email"
           type="email"
           autoComplete="email"
           required
-          className="input"
           placeholder="tu@correo.com"
         />
       </div>
@@ -32,13 +33,12 @@ export function LoginForm({ next }: { next: string }) {
         <label className="label" htmlFor="password">
           Contraseña
         </label>
-        <input
+        <Input
           id="password"
           name="password"
           type="password"
           autoComplete="current-password"
           required
-          className="input"
           placeholder="••••••••"
         />
       </div>
@@ -49,10 +49,10 @@ export function LoginForm({ next }: { next: string }) {
         </p>
       )}
 
-      <button type="submit" disabled={pending} className="btn-primary w-full">
+      <Button type="submit" disabled={pending} className="w-full">
         <LogIn className="h-4 w-4" />
         {pending ? "Ingresando…" : "Ingresar"}
-      </button>
+      </Button>
     </form>
   );
 }

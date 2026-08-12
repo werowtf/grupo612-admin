@@ -6,6 +6,8 @@ import { DocumentsList } from "@/components/documents-list";
 import { DOCUMENT_CATEGORIES, documentCategoryLabels } from "@/lib/labels";
 import { VenueTag } from "@/components/venue-tag";
 import type { DocumentCategory } from "@/generated/prisma/enums";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default async function DocumentosPage({
   searchParams,
@@ -41,7 +43,7 @@ export default async function DocumentosPage({
           <h1 className="text-xl font-semibold">Documentos</h1>
           <p className="text-sm text-[var(--color-muted)]"><VenueTag name={selected.name} /></p>
         </div>
-        <Link href="/documentos/nuevo" className="btn-primary">
+        <Link href="/documentos/nuevo" className={buttonVariants()}>
           <Plus className="h-4 w-4" />
           Subir documento
         </Link>
@@ -50,7 +52,7 @@ export default async function DocumentosPage({
       <form method="get" className="card flex flex-wrap items-end gap-3 p-4">
         <div className="min-w-[180px] flex-1">
           <label className="label" htmlFor="search">Buscar</label>
-          <input id="search" name="search" defaultValue={filters.search ?? ""} placeholder="Título, etiqueta, archivo…" className="input" />
+          <Input id="search" name="search" defaultValue={filters.search ?? ""} placeholder="Título, etiqueta, archivo…" />
         </div>
         <div>
           <label className="label" htmlFor="category">Categoría</label>
@@ -62,9 +64,9 @@ export default async function DocumentosPage({
           </select>
         </div>
         <div className="flex gap-2">
-          <button type="submit" className="btn-primary">Filtrar</button>
+          <Button type="submit">Filtrar</Button>
           {hasFilters && (
-            <Link href="/documentos" className="btn-ghost">
+            <Link href="/documentos" className={buttonVariants({ variant: "outline" })}>
               <X className="h-4 w-4" /> Limpiar
             </Link>
           )}
