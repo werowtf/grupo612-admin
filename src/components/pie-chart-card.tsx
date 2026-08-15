@@ -1,6 +1,6 @@
 "use client";
 
-import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
+import { Label, Pie, PieChart } from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/chart";
 import { formatMXN } from "@/lib/utils";
 
-export interface RadialChartItem {
+export interface PieChartItem {
   label: string;
   value: number;
 }
@@ -23,7 +23,7 @@ const COLORS = [
   "var(--chart-5)",
 ];
 
-export function RadialChartCard({ items }: { items: RadialChartItem[] }) {
+export function PieChartCard({ items }: { items: PieChartItem[] }) {
   const data = items.filter((i) => i.value > 0);
   const total = data.reduce((s, i) => s + i.value, 0);
 
@@ -31,7 +31,6 @@ export function RadialChartCard({ items }: { items: RadialChartItem[] }) {
     return <p className="text-sm text-muted-foreground">Sin datos en el periodo.</p>;
   }
 
-  const max = Math.max(...data.map((i) => i.value));
   const chartData = data.map((i, idx) => ({
     label: i.label,
     value: i.value,
@@ -45,7 +44,7 @@ export function RadialChartCard({ items }: { items: RadialChartItem[] }) {
   return (
     <div className="flex flex-wrap items-center gap-6">
       <ChartContainer config={chartConfig} className="mx-auto aspect-square w-[160px]">
-        <RadialBarChart data={chartData} innerRadius="18%" outerRadius="85%" barSize={12}>
+        <PieChart>
           <ChartTooltip
             cursor={false}
             content={
@@ -72,9 +71,24 @@ export function RadialChartCard({ items }: { items: RadialChartItem[] }) {
               />
             }
           />
-          <PolarAngleAxis type="number" domain={[0, max]} tick={false} axisLine={false} />
-          <RadialBar dataKey="value" background cornerRadius={6} />
-        </RadialBarChart>
+          <Pie data={chartData} dataKey="value" nameKey="label" innerRadius="60%" outerRadius="90%" strokeWidth={4}>
+            <Label
+              content={({ viewBox }) => {
+                if (!viewBox || !("cx" in viewBox) || !("cy" in viewBox)) return null;
+                return (
+                  <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                    <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-sm font-semibold">
+                      {formatMXN(total)}
+                    </tspan>
+                    <tspan x={viewBox.cx} y={(viewBox.cy ?? 0) + 16} className="fill-muted-foreground text-[10px]">
+                      total
+                    </tspan>
+                  </text>
+                );
+              }}
+            />
+          </Pie>
+        </PieChart>
       </ChartContainer>
       <ul className="space-y-1.5 text-sm">
         {chartData.map((d) => (
