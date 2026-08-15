@@ -6,7 +6,6 @@ import { StatCard } from "@/components/stat-card";
 import { CategoryBadge } from "@/components/badges";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
 import { bankLabels, categoryBar } from "@/lib/labels";
-import { VenueTag } from "@/components/venue-tag";
 import { buttonVariants } from "@/components/ui/button";
 
 export default async function DashboardPage() {
@@ -29,9 +28,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-xl">Dashboard</h1>
-        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          Resumen financiero de <VenueTag name={selected.name} />
-        </p>
+        <p className="text-sm text-muted-foreground">Resumen financiero</p>
       </header>
 
       {summary.count === 0 ? (

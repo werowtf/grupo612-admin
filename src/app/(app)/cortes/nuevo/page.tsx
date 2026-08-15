@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { CorteEditor } from "@/components/corte-editor";
-import { VenueTag } from "@/components/venue-tag";
 
 export default async function NuevoCortePage() {
   const { selected } = await getAppContext();
@@ -28,7 +27,6 @@ export default async function NuevoCortePage() {
           Cortes de caja
         </Link>
         <h1 className="mt-1 text-xl">Nuevo corte de caja</h1>
-        <p className="text-sm text-muted-foreground"><VenueTag name={selected.name} /></p>
       </div>
 
       <CorteEditor

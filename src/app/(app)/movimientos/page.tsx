@@ -7,7 +7,6 @@ import { StatCard } from "@/components/stat-card";
 import { toTxRow } from "@/lib/serialize";
 import { categoryLabels, statusLabels } from "@/lib/labels";
 import { formatMXN } from "@/lib/utils";
-import { VenueTag } from "@/components/venue-tag";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -79,8 +78,8 @@ export default async function MovimientosPage({
     <div className="space-y-6">
       <header>
         <h1 className="text-xl">Movimientos</h1>
-        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <VenueTag name={selected.name} /> {total} movimiento{total === 1 ? "" : "s"}
+        <p className="text-sm text-muted-foreground">
+          {total} movimiento{total === 1 ? "" : "s"}
           {hasFilters ? " (filtrados)" : ""}
         </p>
       </header>

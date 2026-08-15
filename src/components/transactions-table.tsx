@@ -21,6 +21,7 @@ export interface TxRow {
   date: string; // ISO
   time: string | null;
   description: string;
+  descriptionLong: string | null;
   direction: TxDirection;
   amount: number;
   category: TxCategory;
@@ -37,7 +38,7 @@ const CATEGORIES: TxCategory[] = [
 ];
 const STATUSES: TxStatus[] = ["PENDIENTE", "CONCILIADO", "IGNORADO"];
 
-export function TransactionsTable({ rows }: { rows: TxRow[] }) {
+export function TransactionsTable({ rows, hideTime }: { rows: TxRow[]; hideTime?: boolean }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -83,14 +84,14 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
               <tr key={r.id} className="hover:bg-muted/60">
                 <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
                   <div>{formatDate(r.date)}</div>
-                  {r.time && <div className="text-[11px]">{r.time}</div>}
+                  {!hideTime && r.time && <div className="text-[11px]">{r.time}</div>}
                 </td>
                 <td className="max-w-[320px] px-3 py-2">
                   <Tooltip>
                     <TooltipTrigger className="block max-w-full truncate text-left">
                       {r.description}
                     </TooltipTrigger>
-                    <TooltipContent>{r.description}</TooltipContent>
+                    <TooltipContent>{r.descriptionLong || r.description}</TooltipContent>
                   </Tooltip>
                 </td>
                 {CATEGORIES.map((c) =>

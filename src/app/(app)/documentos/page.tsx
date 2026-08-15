@@ -4,7 +4,6 @@ import { getAppContext } from "@/lib/context";
 import { getVenueDocuments, type DocumentFilters } from "@/lib/documents/queries";
 import { DocumentsList } from "@/components/documents-list";
 import { DOCUMENT_CATEGORIES, documentCategoryLabels } from "@/lib/labels";
-import { VenueTag } from "@/components/venue-tag";
 import type { DocumentCategory } from "@/generated/prisma/enums";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,7 +44,6 @@ export default async function DocumentosPage({
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl">Documentos</h1>
-          <p className="text-sm text-muted-foreground"><VenueTag name={selected.name} /></p>
         </div>
         <Link href="/documentos/nuevo" className={buttonVariants()}>
           <Plus className="h-4 w-4" />

@@ -8,6 +8,7 @@ export function toTxRow(t: BankTransaction): TxRow {
     date: t.date.toISOString(),
     time: t.time,
     description: t.description,
+    descriptionLong: t.descriptionLong,
     direction: t.direction,
     amount: Number(t.amount.toString()),
     category: t.category,

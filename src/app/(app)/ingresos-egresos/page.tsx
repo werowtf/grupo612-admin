@@ -6,7 +6,6 @@ import { EntriesTable } from "@/components/entries-table";
 import { StatCard } from "@/components/stat-card";
 import { EGRESO_CATEGORIES, INGRESO_CATEGORIES } from "@/lib/entries/config";
 import { formatMXN } from "@/lib/utils";
-import { VenueTag } from "@/components/venue-tag";
 import type { EntryType } from "@/generated/prisma/enums";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,7 +50,6 @@ export default async function IngresosEgresosPage({
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl">Ingresos y egresos</h1>
-          <p className="text-sm text-muted-foreground"><VenueTag name={selected.name} /></p>
         </div>
         <Link href="/ingresos-egresos/nuevo" className={buttonVariants()}>
           <Plus className="h-4 w-4" />

@@ -6,7 +6,6 @@ import { BarList, Donut } from "@/components/charts";
 import { ReportActions } from "@/components/report-actions";
 import { categoryLabels } from "@/lib/labels";
 import { formatMXN } from "@/lib/utils";
-import { VenueTag } from "@/components/venue-tag";
 import { MonthPicker } from "@/components/month-picker";
 import { VenueSelect } from "@/components/venue-select";
 import { Button } from "@/components/ui/button";
@@ -59,9 +58,7 @@ export default async function ReportesPage({
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-xl">Reportes</h1>
-          <p className="flex items-center gap-2 text-sm text-muted-foreground">
-            <VenueTag name={scopeName} /> {report.period.label}
-          </p>
+          <p className="text-sm text-muted-foreground">{report.period.label}</p>
         </div>
         <ReportActions exportHref={exportHref} />
       </header>

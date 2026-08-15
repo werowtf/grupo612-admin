@@ -7,7 +7,6 @@ import { TransactionsTable } from "@/components/transactions-table";
 import { toTxRow } from "@/lib/serialize";
 import { formatDate, formatMXN } from "@/lib/utils";
 import { bankLabels } from "@/lib/labels";
-import { VenueTag } from "@/components/venue-tag";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default async function ConciliacionPage() {
@@ -31,8 +30,8 @@ export default async function ConciliacionPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-xl">Estados de cuenta</h1>
-        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <VenueTag name={selected.name} /> sube y administra los estados de cuenta bancarios
+        <p className="text-sm text-muted-foreground">
+          Sube y administra los estados de cuenta bancarios
         </p>
       </header>
 
@@ -116,7 +115,7 @@ export default async function ConciliacionPage() {
               Ver todos ({recent.total}) <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <TransactionsTable rows={recent.rows.map(toTxRow)} />
+          <TransactionsTable rows={recent.rows.map(toTxRow)} hideTime />
         </section>
       )}
     </div>

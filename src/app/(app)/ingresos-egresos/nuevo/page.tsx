@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { EntryForm } from "@/components/entry-form";
-import { VenueTag } from "@/components/venue-tag";
 
 export default async function NuevoMovimientoPage() {
   const { selected } = await getAppContext();
@@ -23,7 +22,6 @@ export default async function NuevoMovimientoPage() {
           Ingresos y egresos
         </Link>
         <h1 className="mt-1 text-xl">Nuevo movimiento</h1>
-        <p className="text-sm text-muted-foreground"><VenueTag name={selected.name} /></p>
       </div>
 
       <EntryForm

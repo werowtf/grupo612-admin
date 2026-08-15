@@ -3,7 +3,6 @@ import { Plus, Receipt } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { prisma } from "@/lib/prisma";
 import { formatMXN, formatDate } from "@/lib/utils";
-import { VenueTag } from "@/components/venue-tag";
 import { buttonVariants } from "@/components/ui/button";
 
 const sourceLabels: Record<string, string> = {
@@ -34,8 +33,8 @@ export default async function CortesPage() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl">Cortes de caja</h1>
-          <p className="flex items-center gap-2 text-sm text-muted-foreground">
-            <VenueTag name={selected.name} /> {cortes.length} corte{cortes.length === 1 ? "" : "s"}
+          <p className="text-sm text-muted-foreground">
+            {cortes.length} corte{cortes.length === 1 ? "" : "s"}
           </p>
         </div>
         <Link href="/cortes/nuevo" className={buttonVariants()}>
