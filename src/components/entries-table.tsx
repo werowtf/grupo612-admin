@@ -58,7 +58,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
                   </td>
                   <td className="px-3 py-2">{e.category}</td>
                   <td className="max-w-[200px] px-3 py-2 text-muted-foreground">
-                    <span className="line-clamp-1">{e.supplier ?? "—"}</span>
+                    <span className="block truncate" title={e.supplier ?? undefined}>{e.supplier ?? "—"}</span>
                   </td>
                   <td className="px-3 py-2 text-muted-foreground">{paymentLabels[e.paymentMethod]}</td>
                   <td className={`px-3 py-2 text-right tabular-nums font-medium ${isEgreso ? "text-cargo" : "text-abono"}`}>

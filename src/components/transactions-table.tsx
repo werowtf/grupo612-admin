@@ -85,7 +85,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                   {r.time && <div className="text-[11px]">{r.time}</div>}
                 </td>
                 <td className="max-w-[320px] px-3 py-2">
-                  <span className="line-clamp-2">{r.description}</span>
+                  <span className="block truncate" title={r.description}>{r.description}</span>
                 </td>
                 {CATEGORIES.map((c) =>
                   c === r.category ? (

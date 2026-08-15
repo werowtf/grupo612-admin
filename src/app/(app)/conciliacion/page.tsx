@@ -64,7 +64,7 @@ export default async function ConciliacionPage() {
                   {statements.map((s) => (
                     <tr key={s.id} className="hover:bg-muted/60">
                       <td className="max-w-[240px] px-3 py-2">
-                        <span className="line-clamp-1 font-medium">{s.fileName}</span>
+                        <span className="block truncate font-medium" title={s.fileName}>{s.fileName}</span>
                       </td>
                       <td className="px-3 py-2">{bankLabels[s.bank]}</td>
                       <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
