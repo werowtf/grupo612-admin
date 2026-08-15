@@ -1,6 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Pencil } from "lucide-react";
+import {
+  ArrowLeft,
+  Pencil,
+  BadgeInfo,
+  CreditCard,
+  HandCoins,
+  ShoppingBag,
+  Calculator,
+  Wallet,
+  ClipboardList,
+} from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CORTE_SECTIONS } from "@/lib/cortes/fields";
@@ -16,6 +26,16 @@ const sourceLabels: Record<string, string> = {
   MANUAL: "Captura manual",
   EXCEL: "Excel (Soft Restaurant)",
   OCR: "Foto (OCR)",
+};
+
+const SECTION_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  "Identificación": BadgeInfo,
+  "Formas de pago (ventas)": CreditCard,
+  "Propinas": HandCoins,
+  "Ventas por producto": ShoppingBag,
+  "Totales": Calculator,
+  "Control de caja": Wallet,
+  "Operación": ClipboardList,
 };
 
 export default async function CorteDetailPage({
@@ -84,11 +104,16 @@ export default async function CorteDetailPage({
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {CORTE_SECTIONS.map((section) => (
+        {CORTE_SECTIONS.map((section) => {
+          const Icon = SECTION_ICONS[section.title];
+          return (
           <div key={section.title} className="card p-5">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              {section.title}
-            </h2>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                {section.title}
+              </h2>
+              {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+            </div>
             <dl className="divide-y divide-border">
               {section.fields.map((f) => (
                 <div key={f.key} className="flex items-center justify-between py-1.5 text-sm">
@@ -98,7 +123,8 @@ export default async function CorteDetailPage({
               ))}
             </dl>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {corte.notes && (
