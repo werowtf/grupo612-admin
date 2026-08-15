@@ -16,7 +16,7 @@ export function VenueSelect({ name, defaultValue, options }: Props) {
 
   return (
     <Select name={name} value={value} onValueChange={setValue}>
-      <SelectTrigger>
+      <SelectTrigger className="h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50">
         <SelectValue>{label}</SelectValue>
       </SelectTrigger>
       <SelectContent>
