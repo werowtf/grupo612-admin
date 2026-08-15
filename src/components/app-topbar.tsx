@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ChevronDown, LogOut, Menu, Moon, ScrollText, Sun, Users } from "lucide-react";
 import { logoutAction, selectVenueAction } from "@/app/(app)/actions";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -58,24 +59,38 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
           <Menu className="h-5 w-5" />
         </button>
         {venues.length > 0 ? (
-          <div className="flex items-center gap-1 overflow-x-auto rounded-full bg-muted/50 p-1">
-            {venues.map((v) => (
-              <button
-                key={v.id}
-                type="button"
-                onClick={() => onVenueChange(v.id)}
-                disabled={pending}
-                className={cn(
-                  "shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
-                  v.id === selectedVenueId
-                    ? "bg-brand-600 text-white"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                )}
-              >
-                {v.name}
-              </button>
-            ))}
-          </div>
+          <>
+            <div className="hidden items-center gap-1 overflow-x-auto rounded-full bg-muted/50 p-1 sm:flex">
+              {venues.map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => onVenueChange(v.id)}
+                  disabled={pending}
+                  className={cn(
+                    "shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                    v.id === selectedVenueId
+                      ? "bg-brand-600 text-white"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  {v.name}
+                </button>
+              ))}
+            </div>
+            <Select value={selectedVenueId ?? undefined} onValueChange={onVenueChange} disabled={pending}>
+              <SelectTrigger className="max-w-[160px] sm:hidden">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {venues.map((v) => (
+                  <SelectItem key={v.id} value={v.id}>
+                    {v.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </>
         ) : (
           <span className="text-sm text-muted-foreground">Sin negocios</span>
         )}
