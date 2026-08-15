@@ -63,6 +63,56 @@ export async function getVenueSummary(venueId: string): Promise<VenueSummary> {
   };
 }
 
+export interface DailyTotal {
+  date: string; // YYYY-MM-DD
+  abonos: number;
+  cargos: number;
+}
+
+/**
+ * Totales de abonos/cargos por día, para graficar la tendencia reciente.
+ * La ventana de `days` se ancla a la fecha del movimiento más reciente (no a
+ * "hoy"), porque los datos importados suelen quedar en el pasado respecto al
+ * reloj real.
+ */
+export async function getVenueDailyTotals(venueId: string, days = 30): Promise<DailyTotal[]> {
+  const latest = await prisma.bankTransaction.findFirst({
+    where: { bankAccount: { venueId } },
+    orderBy: { date: "desc" },
+    select: { date: true },
+  });
+  if (!latest) return [];
+
+  const since = new Date(latest.date);
+  since.setHours(0, 0, 0, 0);
+  since.setDate(since.getDate() - (days - 1));
+
+  const rows = await prisma.bankTransaction.findMany({
+    where: { bankAccount: { venueId }, date: { gte: since } },
+    select: { date: true, amount: true, direction: true },
+    orderBy: { date: "asc" },
+  });
+
+  const byDay = new Map<string, { abonos: number; cargos: number }>();
+  for (const r of rows) {
+    const key = r.date.toISOString().slice(0, 10);
+    const entry = byDay.get(key) ?? { abonos: 0, cargos: 0 };
+    if (r.direction === "ABONO") entry.abonos += num(r.amount);
+    else entry.cargos += num(r.amount);
+    byDay.set(key, entry);
+  }
+
+  const result: DailyTotal[] = [];
+  for (let i = 0; i < days; i++) {
+    const d = new Date(since);
+    d.setDate(since.getDate() + i);
+    const key = d.toISOString().slice(0, 10);
+    const entry = byDay.get(key) ?? { abonos: 0, cargos: 0 };
+    result.push({ date: key, ...entry });
+  }
+  return result;
+}
+
 export async function getVenueStatements(venueId: string) {
   return prisma.bankStatement.findMany({
     where: { bankAccount: { venueId } },

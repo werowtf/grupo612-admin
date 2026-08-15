@@ -1,5 +1,13 @@
 import { formatMXN } from "@/lib/utils";
 
+const MONTHS_ES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+/** Formatea una fecha YYYY-MM-DD como "29 jun" sin pasar por Date (evita saltos de zona horaria). */
+function formatDayMonth(isoDate: string): string {
+  const [, m, d] = isoDate.split("-");
+  return `${Number(d)} ${MONTHS_ES[Number(m) - 1]}`;
+}
+
 /** Paleta de categorías (consistente en toda la app). */
 export const CHART_COLORS = [
   "#059669", // brand
@@ -120,6 +128,93 @@ export function Donut({ items, size = 160 }: { items: ChartItem[]; size?: number
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+export interface AreaSeriesPoint {
+  date: string; // YYYY-MM-DD
+  abonos: number;
+  cargos: number;
+}
+
+/** Área apilada (SVG) comparando dos series (p.ej. abonos vs. cargos) en el tiempo. */
+export function AreaChart({
+  data,
+  width = 640,
+  height = 220,
+}: {
+  data: AreaSeriesPoint[];
+  width?: number;
+  height?: number;
+}) {
+  const padding = { top: 12, right: 12, bottom: 24, left: 12 };
+  const innerW = width - padding.left - padding.right;
+  const innerH = height - padding.top - padding.bottom;
+
+  if (data.length === 0) {
+    return <p className="text-sm text-muted-foreground">Sin datos en el periodo.</p>;
+  }
+
+  const max = Math.max(...data.map((d) => Math.max(d.abonos, d.cargos)), 1);
+  const x = (i: number) => padding.left + (data.length === 1 ? innerW / 2 : (i / (data.length - 1)) * innerW);
+  const y = (v: number) => padding.top + innerH - (v / max) * innerH;
+
+  const linePath = (key: "abonos" | "cargos") =>
+    data.map((d, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(d[key])}`).join(" ");
+
+  const areaPath = (key: "abonos" | "cargos") =>
+    `${linePath(key)} L ${x(data.length - 1)} ${padding.top + innerH} L ${x(0)} ${padding.top + innerH} Z`;
+
+  const abonosColor = "var(--color-abono)";
+  const cargosColor = "var(--color-cargo)";
+
+  // Hasta 5 etiquetas de fecha distribuidas en el eje X.
+  const tickCount = Math.min(5, data.length);
+  const tickIdx = Array.from({ length: tickCount }, (_, i) =>
+    Math.round((i / Math.max(tickCount - 1, 1)) * (data.length - 1)),
+  );
+
+  return (
+    <div>
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="none">
+        {[0.25, 0.5, 0.75].map((f) => (
+          <line
+            key={f}
+            x1={padding.left}
+            x2={width - padding.right}
+            y1={padding.top + innerH * f}
+            y2={padding.top + innerH * f}
+            stroke="var(--color-border)"
+            strokeWidth={1}
+          />
+        ))}
+        <path d={areaPath("abonos")} fill={abonosColor} fillOpacity={0.15} stroke="none" />
+        <path d={linePath("abonos")} fill="none" stroke={abonosColor} strokeWidth={2} />
+        <path d={areaPath("cargos")} fill={cargosColor} fillOpacity={0.15} stroke="none" />
+        <path d={linePath("cargos")} fill="none" stroke={cargosColor} strokeWidth={2} />
+        {tickIdx.map((i) => (
+          <text
+            key={i}
+            x={x(i)}
+            y={height - 6}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[10px]"
+          >
+            {formatDayMonth(data[i].date)}
+          </text>
+        ))}
+      </svg>
+      <div className="mt-2 flex items-center gap-4 text-sm">
+        <span className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: abonosColor }} />
+          Abonos
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: cargosColor }} />
+          Cargos
+        </span>
+      </div>
     </div>
   );
 }

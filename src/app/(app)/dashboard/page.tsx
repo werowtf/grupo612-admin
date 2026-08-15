@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { TrendingUp, TrendingDown, Wallet, Clock, ArrowRight } from "lucide-react";
 import { getAppContext } from "@/lib/context";
-import { getVenueSummary, getVenueStatements } from "@/lib/queries";
+import { getVenueSummary, getVenueStatements, getVenueDailyTotals } from "@/lib/queries";
 import { StatCard } from "@/components/stat-card";
 import { CategoryBadge } from "@/components/badges";
+import { AreaChart } from "@/components/charts";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
 import { bankLabels, categoryBar } from "@/lib/labels";
 import { buttonVariants } from "@/components/ui/button";
@@ -19,9 +20,10 @@ export default async function DashboardPage() {
     );
   }
 
-  const [summary, statements] = await Promise.all([
+  const [summary, statements, dailyTotals] = await Promise.all([
     getVenueSummary(selected.id),
     getVenueStatements(selected.id),
+    getVenueDailyTotals(selected.id),
   ]);
 
   return (
@@ -68,6 +70,11 @@ export default async function DashboardPage() {
               tone="pending"
               icon={<Clock className="h-4 w-4" />}
             />
+          </section>
+
+          <section className="card p-5">
+            <h2 className="mb-4 text-base font-semibold">Abonos vs. cargos (últimos 30 días)</h2>
+            <AreaChart data={dailyTotals} />
           </section>
 
           <section className="grid gap-6 lg:grid-cols-2">
