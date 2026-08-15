@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Prata } from "next/font/google";
+import { Manrope, Prata } from "next/font/google";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-manrope",
 });
 
 const prata = Prata({
@@ -30,7 +30,7 @@ export default function RootLayout({
     <html
       lang="es"
       suppressHydrationWarning
-      className={cn("h-full", "antialiased", inter.variable, prata.variable, GeistMono.variable)}
+      className={cn("h-full", "antialiased", manrope.variable, prata.variable, GeistMono.variable)}
     >
       <body className="min-h-full">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

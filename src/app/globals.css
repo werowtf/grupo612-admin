@@ -10,11 +10,11 @@
   --color-border: var(--border);
   --color-fg: var(--foreground);
 
-  --color-brand-50: oklch(0.962 0.018 272.314);
-  --color-brand-100: oklch(0.962 0.018 272.314);
+  --color-brand-50: #EDF6F3;
+  --color-brand-100: #EDF6F3;
   --color-brand-500: #5A7E71;
   --color-brand-600: #5A7E71;
-  --color-brand-700: oklch(0.398 0.195 277.366);
+  --color-brand-700: #5A7E71;
 
   --color-danger: #EE4273;
   --color-danger-bg: #F8D2DD;
@@ -26,8 +26,10 @@
   --color-success-bg: #E3F6EF;
   --color-purple: #9333EA;
   --color-purple-bg: #F3E8FF;
+  --color-abono: #81C3AC;
+  --color-cargo: #84B3C7;
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --font-display: var(--font-prata), serif;
 }
@@ -126,15 +128,15 @@ body {
    ahora son alias de estos tokens semánticos, así que toda la app (no sólo
    Button/Card/Dialog) sigue este esquema automáticamente. */
 :root {
-  --background: #EDF6F3;
-  --foreground: oklch(0.148 0.004 228.8);
+  --background: #F8FCFA;
+  --foreground: #535353;
   --card: #FFFFFF;
-  --card-foreground: oklch(0.148 0.004 228.8);
+  --card-foreground: #535353;
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.148 0.004 228.8);
-  --primary: #8192E7;
+  --primary: #5AA288;
   --primary-foreground: oklch(0.962 0.018 272.314);
-  --secondary: oklch(0.967 0.001 286.375);
+  --secondary: oklch(22.686% 0.00193 286.053);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.963 0.002 197.1);
   --muted-foreground: oklch(0.45 0.02 213.5);

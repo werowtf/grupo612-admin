@@ -80,10 +80,10 @@ export default async function ConciliacionPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-3 py-2 text-right tabular-nums text-brand-600">
+                      <td className="px-3 py-2 text-right tabular-nums text-abono">
                         {formatMXN(s.totalAbonos)}
                       </td>
-                      <td className="px-3 py-2 text-right tabular-nums text-danger">
+                      <td className="px-3 py-2 text-right tabular-nums text-cargo">
                         {formatMXN(s.totalCargos)}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">

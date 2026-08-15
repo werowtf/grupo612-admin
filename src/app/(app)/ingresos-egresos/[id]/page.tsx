@@ -62,7 +62,7 @@ export default async function EntryDetailPage({
         </div>
       </div>
 
-      <div className={`text-3xl font-semibold tabular-nums ${isEgreso ? "text-danger" : "text-brand-600"}`}>
+      <div className={`text-3xl font-semibold tabular-nums ${isEgreso ? "text-cargo" : "text-abono"}`}>
         {isEgreso ? "−" : "+"}
         {formatMXN(entry.amount)}
       </div>

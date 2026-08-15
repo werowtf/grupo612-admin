@@ -100,7 +100,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                           title={r.autoCategorized ? "Clasificación automática" : "Ajustada manualmente"}
                           className={cn(
                             "ml-auto justify-end border-0 bg-transparent px-1.5 py-1 text-sm font-medium hover:bg-muted",
-                            r.direction === "CARGO" ? "text-danger" : "text-brand-600",
+                            r.direction === "CARGO" ? "text-cargo" : "text-abono",
                           )}
                         >
                           <SelectValue>{formatMXN(r.amount)}</SelectValue>

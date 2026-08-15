@@ -61,7 +61,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
                     <span className="line-clamp-1">{e.supplier ?? "—"}</span>
                   </td>
                   <td className="px-3 py-2 text-muted-foreground">{paymentLabels[e.paymentMethod]}</td>
-                  <td className={`px-3 py-2 text-right tabular-nums font-medium ${isEgreso ? "text-danger" : "text-brand-600"}`}>
+                  <td className={`px-3 py-2 text-right tabular-nums font-medium ${isEgreso ? "text-cargo" : "text-abono"}`}>
                     {isEgreso ? "−" : "+"}
                     {formatMXN(e.amount)}
                   </td>
