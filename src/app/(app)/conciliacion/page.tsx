@@ -51,14 +51,14 @@ export default async function ConciliacionPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
-                  <tr className="border-b border-border bg-table-header text-left text-xs uppercase tracking-wide text-brand-700">
-                    <th className="px-3 py-2 font-medium">Archivo</th>
-                    <th className="px-3 py-2 font-medium">Banco</th>
-                    <th className="px-3 py-2 font-medium">Periodo</th>
-                    <th className="px-3 py-2 text-right font-medium">Movs.</th>
-                    <th className="px-3 py-2 text-right font-medium">Abonos</th>
-                    <th className="px-3 py-2 text-right font-medium">Cargos</th>
-                    <th className="px-3 py-2 font-medium">Importado</th>
+                  <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-700">
+                    <th className="px-3 py-2 font-semibold">Archivo</th>
+                    <th className="px-3 py-2 font-semibold">Banco</th>
+                    <th className="px-3 py-2 font-semibold">Periodo</th>
+                    <th className="px-3 py-2 text-right font-semibold">Movs.</th>
+                    <th className="px-3 py-2 text-right font-semibold">Abonos</th>
+                    <th className="px-3 py-2 text-right font-semibold">Cargos</th>
+                    <th className="px-3 py-2 font-semibold">Importado</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">

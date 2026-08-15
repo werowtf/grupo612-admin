@@ -120,11 +120,11 @@ export default async function BitacoraPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b border-border bg-table-header text-left text-xs uppercase tracking-wide text-brand-700">
-                <th className="px-3 py-2 font-medium">Fecha</th>
-                <th className="px-3 py-2 font-medium">Usuario</th>
-                <th className="px-3 py-2 font-medium">Acción</th>
-                <th className="px-3 py-2 font-medium">Detalle</th>
+              <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-700">
+                <th className="px-3 py-2 font-semibold">Fecha</th>
+                <th className="px-3 py-2 font-semibold">Usuario</th>
+                <th className="px-3 py-2 font-semibold">Acción</th>
+                <th className="px-3 py-2 font-semibold">Detalle</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

@@ -67,15 +67,15 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1080px] text-sm">
           <thead>
-            <tr className="border-b border-border bg-table-header text-left text-xs uppercase tracking-wide text-brand-700">
-              <th className="px-3 py-2 font-medium">Fecha</th>
-              <th className="px-3 py-2 font-medium">Descripción</th>
+            <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-700">
+              <th className="px-3 py-2 font-semibold">Fecha</th>
+              <th className="px-3 py-2 font-semibold">Descripción</th>
               {CATEGORIES.map((c) => (
                 <th key={c} className="px-3 py-2 text-right font-medium">
                   {categoryLabels[c]}
                 </th>
               ))}
-              <th className="px-3 py-2 font-medium">Estatus</th>
+              <th className="px-3 py-2 font-semibold">Estatus</th>
             </tr>
           </thead>
           <tbody className={cn("divide-y divide-border", pending && "opacity-60")}>

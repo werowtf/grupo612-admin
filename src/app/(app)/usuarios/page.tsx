@@ -35,13 +35,13 @@ export default async function UsuariosPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
             <thead>
-              <tr className="border-b border-border bg-table-header text-left text-xs uppercase tracking-wide text-brand-700">
-                <th className="px-3 py-2 font-medium">Nombre</th>
-                <th className="px-3 py-2 font-medium">Correo</th>
-                <th className="px-3 py-2 font-medium">Rol</th>
-                <th className="px-3 py-2 font-medium">Negocios</th>
-                <th className="px-3 py-2 font-medium">Estado</th>
-                <th className="px-3 py-2 font-medium"></th>
+              <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-700">
+                <th className="px-3 py-2 font-semibold">Nombre</th>
+                <th className="px-3 py-2 font-semibold">Correo</th>
+                <th className="px-3 py-2 font-semibold">Rol</th>
+                <th className="px-3 py-2 font-semibold">Negocios</th>
+                <th className="px-3 py-2 font-semibold">Estado</th>
+                <th className="px-3 py-2 font-semibold"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
