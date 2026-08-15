@@ -31,6 +31,7 @@
   --color-cargo: #84B3C7;
   --color-cargo-bg: #E4EEF3;
   --color-pending: #E8AEAE;
+  --color-pending-bg: #F9E7E7;
   --color-table-header: #F4F8F6;
   --color-field-bg: #F4F8F6;
 
@@ -210,6 +211,7 @@ body {
   --color-purple-bg: oklch(0.325 0.11 305 / 40%);
   --color-abono-bg: oklch(0.325 0.078 162 / 40%);
   --color-cargo-bg: oklch(0.325 0.078 232 / 40%);
+  --color-pending-bg: oklch(0.33 0.06 20 / 35%);
   --color-field-bg: oklch(0.275 0.011 216.9);
   --color-table-header: oklch(0.275 0.011 216.9);
 }
