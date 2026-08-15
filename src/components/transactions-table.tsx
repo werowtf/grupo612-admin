@@ -66,18 +66,19 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
   return (
     <div className="card overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1080px] text-sm">
+        <table className="w-full min-w-full text-sm sm:min-w-[1080px]">
           <thead>
             <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-600">
-              <th className="px-3 py-2 font-semibold">Fecha</th>
-              <th className="px-3 py-2 font-semibold">Hora</th>
-              <th className="px-3 py-2 font-semibold">Descripción</th>
+              <th className="px-2 py-2 font-semibold sm:px-3">Fecha</th>
+              <th className="hidden px-3 py-2 font-semibold sm:table-cell">Hora</th>
+              <th className="px-2 py-2 font-semibold sm:px-3">Descripción</th>
               {CATEGORIES.map((c) => (
-                <th key={c} className="px-3 py-2 text-right font-medium">
+                <th key={c} className="hidden px-3 py-2 text-right font-medium sm:table-cell">
                   {categoryLabels[c]}
                 </th>
               ))}
-              <th className="px-3 py-2 text-right font-semibold">Estatus</th>
+              <th className="px-2 py-2 text-right font-semibold sm:hidden">Cargo/Abono</th>
+              <th className="hidden px-3 py-2 text-right font-semibold sm:table-cell">Estatus</th>
             </tr>
           </thead>
           <tbody className={cn("divide-y divide-border", pending && "opacity-60")}>
@@ -89,9 +90,9 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                   r.status === "PENDIENTE" && "bg-pending-bg hover:bg-pending-bg",
                 )}
               >
-                <td className="whitespace-nowrap px-3 py-2 font-semibold text-muted-foreground">{formatDate(r.date)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{r.time || "—"}</td>
-                <td className="max-w-[320px] px-3 py-2">
+                <td className="whitespace-nowrap px-2 py-2 font-semibold text-muted-foreground sm:px-3">{formatDate(r.date)}</td>
+                <td className="hidden whitespace-nowrap px-3 py-2 text-muted-foreground sm:table-cell">{r.time || "—"}</td>
+                <td className="max-w-[120px] px-2 py-2 sm:max-w-[320px] sm:px-3">
                   <Tooltip>
                     <TooltipTrigger className="block max-w-full truncate text-left">
                       {r.description}
@@ -101,7 +102,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                 </td>
                 {CATEGORIES.map((c) =>
                   c === r.category ? (
-                    <td key={c} className="whitespace-nowrap px-3 py-2 text-right tabular-nums">
+                    <td key={c} className="hidden whitespace-nowrap px-3 py-2 text-right tabular-nums sm:table-cell">
                       <Select
                         value={r.category}
                         onValueChange={(value) => onCategory(r.id, value)}
@@ -127,10 +128,18 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                       </Select>
                     </td>
                   ) : (
-                    <td key={c} className="px-3 py-2 text-right text-muted-foreground/40">—</td>
+                    <td key={c} className="hidden px-3 py-2 text-right text-muted-foreground/40 sm:table-cell">—</td>
                   ),
                 )}
-                <td className="px-3 py-2 text-right">
+                <td
+                  className={cn(
+                    "whitespace-nowrap px-2 py-2 text-right font-semibold tabular-nums sm:hidden",
+                    r.direction === "CARGO" ? "text-cargo" : "text-abono",
+                  )}
+                >
+                  {formatMXN(r.amount)}
+                </td>
+                <td className="hidden px-3 py-2 text-right sm:table-cell">
                   <Select
                     value={r.status}
                     onValueChange={(value) => onStatus(r.id, value)}
