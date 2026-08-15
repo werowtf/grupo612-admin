@@ -13,7 +13,7 @@ export default async function LoginPage({
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
           <Logo className="mx-auto mb-3 h-16 w-auto" />
-          <h1 className="text-xl font-semibold">Plataforma Administrativa</h1>
+          <h1 className="text-xl">Plataforma Administrativa</h1>
         </div>
 
         <div className="card p-6">

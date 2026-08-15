@@ -40,7 +40,7 @@ export default async function DocumentosPage({
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">Documentos</h1>
+          <h1 className="text-xl">Documentos</h1>
           <p className="text-sm text-muted-foreground"><VenueTag name={selected.name} /></p>
         </div>
         <Link href="/documentos/nuevo" className={buttonVariants()}>

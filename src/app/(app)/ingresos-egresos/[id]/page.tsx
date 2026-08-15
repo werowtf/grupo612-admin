@@ -46,7 +46,7 @@ export default async function EntryDetailPage({
             <ArrowLeft className="h-4 w-4" />
             Ingresos y egresos
           </Link>
-          <h1 className="mt-1 text-xl font-semibold">
+          <h1 className="mt-1 text-xl">
             {entryTypeLabels[entry.type]} · {formatDate(entry.date)}
           </h1>
           <p className="text-sm text-muted-foreground">

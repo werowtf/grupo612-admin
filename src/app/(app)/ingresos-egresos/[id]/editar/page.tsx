@@ -45,7 +45,7 @@ export default async function EditarMovimientoPage({
           <ArrowLeft className="h-4 w-4" />
           Volver al movimiento
         </Link>
-        <h1 className="mt-1 text-xl font-semibold">Editar movimiento · {formatDate(entry.date)}</h1>
+        <h1 className="mt-1 text-xl">Editar movimiento · {formatDate(entry.date)}</h1>
         <p className="text-sm text-muted-foreground">{entry.venue.name}</p>
       </div>
 

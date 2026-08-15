@@ -33,7 +33,7 @@ export default async function CortesPage() {
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">Cortes de caja</h1>
+          <h1 className="text-xl">Cortes de caja</h1>
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <VenueTag name={selected.name} /> {cortes.length} corte{cortes.length === 1 ? "" : "s"}
           </p>

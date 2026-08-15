@@ -27,7 +27,7 @@ export default async function NuevoCortePage() {
           <ArrowLeft className="h-4 w-4" />
           Cortes de caja
         </Link>
-        <h1 className="mt-1 text-xl font-semibold">Nuevo corte de caja</h1>
+        <h1 className="mt-1 text-xl">Nuevo corte de caja</h1>
         <p className="text-sm text-muted-foreground"><VenueTag name={selected.name} /></p>
       </div>
 

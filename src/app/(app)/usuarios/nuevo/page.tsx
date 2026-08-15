@@ -18,7 +18,7 @@ export default async function NuevoUsuarioPage() {
           <ArrowLeft className="h-4 w-4" />
           Usuarios
         </Link>
-        <h1 className="mt-1 text-xl font-semibold">Nuevo usuario</h1>
+        <h1 className="mt-1 text-xl">Nuevo usuario</h1>
       </div>
 
       <UserForm venues={venues.map((v) => ({ id: v.id, name: v.name }))} mode="create" />

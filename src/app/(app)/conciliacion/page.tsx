@@ -29,7 +29,7 @@ export default async function ConciliacionPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-semibold">Estados de cuenta</h1>
+        <h1 className="text-xl">Estados de cuenta</h1>
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <VenueTag name={selected.name} /> sube y administra los estados de cuenta bancarios
         </p>

@@ -49,7 +49,7 @@ export default async function EditarCortePage({
           <ArrowLeft className="h-4 w-4" />
           Volver al corte
         </Link>
-        <h1 className="mt-1 text-xl font-semibold">
+        <h1 className="mt-1 text-xl">
           Editar corte · {formatDate(corte.date)}
         </h1>
         <p className="text-sm text-muted-foreground">{corte.venue.name}</p>

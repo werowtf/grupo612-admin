@@ -66,7 +66,7 @@ export default async function MovimientosPage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-semibold">Movimientos</h1>
+        <h1 className="text-xl">Movimientos</h1>
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <VenueTag name={selected.name} /> {total} movimiento{total === 1 ? "" : "s"}
           {hasFilters ? " (filtrados)" : ""}

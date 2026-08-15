@@ -110,7 +110,7 @@ export default async function BitacoraPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-semibold">Logs</h1>
+        <h1 className="text-xl">Logs</h1>
         <p className="text-sm text-muted-foreground">
           Registro de acciones realizadas en la plataforma
         </p>

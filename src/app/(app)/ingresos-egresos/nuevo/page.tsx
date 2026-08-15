@@ -22,7 +22,7 @@ export default async function NuevoMovimientoPage() {
           <ArrowLeft className="h-4 w-4" />
           Ingresos y egresos
         </Link>
-        <h1 className="mt-1 text-xl font-semibold">Nuevo movimiento</h1>
+        <h1 className="mt-1 text-xl">Nuevo movimiento</h1>
         <p className="text-sm text-muted-foreground"><VenueTag name={selected.name} /></p>
       </div>
 

@@ -32,7 +32,7 @@ export default async function EditarUsuarioPage({
           <ArrowLeft className="h-4 w-4" />
           Usuarios
         </Link>
-        <h1 className="mt-1 text-xl font-semibold">Editar usuario</h1>
+        <h1 className="mt-1 text-xl">Editar usuario</h1>
         <p className="text-sm text-muted-foreground">{target.email}</p>
       </div>
 

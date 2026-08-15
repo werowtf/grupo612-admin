@@ -20,7 +20,7 @@ export default async function NuevoDocumentoPage() {
           <ArrowLeft className="h-4 w-4" />
           Documentos
         </Link>
-        <h1 className="mt-1 text-xl font-semibold">Subir documento</h1>
+        <h1 className="mt-1 text-xl">Subir documento</h1>
       </div>
 
       <DocumentUploadForm

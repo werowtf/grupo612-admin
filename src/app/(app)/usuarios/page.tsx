@@ -20,7 +20,7 @@ export default async function UsuariosPage() {
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">Usuarios</h1>
+          <h1 className="text-xl">Usuarios</h1>
           <p className="text-sm text-muted-foreground">
             Usuarios con acceso a la plataforma
           </p>

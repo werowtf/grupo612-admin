@@ -42,7 +42,7 @@ export default async function DocumentDetailPage({
             <ArrowLeft className="h-4 w-4" />
             Documentos
           </Link>
-          <h1 className="mt-1 text-xl font-semibold">{doc.title}</h1>
+          <h1 className="mt-1 text-xl">{doc.title}</h1>
           <p className="text-sm text-muted-foreground">
             {doc.venue.name} · {documentCategoryLabels[doc.category]}
             {doc.uploadedBy?.name ? ` · subido por ${doc.uploadedBy.name}` : ""}
