@@ -5,6 +5,7 @@ import { getAppContext } from "@/lib/context";
 import { prisma } from "@/lib/prisma";
 import { UserForm } from "@/components/user-form";
 import { ResetPasswordForm } from "@/components/reset-password-form";
+import { DeleteUserButton } from "@/components/delete-user-button";
 
 export default async function EditarUsuarioPage({
   params,
@@ -24,6 +25,15 @@ export default async function EditarUsuarioPage({
     prisma.venue.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
   ]);
   if (!target) notFound();
+
+  const isSelf = target.id === user.id;
+  let canDelete = !isSelf;
+  if (canDelete && target.role === "ADMIN" && target.active) {
+    const otherAdmins = await prisma.user.count({
+      where: { role: "ADMIN", active: true, id: { not: target.id } },
+    });
+    if (otherAdmins === 0) canDelete = false;
+  }
 
   return (
     <div className="space-y-6">
@@ -50,6 +60,17 @@ export default async function EditarUsuarioPage({
       />
 
       <ResetPasswordForm userId={target.id} justReset={reset === "1"} />
+
+      {canDelete && (
+        <div className="card space-y-2 p-5">
+          <h2 className="text-base font-semibold">Zona de peligro</h2>
+          <p className="text-sm text-muted-foreground">
+            Elimina permanentemente a este usuario. Su historial de cortes, movimientos y
+            documentos se conserva, pero perderá acceso a la plataforma de inmediato.
+          </p>
+          <DeleteUserButton userId={target.id} userName={target.name} />
+        </div>
+      )}
     </div>
   );
 }

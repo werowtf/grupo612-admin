@@ -158,6 +158,38 @@ export async function resetPasswordAction(
   redirect(`/usuarios/${userId}/editar?reset=1`);
 }
 
+/** Elimina un usuario permanentemente. */
+export async function deleteUserAction(userId: string): Promise<{ error?: string }> {
+  const admin = await requireAdmin();
+  const target = await prisma.user.findUnique({ where: { id: userId } });
+  if (!target) return { error: "Usuario no encontrado." };
+
+  if (target.id === admin.id) {
+    return { error: "No puedes eliminar tu propia cuenta." };
+  }
+
+  if (target.role === "ADMIN" && target.active) {
+    const otherAdmins = await prisma.user.count({
+      where: { role: "ADMIN", active: true, id: { not: target.id } },
+    });
+    if (otherAdmins === 0) {
+      return { error: "No puedes eliminar al único administrador activo." };
+    }
+  }
+
+  await prisma.user.delete({ where: { id: userId } });
+  await logAudit({
+    userId: admin.id,
+    action: "user.delete",
+    entity: "User",
+    entityId: userId,
+    meta: { email: target.email, name: target.name, role: target.role },
+  });
+
+  revalidatePath("/usuarios");
+  redirect("/usuarios");
+}
+
 /** Activa/desactiva un usuario desde la lista. */
 export async function toggleActiveAction(userId: string) {
   const admin = await requireAdmin();
