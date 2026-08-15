@@ -27,7 +27,9 @@
   --color-purple: #9333EA;
   --color-purple-bg: #F3E8FF;
   --color-abono: #81C3AC;
+  --color-abono-bg: #E3F3EC;
   --color-cargo: #84B3C7;
+  --color-cargo-bg: #E4EEF3;
   --color-pending: #E8AEAE;
   --color-table-header: #F4F8F6;
 
@@ -65,13 +67,13 @@ body {
       0 0px 6px -4px var(--tw-shadow-color, #0000001a);
   }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-brand-500 text-white hover:bg-brand-700;
+    @apply inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-brand-500 text-white hover:bg-brand-700;
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-border bg-card text-foreground hover:bg-muted;
+    @apply inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-border bg-card text-foreground hover:bg-muted;
   }
   .input {
     @apply w-full rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
@@ -205,6 +207,8 @@ body {
   --color-info-bg: oklch(0.282 0.091 267.935 / 40%);
   --color-success-bg: oklch(0.325 0.078 162 / 40%);
   --color-purple-bg: oklch(0.325 0.11 305 / 40%);
+  --color-abono-bg: oklch(0.325 0.078 162 / 40%);
+  --color-cargo-bg: oklch(0.325 0.078 232 / 40%);
 }
 
 @layer base {

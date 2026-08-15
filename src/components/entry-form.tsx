@@ -199,8 +199,8 @@ export function EntryForm({
                   "flex-1",
                   active &&
                     (t === "EGRESO"
-                      ? "border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-50"
-                      : "border-brand-300 bg-brand-50 text-brand-700 hover:bg-brand-50"),
+                      ? "border-cargo bg-cargo-bg text-cargo hover:bg-cargo-bg"
+                      : "border-abono bg-abono-bg text-abono hover:bg-abono-bg"),
                 )}
               >
                 <Icon className="h-4 w-4" />

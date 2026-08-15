@@ -51,7 +51,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
                   <td className="px-3 py-2">
                     <span
                       className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                        isEgreso ? "bg-rose-50 text-rose-700" : "bg-brand-50 text-brand-700"
+                        isEgreso ? "bg-cargo-bg text-cargo" : "bg-abono-bg text-abono"
                       }`}
                     >
                       {entryTypeLabels[e.type]}

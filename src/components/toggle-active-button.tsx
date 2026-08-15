@@ -34,7 +34,7 @@ export function ToggleActiveButton({ userId, active }: { userId: string; active:
         title={active ? "Clic para desactivar" : "Clic para reactivar"}
         className={cn(
           "rounded-full px-2 py-0.5 text-xs font-medium transition-colors",
-          active ? "bg-brand-50 text-brand-700 hover:bg-rose-50 hover:text-rose-700" : "bg-muted text-muted-foreground hover:bg-brand-50 hover:text-brand-700",
+          active ? "bg-success-bg text-success hover:bg-danger-bg hover:text-danger" : "bg-muted text-muted-foreground hover:bg-success-bg hover:text-success",
         )}
       >
         {pending ? "…" : active ? "Activo" : "Inactivo"}
