@@ -240,7 +240,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                 id="corte-file"
                 type="file"
                 accept={method === "EXCEL" ? ".xlsx,.xls" : "image/*"}
-                className="file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
+                className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-700"
               />
             </div>
             <Button type="button" onClick={onProcess} disabled={processing || ocrPending}>

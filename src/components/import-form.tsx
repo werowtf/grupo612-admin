@@ -84,7 +84,7 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
             type="file"
             accept=".csv,.xlsx,.xls"
             required
-            className="file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1 file:text-brand-700"
+            className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-700"
           />
         </div>
       </div>
