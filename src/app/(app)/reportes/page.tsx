@@ -93,7 +93,7 @@ export default async function ReportesPage({
         <StatCard label="Cortes conciliados" value={`${report.conciliacion.cortesConciliados}/${report.conciliacion.cortesConTarjeta}`} hint={`${conciliadoPct}% con depósito bancario`} tone={conciliadoPct >= 100 ? "positive" : "default"} icon={<Link2 className="h-4 w-4" />} />
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section className="grid gap-6 lg:grid-cols-3">
         <div className="card p-5">
           <h2 className="mb-4 text-base font-semibold">Ventas por forma de pago</h2>
           <PieChartCard
@@ -112,6 +112,16 @@ export default async function ReportesPage({
               { label: "Alimentos", value: report.ventas.alimentos },
               { label: "Bebidas", value: report.ventas.bebidas },
             ]}
+          />
+        </div>
+        <div className="card p-5">
+          <h2 className="mb-4 text-base font-semibold">Abonos vs. cargos del banco</h2>
+          <PieChartCard
+            items={[
+              { label: "Abonos", value: report.banco.abonos },
+              { label: "Cargos", value: report.banco.cargos },
+            ]}
+            colors={["var(--color-abono)", "var(--color-cargo)"]}
           />
         </div>
       </section>

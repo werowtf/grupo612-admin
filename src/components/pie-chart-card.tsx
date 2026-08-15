@@ -23,7 +23,7 @@ const COLORS = [
   "var(--chart-5)",
 ];
 
-export function PieChartCard({ items }: { items: PieChartItem[] }) {
+export function PieChartCard({ items, colors = COLORS }: { items: PieChartItem[]; colors?: string[] }) {
   const data = items.filter((i) => i.value > 0);
   const total = data.reduce((s, i) => s + i.value, 0);
 
@@ -34,11 +34,11 @@ export function PieChartCard({ items }: { items: PieChartItem[] }) {
   const chartData = data.map((i, idx) => ({
     label: i.label,
     value: i.value,
-    fill: COLORS[idx % COLORS.length],
+    fill: colors[idx % colors.length],
   }));
 
   const chartConfig = Object.fromEntries(
-    data.map((i, idx) => [i.label, { label: i.label, color: COLORS[idx % COLORS.length] }]),
+    data.map((i, idx) => [i.label, { label: i.label, color: colors[idx % colors.length] }]),
   ) satisfies ChartConfig;
 
   return (
