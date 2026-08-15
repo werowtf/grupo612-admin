@@ -214,7 +214,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
               onClick={() => setMethod(m.id)}
               className={cn(
                 "card flex items-start gap-3 p-4 text-left transition-colors",
-                active ? "ring-2 ring-brand-500" : "hover:bg-muted/50",
+                active ? "ring-2 ring-brand-600" : "hover:bg-muted/50",
               )}
             >
               <Icon className={cn("mt-0.5 h-5 w-5", active ? "text-brand-600" : "text-muted-foreground")} />
@@ -240,7 +240,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                 id="corte-file"
                 type="file"
                 accept={method === "EXCEL" ? ".xlsx,.xls" : "image/*"}
-                className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-700"
+                className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-600"
               />
             </div>
             <Button type="button" onClick={onProcess} disabled={processing || ocrPending}>
@@ -262,7 +262,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
               className={cn(
                 "flex items-start gap-2 rounded-lg px-3 py-2 text-sm",
                 procMsg.ok
-                  ? "bg-brand-50 text-brand-700"
+                  ? "bg-brand-50 text-brand-600"
                   : "bg-danger-bg text-danger",
               )}
             >
@@ -291,7 +291,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                     <label className="label flex items-center gap-2" htmlFor={f.key}>
                       {f.label}
                       {wasDetected && (
-                        <span className="rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700">
+                        <span className="rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-600">
                           detectado
                         </span>
                       )}
@@ -303,7 +303,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                       step={f.type === "money" ? "0.01" : f.type === "int" ? "1" : undefined}
                       value={values[f.key] ?? ""}
                       onChange={(e) => setField(f.key, e.target.value)}
-                      className={cn(wasDetected && "border-brand-500")}
+                      className={cn(wasDetected && "border-brand-600")}
                     />
                   </div>
                 );

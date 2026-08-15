@@ -35,7 +35,7 @@ export default async function UsuariosPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
             <thead>
-              <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-700">
+              <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-600">
                 <th className="px-3 py-2 font-semibold">Nombre</th>
                 <th className="px-3 py-2 font-semibold">Correo</th>
                 <th className="px-3 py-2 font-semibold">Rol</th>
@@ -48,7 +48,7 @@ export default async function UsuariosPage() {
               {users.map((u) => (
                 <tr key={u.id} className="hover:bg-muted/60">
                   <td className="px-3 py-2 font-medium">
-                    <Link href={`/usuarios/${u.id}/editar`} className="hover:text-brand-700 hover:underline">
+                    <Link href={`/usuarios/${u.id}/editar`} className="hover:text-brand-600 hover:underline">
                       {u.name}
                     </Link>
                     {u.id === user.id && (

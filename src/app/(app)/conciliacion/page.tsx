@@ -50,7 +50,7 @@ export default async function ConciliacionPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
-                  <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-700">
+                  <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-600">
                     <th className="px-3 py-2 font-semibold">Archivo</th>
                     <th className="px-3 py-2 font-semibold">Banco</th>
                     <th className="px-3 py-2 font-semibold">Periodo</th>
@@ -110,7 +110,7 @@ export default async function ConciliacionPage() {
             <h2 className="text-base font-semibold">Movimientos recientes</h2>
             <Link
               href="/movimientos"
-              className="inline-flex items-center gap-1 text-sm text-brand-500 hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-brand-600 hover:underline"
             >
               Ver todos ({recent.total}) <ArrowRight className="h-4 w-4" />
             </Link>

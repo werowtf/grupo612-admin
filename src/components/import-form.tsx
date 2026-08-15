@@ -84,7 +84,7 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
             type="file"
             accept=".csv,.xlsx,.xls"
             required
-            className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-700"
+            className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-600"
           />
         </div>
       </div>
@@ -97,7 +97,7 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
       )}
 
       {state.ok && (state.imported ?? 0) > 0 && (
-        <div className="flex items-start gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-700">
+        <div className="flex items-start gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-600">
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
           <span>
             Se importaron <strong>{state.imported}</strong> movimientos

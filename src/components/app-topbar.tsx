@@ -68,7 +68,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
                 className={cn(
                   "shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                   v.id === selectedVenueId
-                    ? "bg-brand-500 text-white"
+                    ? "bg-brand-600 text-white"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
@@ -98,7 +98,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
 
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-muted/50">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-700">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-50 text-xs font-semibold text-brand-600">
             {userName.slice(0, 1).toUpperCase()}
           </span>
           <span className="hidden text-left sm:block">

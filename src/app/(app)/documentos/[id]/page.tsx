@@ -75,17 +75,17 @@ export default async function DocumentDetailPage({
                 Vinculado a
               </h3>
               {doc.corte && (
-                <Link href={`/cortes/${doc.corte.id}`} className="text-sm text-brand-700 hover:underline">
+                <Link href={`/cortes/${doc.corte.id}`} className="text-sm text-brand-600 hover:underline">
                   Corte {doc.corte.folioCorteZ ? `#${doc.corte.folioCorteZ}` : ""} · {formatDate(doc.corte.date)}
                 </Link>
               )}
               {doc.entry && (
-                <Link href={`/ingresos-egresos/${doc.entry.id}`} className="block text-sm text-brand-700 hover:underline">
+                <Link href={`/ingresos-egresos/${doc.entry.id}`} className="block text-sm text-brand-600 hover:underline">
                   Movimiento {doc.entry.category} · {formatDate(doc.entry.date)}
                 </Link>
               )}
               {doc.bankTransaction && (
-                <Link href="/movimientos" className="block text-sm text-brand-700 hover:underline">
+                <Link href="/movimientos" className="block text-sm text-brand-600 hover:underline">
                   {doc.bankTransaction.description} · {formatDate(doc.bankTransaction.date)}
                 </Link>
               )}

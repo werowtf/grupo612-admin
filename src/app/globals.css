@@ -9,10 +9,7 @@
   --color-fg: var(--foreground);
 
   --color-brand-50: #EDF6F3;
-  --color-brand-100: #EDF6F3;
-  --color-brand-500: #5A7E71;
   --color-brand-600: #5A7E71;
-  --color-brand-700: #5A7E71;
 
   --color-danger: #EE4273;
   --color-danger-bg: #F8D2DD;
@@ -76,13 +73,13 @@ h2.text-xl {
     @apply inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-brand-500 text-white hover:bg-brand-700;
+    @apply inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-brand-600 text-white hover:bg-brand-600;
   }
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-border bg-card text-foreground hover:bg-muted;
   }
   .input {
-    @apply w-full rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
+    @apply w-full rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-50;
   }
   .label {
     @apply mb-1 block text-sm font-medium text-foreground;

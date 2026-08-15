@@ -26,7 +26,7 @@ export function ResetPasswordForm({ userId, justReset }: { userId: string; justR
         </p>
       )}
       {justReset && !state.error && (
-        <p className="flex items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-700">
+        <p className="flex items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-600">
           <CheckCircle2 className="h-4 w-4" />
           Contraseña actualizada.
         </p>

@@ -25,7 +25,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
-            <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-700">
+            <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-600">
               <th className="px-3 py-2 font-semibold">Fecha</th>
               <th className="px-3 py-2 font-semibold">Tipo</th>
               <th className="px-3 py-2 font-semibold">Categoría</th>
@@ -39,7 +39,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
             {rows.map((e) => {
               const isEgreso = e.type === "EGRESO";
               const dateCell = hrefBase ? (
-                <Link href={`${hrefBase}/${e.id}`} className="font-semibold text-brand-700 hover:underline">
+                <Link href={`${hrefBase}/${e.id}`} className="font-semibold text-brand-600 hover:underline">
                   {formatDate(e.date)}
                 </Link>
               ) : (

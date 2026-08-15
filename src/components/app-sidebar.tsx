@@ -75,8 +75,8 @@ function NavLinks({ role, onNavigate }: { role: UserRole; onNavigate?: () => voi
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               active
-                ? "bg-brand-50 text-brand-700"
-                : "text-foreground/70 hover:bg-brand-50 hover:text-brand-700",
+                ? "bg-brand-50 text-brand-600"
+                : "text-foreground/70 hover:bg-brand-50 hover:text-brand-600",
             )}
           >
             <Icon className="h-4 w-4" />

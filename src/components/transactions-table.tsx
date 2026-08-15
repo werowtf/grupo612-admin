@@ -68,7 +68,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1080px] text-sm">
           <thead>
-            <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-700">
+            <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-600">
               <th className="px-3 py-2 font-semibold">Fecha</th>
               <th className="px-3 py-2 font-semibold">Hora</th>
               <th className="px-3 py-2 font-semibold">Descripción</th>

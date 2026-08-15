@@ -160,7 +160,7 @@ export function EntryForm({
         <label className="label flex items-center gap-2" htmlFor={key}>
           {label}
           {was && (
-            <span className="rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700">
+            <span className="rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-600">
               del ticket
             </span>
           )}
@@ -173,7 +173,7 @@ export function EntryForm({
           placeholder={opts?.placeholder}
           value={values[key] ?? ""}
           onChange={(e) => set(key, e.target.value)}
-          className={cn(was && "border-brand-500")}
+          className={cn(was && "border-brand-600")}
         />
       </div>
     );
@@ -230,7 +230,7 @@ export function EntryForm({
                 type="file"
                 accept="image/*"
                 capture="environment"
-                className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-700"
+                className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-600"
               />
             </div>
             <Button type="button" variant="outline" onClick={onReadTicket} disabled={ocrPending}>
@@ -242,7 +242,7 @@ export function EntryForm({
             <p
               className={cn(
                 "flex items-start gap-2 rounded-lg px-3 py-2 text-sm",
-                ocrMsg.ok ? "bg-brand-50 text-brand-700" : "bg-danger-bg text-danger",
+                ocrMsg.ok ? "bg-brand-50 text-brand-600" : "bg-danger-bg text-danger",
               )}
             >
               {ocrMsg.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}

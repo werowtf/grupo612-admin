@@ -93,7 +93,7 @@ export function DocumentUploadForm({
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="rounded bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700 hover:bg-brand-100"
+              className="rounded bg-brand-50 px-3 py-1 text-sm font-medium text-brand-600 hover:bg-brand-50"
             >
               Elegir archivo
             </button>

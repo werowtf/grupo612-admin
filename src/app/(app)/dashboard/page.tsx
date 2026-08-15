@@ -85,7 +85,7 @@ export default async function DashboardPage() {
                 <h2 className="text-base font-semibold">Estados de cuenta recientes</h2>
                 <Link
                   href="/conciliacion"
-                  className="text-sm text-brand-500 hover:underline"
+                  className="text-sm text-brand-600 hover:underline"
                 >
                   Ver todos
                 </Link>
@@ -108,7 +108,7 @@ export default async function DashboardPage() {
                             : formatDate(s.createdAt)}
                         </div>
                       </div>
-                      <span className="ml-3 shrink-0 rounded bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
+                      <span className="ml-3 shrink-0 rounded bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-600">
                         {s.importedCount} mov.
                       </span>
                     </li>

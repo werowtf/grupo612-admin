@@ -60,7 +60,7 @@ export default async function CortesPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-sm">
               <thead>
-                <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-700">
+                <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-600">
                   <th className="px-3 py-2 font-semibold">Fecha</th>
                   <th className="px-3 py-2 font-semibold">Turno</th>
                   <th className="px-3 py-2 font-semibold">Folio Z</th>
@@ -76,7 +76,7 @@ export default async function CortesPage() {
                   return (
                     <tr key={c.id} className="hover:bg-muted/60">
                       <td className="whitespace-nowrap px-3 py-2">
-                        <Link href={`/cortes/${c.id}`} className="font-semibold text-brand-700 hover:underline">
+                        <Link href={`/cortes/${c.id}`} className="font-semibold text-brand-600 hover:underline">
                           {formatDate(c.date)}
                         </Link>
                       </td>

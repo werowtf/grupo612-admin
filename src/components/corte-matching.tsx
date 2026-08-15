@@ -149,7 +149,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
                       type="button"
                       onClick={() => run(() => linkDepositAction(corteId, d.id))}
                       disabled={pending}
-                      className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs font-medium hover:bg-brand-50 hover:text-brand-700"
+                      className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs font-medium hover:bg-brand-50 hover:text-brand-600"
                     >
                       <Link2 className="h-3.5 w-3.5" />
                       Vincular
