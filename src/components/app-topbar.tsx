@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { Building2, ChevronDown, LogOut, Menu, Moon, ScrollText, Sun, Users } from "lucide-react";
+import { ChevronDown, LogOut, Menu, Moon, ScrollText, Sun, Users } from "lucide-react";
 import { logoutAction, selectVenueAction } from "@/app/(app)/actions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -57,7 +57,6 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
         >
           <Menu className="h-5 w-5" />
         </button>
-        <Building2 className="hidden h-4 w-4 text-brand-500 sm:block" />
         {venues.length > 0 ? (
           <div className="flex items-center gap-1 overflow-x-auto rounded-full bg-muted/50 p-1">
             {venues.map((v) => (
