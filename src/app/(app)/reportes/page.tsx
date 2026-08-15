@@ -89,7 +89,7 @@ export default async function ReportesPage({
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard label="Ventas del mes" value={formatMXN(report.ventas.total)} hint={`${report.ventas.cortes} cortes`} tone="positive" icon={<TrendingUp className="h-4 w-4" />} />
         <StatCard label="Ventas con tarjeta" value={formatMXN(report.ventas.tarjeta)} icon={<CreditCard className="h-4 w-4" />} />
-        <StatCard label="Comisiones bancarias" value={formatMXN(report.banco.comisiones)} tone="warning" icon={<Percent className="h-4 w-4" />} />
+        <StatCard label="Comisiones bancarias" value={formatMXN(report.banco.comisiones)} tone="negative" icon={<Percent className="h-4 w-4" />} />
         <StatCard label="Egresos registrados" value={formatMXN(report.finanzas.egresos)} tone="negative" icon={<TrendingDown className="h-4 w-4" />} />
         <StatCard label="Propinas" value={formatMXN(report.ventas.propinas)} icon={<HandCoins className="h-4 w-4" />} />
         <StatCard label="Cortes conciliados" value={`${report.conciliacion.cortesConciliados}/${report.conciliacion.cortesConTarjeta}`} hint={`${conciliadoPct}% con depósito bancario`} tone={conciliadoPct >= 100 ? "positive" : "default"} icon={<Link2 className="h-4 w-4" />} />
@@ -148,7 +148,7 @@ export default async function ReportesPage({
           </div>
           <div className="rounded-lg border border-border p-3">
             <div className="text-xs text-muted-foreground">Diferencia (≈ comisión)</div>
-            <div className="mt-0.5 text-lg font-semibold tabular-nums text-warning">
+            <div className="mt-0.5 text-lg font-semibold tabular-nums text-cargo">
               {formatMXN(report.conciliacion.tarjetaEsperada - report.conciliacion.depositado)}
             </div>
           </div>
