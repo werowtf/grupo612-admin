@@ -59,7 +59,7 @@ export default async function UsuariosPage() {
                   <td className="px-3 py-2">{roleLabels[u.role]}</td>
                   <td className="px-3 py-2 text-muted-foreground">
                     {u.role === "ADMIN"
-                      ? "Todas"
+                      ? "Todos"
                       : u.venues.map((v) => v.venue.name).join(", ") || "—"}
                   </td>
                   <td className="px-3 py-2">

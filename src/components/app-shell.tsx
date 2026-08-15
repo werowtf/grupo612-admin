@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import type { UserRole } from "@/generated/prisma/enums";
@@ -16,6 +17,7 @@ interface Props {
 
 export function AppShell({ role, venues, selectedVenueId, userName, roleLabel, children }: Props) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <div className="flex min-h-screen">
@@ -29,7 +31,11 @@ export function AppShell({ role, venues, selectedVenueId, userName, roleLabel, c
           roleLabel={roleLabel}
           onOpenMobileNav={() => setMobileNavOpen(true)}
         />
-        <main className="flex-1 overflow-x-hidden p-4 md:p-6">{children}</main>
+        <main className="flex-1 overflow-x-hidden p-4 md:p-6">
+          <div key={pathname} className="animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );
