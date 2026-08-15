@@ -129,7 +129,7 @@ function CategoryBreakdown({
 }) {
   const max = Math.max(...items.map((i) => i.total), 1);
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-6">
       {items.map((i) => (
         <li key={i.category}>
           <div className="mb-1 flex items-center justify-between text-sm">
@@ -139,7 +139,7 @@ function CategoryBreakdown({
               <span className="text-xs">({i.count})</span>
             </span>
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
               className={cn("h-full rounded-full", categoryBar[i.category])}
               style={{ width: `${(i.total / max) * 100}%` }}

@@ -12,8 +12,8 @@
 
   --color-brand-50: oklch(0.962 0.018 272.314);
   --color-brand-100: oklch(0.962 0.018 272.314);
-  --color-brand-500: oklch(0.457 0.24 277.023);
-  --color-brand-600: #48BC93;
+  --color-brand-500: #5A7E71;
+  --color-brand-600: #5A7E71;
   --color-brand-700: oklch(0.398 0.195 277.366);
 
   --color-danger: #EE4273;
@@ -27,8 +27,9 @@
   --color-purple: #9333EA;
   --color-purple-bg: #F3E8FF;
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-prata), serif;
 }
 
 html {
@@ -40,6 +41,12 @@ body {
   color: var(--color-fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Los títulos con tamaño text-xl (h1 de cada página, "Grupo 612" del
+   logo, etc.) usan Prata; todo lo demás sigue con Inter (--font-sans). */
+.text-xl {
+  font-family: var(--font-display);
 }
 
 /* Utilidades de composición reutilizables.
@@ -119,13 +126,13 @@ body {
    ahora son alias de estos tokens semánticos, así que toda la app (no sólo
    Button/Card/Dialog) sigue este esquema automáticamente. */
 :root {
-  --background: rgb(247, 247, 250);
+  --background: #EDF6F3;
   --foreground: oklch(0.148 0.004 228.8);
-  --card: oklch(1 0 0);
+  --card: #FFFFFF;
   --card-foreground: oklch(0.148 0.004 228.8);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.148 0.004 228.8);
-  --primary: oklch(0.457 0.24 277.023);
+  --primary: #8192E7;
   --primary-foreground: oklch(0.962 0.018 272.314);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -137,15 +144,15 @@ body {
   --border: oklch(0.925 0.005 214.3);
   --input: oklch(0.925 0.005 214.3);
   --ring: oklch(0.723 0.014 214.4);
-  --chart-1: #7BC8A4;
-  --chart-2: #7CA6C9;
-  --chart-3: #7B87C4;
-  --chart-4: #A47FBF;
-  --chart-5: #C0776C;
+  --chart-1: #5AA288;
+  --chart-2: #81C3AC;
+  --chart-3: #84B3C7;
+  --chart-4: #AEDAED;
+  --chart-5: #AEE8D4;
   --radius: 0.875rem;
   --sidebar: oklch(0.987 0.002 197.1);
   --sidebar-foreground: oklch(0.148 0.004 228.8);
-  --sidebar-primary: oklch(0.511 0.262 276.966);
+  --sidebar-primary: #8192E7;
   --sidebar-primary-foreground: oklch(0.962 0.018 272.314);
   --sidebar-accent: oklch(0.963 0.002 197.1);
   --sidebar-accent-foreground: oklch(0.218 0.008 223.9);
@@ -172,11 +179,11 @@ body {
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.56 0.021 213.5);
-  --chart-1: #7BC8A4;
-  --chart-2: #7CA6C9;
-  --chart-3: #7B87C4;
-  --chart-4: #A47FBF;
-  --chart-5: #C0776C;
+ --chart-1: #5AA288;
+  --chart-2: #81C3AC;
+  --chart-3: #84B3C7;
+  --chart-4: #AEDAED;
+  --chart-5: #AEE8D4;
   --sidebar: oklch(0.218 0.008 223.9);
   --sidebar-foreground: oklch(0.987 0.002 197.1);
   --sidebar-primary: oklch(0.585 0.233 277.117);
