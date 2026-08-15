@@ -4,7 +4,7 @@ import { getAppContext } from "@/lib/context";
 import { getVenueSummary, getVenueStatements, getVenueDailyTotals } from "@/lib/queries";
 import { StatCard } from "@/components/stat-card";
 import { CategoryBadge } from "@/components/badges";
-import { AreaChart } from "@/components/charts";
+import { AreaChartInteractive } from "@/components/area-chart-interactive";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
 import { bankLabels, categoryBar } from "@/lib/labels";
 import { buttonVariants } from "@/components/ui/button";
@@ -72,10 +72,7 @@ export default async function DashboardPage() {
             />
           </section>
 
-          <section className="card p-5">
-            <h2 className="mb-4 text-base font-semibold">Abonos vs. cargos (últimos 30 días)</h2>
-            <AreaChart data={dailyTotals} />
-          </section>
+          <AreaChartInteractive data={dailyTotals} />
 
           <section className="grid gap-6 lg:grid-cols-2">
             <div className="card p-5">

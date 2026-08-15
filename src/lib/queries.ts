@@ -75,7 +75,7 @@ export interface DailyTotal {
  * "hoy"), porque los datos importados suelen quedar en el pasado respecto al
  * reloj real.
  */
-export async function getVenueDailyTotals(venueId: string, days = 30): Promise<DailyTotal[]> {
+export async function getVenueDailyTotals(venueId: string, days = 90): Promise<DailyTotal[]> {
   const latest = await prisma.bankTransaction.findFirst({
     where: { bankAccount: { venueId } },
     orderBy: { date: "desc" },
