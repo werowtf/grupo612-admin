@@ -107,14 +107,14 @@ export function AreaChartInteractive({ data }: { data: DailyTotal[] }) {
             />
             <Area
               dataKey="abonos"
-              type="natural"
+              type="monotone"
               fill="url(#fillAbonos)"
               stroke="var(--color-abonos)"
               stackId="a"
             />
             <Area
               dataKey="cargos"
-              type="natural"
+              type="monotone"
               fill="url(#fillCargos)"
               stroke="var(--color-cargos)"
               stackId="a"
