@@ -43,7 +43,10 @@ body {
    @layer components, por eso las variantes de botón repiten la base. */
 @layer components {
   .card {
-    @apply rounded-xl  bg-[var(--color-surface)] shadow-lg;
+    @apply rounded-xl bg-[var(--color-surface)];
+    box-shadow:
+      0 0px 23px -3px var(--tw-shadow-color, #0000001a),
+      0 0px 6px -4px var(--tw-shadow-color, #0000001a);
   }
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60;
