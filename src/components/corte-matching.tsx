@@ -184,7 +184,7 @@ function Summary({
   const toneClass = {
     default: "text-foreground",
     ok: "text-brand-600",
-    pending: "text-warning",
+    pending: "text-pending",
     warn: "text-danger",
   }[tone];
   return (
