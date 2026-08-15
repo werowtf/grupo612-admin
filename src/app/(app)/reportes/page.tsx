@@ -2,7 +2,8 @@ import { TrendingUp, CreditCard, Percent, TrendingDown, HandCoins, Link2 } from 
 import { getAppContext } from "@/lib/context";
 import { getMonthlyReport } from "@/lib/reports/queries";
 import { StatCard } from "@/components/stat-card";
-import { BarList, Donut } from "@/components/charts";
+import { BarList } from "@/components/charts";
+import { RadialChartCard } from "@/components/radial-chart-card";
 import { ReportActions } from "@/components/report-actions";
 import { categoryLabels } from "@/lib/labels";
 import { formatMXN } from "@/lib/utils";
@@ -95,7 +96,7 @@ export default async function ReportesPage({
       <section className="grid gap-6 lg:grid-cols-2">
         <div className="card p-5">
           <h2 className="mb-4 text-base font-semibold">Ventas por forma de pago</h2>
-          <Donut
+          <RadialChartCard
             items={[
               { label: "Efectivo", value: report.ventas.efectivo },
               { label: "Visa", value: report.ventas.visa },
@@ -106,7 +107,7 @@ export default async function ReportesPage({
         </div>
         <div className="card p-5">
           <h2 className="mb-4 text-base font-semibold">Ventas por producto</h2>
-          <Donut
+          <RadialChartCard
             items={[
               { label: "Alimentos", value: report.ventas.alimentos },
               { label: "Bebidas", value: report.ventas.bebidas },
