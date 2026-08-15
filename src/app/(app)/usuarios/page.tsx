@@ -35,7 +35,7 @@ export default async function UsuariosPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <tr className="border-b border-border bg-brand-50 text-left text-xs uppercase tracking-wide text-brand-700">
                 <th className="px-3 py-2 font-medium">Nombre</th>
                 <th className="px-3 py-2 font-medium">Correo</th>
                 <th className="px-3 py-2 font-medium">Rol</th>
