@@ -29,6 +29,7 @@
   --color-abono: #81C3AC;
   --color-cargo: #84B3C7;
   --color-pending: #E8AEAE;
+  --color-table-header: #C0E1D6;
 
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -130,7 +131,7 @@ body {
    ahora son alias de estos tokens semánticos, así que toda la app (no sólo
    Button/Card/Dialog) sigue este esquema automáticamente. */
 :root {
-  --background: #F8FCFA;
+  --background: #FBFDFC;
   --foreground: #535353;
   --card: #FFFFFF;
   --card-foreground: #535353;

@@ -3,6 +3,7 @@ import { ImageIcon } from "lucide-react";
 import type { FinancialEntry } from "@/generated/prisma/client";
 import { entryTypeLabels, paymentLabels } from "@/lib/entries/config";
 import { formatMXN, formatDate } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Props {
   rows: FinancialEntry[];
@@ -24,7 +25,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
-            <tr className="border-b border-border bg-brand-50 text-left text-xs uppercase tracking-wide text-brand-700">
+            <tr className="border-b border-border bg-table-header text-left text-xs uppercase tracking-wide text-brand-700">
               <th className="px-3 py-2 font-medium">Fecha</th>
               <th className="px-3 py-2 font-medium">Tipo</th>
               <th className="px-3 py-2 font-medium">Categoría</th>
@@ -58,7 +59,16 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
                   </td>
                   <td className="px-3 py-2">{e.category}</td>
                   <td className="max-w-[200px] px-3 py-2 text-muted-foreground">
-                    <span className="block truncate" title={e.supplier ?? undefined}>{e.supplier ?? "—"}</span>
+                    {e.supplier ? (
+                      <Tooltip>
+                        <TooltipTrigger className="block max-w-full truncate text-left">
+                          {e.supplier}
+                        </TooltipTrigger>
+                        <TooltipContent>{e.supplier}</TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="px-3 py-2 text-muted-foreground">{paymentLabels[e.paymentMethod]}</td>
                   <td className={`px-3 py-2 text-right tabular-nums font-medium ${isEgreso ? "text-cargo" : "text-abono"}`}>
