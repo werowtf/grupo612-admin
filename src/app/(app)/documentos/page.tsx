@@ -44,6 +44,9 @@ export default async function DocumentosPage({
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl">Documentos</h1>
+          <p className="text-sm text-muted-foreground">
+            Repositorio centralizado de facturas, contratos y otros archivos
+          </p>
         </div>
         <Link href="/documentos/nuevo" className={buttonVariants()}>
           <Plus className="h-4 w-4" />

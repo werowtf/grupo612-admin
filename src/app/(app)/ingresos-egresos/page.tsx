@@ -50,6 +50,9 @@ export default async function IngresosEgresosPage({
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl">Ingresos y egresos</h1>
+          <p className="text-sm text-muted-foreground">
+            Registra y consulta los movimientos internos de caja
+          </p>
         </div>
         <Link href="/ingresos-egresos/nuevo" className={buttonVariants()}>
           <Plus className="h-4 w-4" />

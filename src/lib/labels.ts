@@ -24,13 +24,13 @@ export const categoryLabels: Record<TxCategory, string> = {
   GASTO_TARJETA: "Tarjeta",
 };
 
-/** Clases Tailwind (badge) por categoría — paleta chart-1..5. */
+/** Clases Tailwind (badge) por categoría — mismo tono para todas (chart-1). */
 export const categoryBadge: Record<TxCategory, string> = {
   DEPOSITO: "bg-chart-1/15 text-chart-1",
-  TRANSFERENCIA: "bg-chart-2/15 text-chart-2",
-  COMISION: "bg-chart-3/15 text-chart-3",
-  CHEQUE: "bg-chart-4/15 text-chart-4",
-  GASTO_TARJETA: "bg-chart-5/15 text-chart-5",
+  TRANSFERENCIA: "bg-chart-1/15 text-chart-1",
+  COMISION: "bg-chart-1/15 text-chart-1",
+  CHEQUE: "bg-chart-1/15 text-chart-1",
+  GASTO_TARJETA: "bg-chart-1/15 text-chart-1",
 };
 
 /** Color sólido por categoría, para barras y gráficas (mismo tono que el badge). */

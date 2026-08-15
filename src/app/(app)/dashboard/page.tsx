@@ -136,7 +136,7 @@ function CategoryBreakdown({
           <div className="mb-1 flex items-center justify-between text-sm">
             <CategoryBadge category={i.category} />
             <span className="tabular-nums text-muted-foreground">
-              {formatMXN(i.total)}{" "}
+              <span className="font-semibold">{formatMXN(i.total)}</span>{" "}
               <span className="text-xs">({i.count})</span>
             </span>
           </div>

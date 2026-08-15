@@ -58,6 +58,18 @@ body {
   font-family: var(--font-display);
 }
 
+/* El h1 de cada página (título Prata) se ve más grande que el resto de
+   los elementos text-xl (p.ej. el h2 de detalle o el logo). */
+h1.text-xl {
+  font-size: 1.75rem;
+}
+
+/* El h2 de detalle (p.ej. "Corte #1120 · 27 jul 2026") no usa Prata,
+   sólo el h1 de cada página. */
+h2.text-xl {
+  font-family: var(--font-sans);
+}
+
 /* Utilidades de composición reutilizables.
    En Tailwind v4 @apply sólo admite utilidades reales, no otras clases de
    @layer components, por eso las variantes de botón repiten la base. */
