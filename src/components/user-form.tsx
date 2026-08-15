@@ -8,6 +8,7 @@ import type { UserRole } from "@/generated/prisma/enums";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const ROLES: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR", "CONTADOR_EXTERNO", "COMPRAS", "CAJERO"];
 
@@ -94,7 +95,7 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
         {mode === "edit" && (
           <div className="flex items-end pb-1.5">
             <label className="flex items-center gap-2 text-sm font-medium">
-              <input type="checkbox" name="active" defaultChecked={initial?.active} className="h-4 w-4 rounded border-border" />
+              <Checkbox name="active" defaultChecked={initial?.active} />
               Usuario activo
             </label>
           </div>
@@ -107,13 +108,11 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
           <div className="grid gap-2 sm:grid-cols-2">
             {venues.map((v) => (
               <label key={v.id} className="flex min-w-0 items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm">
-                <input
-                  type="checkbox"
+                <Checkbox
                   name="venueIds"
                   value={v.id}
                   checked={venueIds.has(v.id)}
-                  onChange={() => toggleVenue(v.id)}
-                  className="h-4 w-4 rounded border-border"
+                  onCheckedChange={() => toggleVenue(v.id)}
                 />
                 {v.name}
               </label>
