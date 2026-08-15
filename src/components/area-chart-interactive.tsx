@@ -96,7 +96,7 @@ export function AreaChartInteractive({ data }: { data: DailyTotal[] }) {
                         />
                         {chartConfig[name as keyof typeof chartConfig]?.label ?? name}
                       </span>
-                      <span className="font-mono font-medium tabular-nums text-foreground">
+                      <span className="font-sans font-medium tabular-nums text-foreground">
                         {formatMXN(Number(value))}
                       </span>
                     </div>
