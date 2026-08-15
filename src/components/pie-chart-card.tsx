@@ -96,7 +96,7 @@ export function PieChartCard({ items, colors = COLORS }: { items: PieChartItem[]
             <span className="h-3 w-3 shrink-0 rounded-sm" style={{ backgroundColor: d.fill }} />
             <span className="flex-1">{d.label}</span>
             <span className="tabular-nums text-muted-foreground">
-              {formatMXN(d.value)} · {Math.round((d.value / total) * 100)}%
+              <span className="font-semibold">{formatMXN(d.value)}</span> · {Math.round((d.value / total) * 100)}%
             </span>
           </li>
         ))}
