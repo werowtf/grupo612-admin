@@ -60,7 +60,7 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
           <Select name="bankAccountId" required defaultValue={accounts[0]?.id}>
             <SelectTrigger
               id="bankAccountId"
-              className="h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50"
+              className="h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50"
             >
               <SelectValue />
             </SelectTrigger>

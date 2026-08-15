@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, X } from "lucide-react";
+import { Search, X, ArrowDownToLine, ArrowLeftRight, Banknote, Percent, CreditCard } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { getVenueTransactions, getCategoryTotals, type TxFilters } from "@/lib/queries";
 import { TransactionsTable } from "@/components/transactions-table";
@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const FILTER_TRIGGER_CLASS =
-  "h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50";
+  "h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50";
 import type {
   TxCategory,
   TxDirection,
@@ -28,6 +28,14 @@ const CATEGORIES: TxCategory[] = [
   "GASTO_TARJETA",
 ];
 const STATUSES: TxStatus[] = ["PENDIENTE", "CONCILIADO", "IGNORADO"];
+
+const CATEGORY_ICONS: Record<TxCategory, React.ReactNode> = {
+  DEPOSITO: <ArrowDownToLine className="h-4 w-4" />,
+  TRANSFERENCIA: <ArrowLeftRight className="h-4 w-4" />,
+  CHEQUE: <Banknote className="h-4 w-4" />,
+  COMISION: <Percent className="h-4 w-4" />,
+  GASTO_TARJETA: <CreditCard className="h-4 w-4" />,
+};
 
 function pick<T extends string>(value: string | undefined, allowed: readonly T[]): T | undefined {
   return value && (allowed as readonly string[]).includes(value) ? (value as T) : undefined;
@@ -84,6 +92,7 @@ export default async function MovimientosPage({
             label={categoryLabels[c]}
             value={formatMXN(categoryTotals[c])}
             tone={c === "DEPOSITO" ? "positive" : "negative"}
+            icon={CATEGORY_ICONS[c]}
           />
         ))}
       </div>

@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const FILTER_TRIGGER_CLASS =
-  "h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50";
+  "h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50";
 
 const ALL_CATEGORIES = [...new Set([...EGRESO_CATEGORIES, ...INGRESO_CATEGORIES])];
 

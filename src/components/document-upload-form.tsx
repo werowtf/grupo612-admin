@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const FIELD_TRIGGER_CLASS = "h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50";
+const FIELD_TRIGGER_CLASS = "h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50";
 
 interface Props {
   venues: { id: string; name: string }[];

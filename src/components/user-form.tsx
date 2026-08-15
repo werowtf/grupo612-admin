@@ -72,7 +72,7 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
           <Select name="role" value={role} onValueChange={(v) => setRole(v as UserRole)}>
             <SelectTrigger
               id="role"
-              className="h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50"
+              className="h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50"
             >
               <SelectValue />
             </SelectTrigger>
