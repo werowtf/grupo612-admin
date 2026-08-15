@@ -68,7 +68,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
                   onClick={() => onVenueChange(v.id)}
                   disabled={pending}
                   className={cn(
-                    "shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                    "shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-wait disabled:opacity-60",
                     v.id === selectedVenueId
                       ? "bg-brand-600 text-white"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
