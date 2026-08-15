@@ -130,7 +130,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                     onValueChange={(value) => onStatus(r.id, value)}
                     disabled={pending}
                   >
-                    <SelectTrigger className="border border-border bg-card px-2 py-1 text-xs text-foreground hover:bg-muted/50">
+                    <SelectTrigger className="border border-transparent bg-field-bg px-2 py-1 text-xs text-foreground hover:bg-muted/50">
                       <SelectValue>{statusLabels[r.status]}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
