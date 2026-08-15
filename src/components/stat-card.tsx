@@ -5,7 +5,7 @@ interface Props {
   value: string;
   hint?: string;
   icon?: React.ReactNode;
-  tone?: "default" | "positive" | "negative" | "warning";
+  tone?: "default" | "positive" | "negative" | "warning" | "pending";
 }
 
 const toneClass: Record<NonNullable<Props["tone"]>, string> = {
@@ -13,6 +13,7 @@ const toneClass: Record<NonNullable<Props["tone"]>, string> = {
   positive: "text-abono",
   negative: "text-cargo",
   warning: "text-orange-500",
+  pending: "text-pending",
 };
 
 export function StatCard({ label, value, hint, icon, tone = "default" }: Props) {

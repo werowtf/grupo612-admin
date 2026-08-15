@@ -68,7 +68,7 @@ export default async function DashboardPage() {
               label="Pendientes de conciliar"
               value={String(summary.pendientes)}
               hint={`${summary.count} movimientos en total`}
-              tone="warning"
+              tone="pending"
               icon={<Clock className="h-4 w-4" />}
             />
           </section>
