@@ -89,7 +89,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                   r.status === "PENDIENTE" && "bg-pending-bg hover:bg-pending-bg",
                 )}
               >
-                <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{formatDate(r.date)}</td>
+                <td className="whitespace-nowrap px-3 py-2 font-semibold text-muted-foreground">{formatDate(r.date)}</td>
                 <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{r.time || "—"}</td>
                 <td className="max-w-[320px] px-3 py-2">
                   <Tooltip>
@@ -111,7 +111,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                           hideIcon
                           title={r.autoCategorized ? "Clasificación automática" : "Ajustada manualmente"}
                           className={cn(
-                            "ml-auto justify-end border-0 bg-transparent px-1.5 py-1 text-sm font-medium hover:bg-muted",
+                            "ml-auto justify-end border-0 bg-transparent px-1.5 py-1 text-sm font-semibold hover:bg-muted",
                             r.direction === "CARGO" ? "text-cargo" : "text-abono",
                           )}
                         >

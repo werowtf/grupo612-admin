@@ -39,11 +39,11 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
             {rows.map((e) => {
               const isEgreso = e.type === "EGRESO";
               const dateCell = hrefBase ? (
-                <Link href={`${hrefBase}/${e.id}`} className="font-medium text-brand-700 hover:underline">
+                <Link href={`${hrefBase}/${e.id}`} className="font-semibold text-brand-700 hover:underline">
                   {formatDate(e.date)}
                 </Link>
               ) : (
-                <span className="font-medium">{formatDate(e.date)}</span>
+                <span className="font-semibold">{formatDate(e.date)}</span>
               );
               return (
                 <tr key={e.id} className="hover:bg-muted/60">
