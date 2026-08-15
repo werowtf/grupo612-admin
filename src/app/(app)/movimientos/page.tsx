@@ -75,7 +75,12 @@ export default async function MovimientosPage({
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {CATEGORIES.map((c) => (
-          <StatCard key={c} label={categoryLabels[c]} value={formatMXN(categoryTotals[c])} />
+          <StatCard
+            key={c}
+            label={categoryLabels[c]}
+            value={formatMXN(categoryTotals[c])}
+            tone={c === "DEPOSITO" ? "positive" : "negative"}
+          />
         ))}
       </div>
 
