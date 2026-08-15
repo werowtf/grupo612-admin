@@ -11,6 +11,7 @@ import { bankLabels } from "@/lib/labels";
 import { formatMXN } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Bank } from "@/generated/prisma/enums";
 
 interface AccountOption {
@@ -56,13 +57,21 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
           <label className="label" htmlFor="bankAccountId">
             Cuenta bancaria
           </label>
-          <select id="bankAccountId" name="bankAccountId" required className="input">
-            {accounts.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.alias} · {bankLabels[a.bank]}
-              </option>
-            ))}
-          </select>
+          <Select name="bankAccountId" required defaultValue={accounts[0]?.id}>
+            <SelectTrigger
+              id="bankAccountId"
+              className="h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {accounts.map((a) => (
+                <SelectItem key={a.id} value={a.id}>
+                  {a.alias} · {bankLabels[a.bank]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div>

@@ -8,6 +8,10 @@ import { VenueTag } from "@/components/venue-tag";
 import type { DocumentCategory } from "@/generated/prisma/enums";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const FILTER_TRIGGER_CLASS =
+  "h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50";
 
 export default async function DocumentosPage({
   searchParams,
@@ -56,12 +60,17 @@ export default async function DocumentosPage({
         </div>
         <div>
           <label className="label" htmlFor="category">Categoría</label>
-          <select id="category" name="category" defaultValue={filters.category ?? ""} className="input">
-            <option value="">Todas</option>
-            {DOCUMENT_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{documentCategoryLabels[c]}</option>
-            ))}
-          </select>
+          <Select name="category" defaultValue={filters.category ?? "todas"}>
+            <SelectTrigger id="category" className={FILTER_TRIGGER_CLASS}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todas">Todas</SelectItem>
+              {DOCUMENT_CATEGORIES.map((c) => (
+                <SelectItem key={c} value={c}>{documentCategoryLabels[c]}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex gap-2">
           <Button type="submit">Filtrar</Button>

@@ -7,6 +7,7 @@ import { roleLabels } from "@/lib/labels";
 import type { UserRole } from "@/generated/prisma/enums";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const ROLES: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR", "CONTADOR_EXTERNO", "COMPRAS", "CAJERO"];
 
@@ -68,17 +69,19 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
 
         <div>
           <label className="label" htmlFor="role">Rol</label>
-          <select
-            id="role"
-            name="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value as UserRole)}
-            className="input"
-          >
-            {ROLES.map((r) => (
-              <option key={r} value={r}>{roleLabels[r]}</option>
-            ))}
-          </select>
+          <Select name="role" value={role} onValueChange={(v) => setRole(v as UserRole)}>
+            <SelectTrigger
+              id="role"
+              className="h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ROLES.map((r) => (
+                <SelectItem key={r} value={r}>{roleLabels[r]}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {mode === "create" && (

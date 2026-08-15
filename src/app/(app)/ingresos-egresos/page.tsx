@@ -10,6 +10,10 @@ import { VenueTag } from "@/components/venue-tag";
 import type { EntryType } from "@/generated/prisma/enums";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const FILTER_TRIGGER_CLASS =
+  "h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50";
 
 const ALL_CATEGORIES = [...new Set([...EGRESO_CATEGORIES, ...INGRESO_CATEGORIES])];
 
@@ -31,7 +35,7 @@ export default async function IngresosEgresosPage({
 
   const filters: EntryFilters = {
     type: sp.type === "INGRESO" || sp.type === "EGRESO" ? (sp.type as EntryType) : undefined,
-    category: sp.category?.trim() || undefined,
+    category: sp.category && sp.category !== "todas" ? sp.category.trim() || undefined : undefined,
     search: sp.search?.trim() || undefined,
     take: 300,
   };
@@ -68,20 +72,30 @@ export default async function IngresosEgresosPage({
         </div>
         <div>
           <label className="label" htmlFor="type">Tipo</label>
-          <select id="type" name="type" defaultValue={filters.type ?? ""} className="input">
-            <option value="">Todos</option>
-            <option value="EGRESO">Egresos</option>
-            <option value="INGRESO">Ingresos</option>
-          </select>
+          <Select name="type" defaultValue={filters.type ?? "todos"}>
+            <SelectTrigger id="type" className={FILTER_TRIGGER_CLASS}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              <SelectItem value="EGRESO">Egresos</SelectItem>
+              <SelectItem value="INGRESO">Ingresos</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <label className="label" htmlFor="category">Categoría</label>
-          <select id="category" name="category" defaultValue={filters.category ?? ""} className="input">
-            <option value="">Todas</option>
-            {ALL_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+          <Select name="category" defaultValue={filters.category ?? "todas"}>
+            <SelectTrigger id="category" className={FILTER_TRIGGER_CLASS}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todas">Todas</SelectItem>
+              {ALL_CATEGORIES.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex gap-2">
           <Button type="submit">Filtrar</Button>

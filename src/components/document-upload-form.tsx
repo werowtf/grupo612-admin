@@ -6,6 +6,9 @@ import { uploadDocumentAction, type DocumentFormState } from "@/app/(app)/docume
 import { DOCUMENT_CATEGORIES, documentCategoryLabels } from "@/lib/labels";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const FIELD_TRIGGER_CLASS = "h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50";
 
 interface Props {
   venues: { id: string; name: string }[];
@@ -46,11 +49,16 @@ export function DocumentUploadForm({
         {venues.length > 1 ? (
           <div>
             <label className="label" htmlFor="venueId">Negocio</label>
-            <select id="venueId" name="venueId" defaultValue={defaultVenueId} className="input">
-              {venues.map((v) => (
-                <option key={v.id} value={v.id}>{v.name}</option>
-              ))}
-            </select>
+            <Select name="venueId" defaultValue={defaultVenueId}>
+              <SelectTrigger id="venueId" className={FIELD_TRIGGER_CLASS}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {venues.map((v) => (
+                  <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         ) : (
           <input type="hidden" name="venueId" value={defaultVenueId} />
@@ -58,11 +66,16 @@ export function DocumentUploadForm({
 
         <div>
           <label className="label" htmlFor="category">Categoría</label>
-          <select id="category" name="category" defaultValue="OTRO" className="input">
-            {DOCUMENT_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{documentCategoryLabels[c]}</option>
-            ))}
-          </select>
+          <Select name="category" defaultValue="OTRO">
+            <SelectTrigger id="category" className={FIELD_TRIGGER_CLASS}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {DOCUMENT_CATEGORIES.map((c) => (
+                <SelectItem key={c} value={c}>{documentCategoryLabels[c]}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="sm:col-span-2">

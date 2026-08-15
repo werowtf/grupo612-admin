@@ -10,6 +10,10 @@ import { formatMXN } from "@/lib/utils";
 import { VenueTag } from "@/components/venue-tag";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const FILTER_TRIGGER_CLASS =
+  "h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50";
 import type {
   TxCategory,
   TxDirection,
@@ -105,39 +109,54 @@ export default async function MovimientosPage({
           <label className="label" htmlFor="category">
             Categoría
           </label>
-          <select id="category" name="category" defaultValue={filters.category ?? ""} className="input">
-            <option value="">Todas</option>
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {categoryLabels[c]}
-              </option>
-            ))}
-          </select>
+          <Select name="category" defaultValue={filters.category ?? "todas"}>
+            <SelectTrigger id="category" className={FILTER_TRIGGER_CLASS}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todas">Todas</SelectItem>
+              {CATEGORIES.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {categoryLabels[c]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div>
           <label className="label" htmlFor="direction">
             Tipo
           </label>
-          <select id="direction" name="direction" defaultValue={filters.direction ?? ""} className="input">
-            <option value="">Todos</option>
-            <option value="ABONO">Abonos</option>
-            <option value="CARGO">Cargos</option>
-          </select>
+          <Select name="direction" defaultValue={filters.direction ?? "todos"}>
+            <SelectTrigger id="direction" className={FILTER_TRIGGER_CLASS}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              <SelectItem value="ABONO">Abonos</SelectItem>
+              <SelectItem value="CARGO">Cargos</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div>
           <label className="label" htmlFor="status">
             Estatus
           </label>
-          <select id="status" name="status" defaultValue={filters.status ?? ""} className="input">
-            <option value="">Todos</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {statusLabels[s]}
-              </option>
-            ))}
-          </select>
+          <Select name="status" defaultValue={filters.status ?? "todos"}>
+            <SelectTrigger id="status" className={FILTER_TRIGGER_CLASS}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              {STATUSES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {statusLabels[s]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex gap-2">

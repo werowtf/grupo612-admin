@@ -10,6 +10,9 @@ import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const FIELD_TRIGGER_CLASS = "h-8 w-full border-input bg-transparent font-normal text-foreground hover:bg-muted/50";
 
 type Values = Record<string, string>;
 
@@ -255,18 +258,18 @@ export function EntryForm({
             <label className="label" htmlFor="venueId">
               Negocio
             </label>
-            <select
-              id="venueId"
-              name="venueId"
-              defaultValue={initialValues?.venueId ?? defaultVenueId}
-              className="input"
-            >
-              {venues.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name}
-                </option>
-              ))}
-            </select>
+            <Select name="venueId" defaultValue={initialValues?.venueId ?? defaultVenueId}>
+              <SelectTrigger id="venueId" className={FIELD_TRIGGER_CLASS}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {venues.map((v) => (
+                  <SelectItem key={v.id} value={v.id}>
+                    {v.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         ) : (
           <input type="hidden" name="venueId" value={defaultVenueId} />
@@ -279,39 +282,44 @@ export function EntryForm({
           <label className="label" htmlFor="category">
             Categoría
           </label>
-          <select
-            id="category"
+          <Select
             name="category"
-            value={values.category ?? ""}
-            onChange={(e) => set("category", e.target.value)}
-            className="input"
+            value={values.category || undefined}
+            onValueChange={(v) => set("category", v)}
           >
-            <option value="">Selecciona…</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger id="category" className={FIELD_TRIGGER_CLASS}>
+              <SelectValue placeholder="Selecciona…" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div>
           <label className="label" htmlFor="paymentMethod">
             Forma de pago
           </label>
-          <select
-            id="paymentMethod"
+          <Select
             name="paymentMethod"
             value={values.paymentMethod ?? "EFECTIVO"}
-            onChange={(e) => set("paymentMethod", e.target.value)}
-            className="input"
+            onValueChange={(v) => set("paymentMethod", v)}
           >
-            {PAYMENT_METHODS.map((m) => (
-              <option key={m} value={m}>
-                {paymentLabels[m]}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger id="paymentMethod" className={FIELD_TRIGGER_CLASS}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PAYMENT_METHODS.map((m) => (
+                <SelectItem key={m} value={m}>
+                  {paymentLabels[m]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {field("supplier", type === "INGRESO" ? "Origen / cliente" : "Proveedor")}
