@@ -16,7 +16,7 @@ export default async function PortalLayout({
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
+      <header className="border-b border-border bg-card">
         <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <Logo className="h-8 w-auto" />
@@ -31,7 +31,7 @@ export default async function PortalLayout({
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-muted/50 hover:text-[var(--color-fg)]"
+                className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               >
                 <LogOut className="h-4 w-4" />
                 Salir

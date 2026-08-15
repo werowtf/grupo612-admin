@@ -102,7 +102,7 @@ export function Donut({ items, size = 160 }: { items: ChartItem[]; size?: number
             />
           ))}
         </g>
-        <text x={cx} y={cx - 4} textAnchor="middle" className="fill-[var(--color-fg)] text-sm font-semibold">
+        <text x={cx} y={cx - 4} textAnchor="middle" className="fill-foreground text-sm font-semibold">
           {formatMXN(total)}
         </text>
         <text x={cx} y={cx + 14} textAnchor="middle" className="fill-muted-foreground text-[10px]">

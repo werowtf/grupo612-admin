@@ -81,7 +81,7 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
       </div>
 
       {state.error && (
-        <p className="flex items-start gap-2 rounded-lg bg-[var(--color-danger-bg)] px-3 py-2 text-sm text-[var(--color-danger)]">
+        <p className="flex items-start gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
           {state.error}
         </p>

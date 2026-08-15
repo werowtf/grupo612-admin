@@ -61,7 +61,7 @@ export default async function CortesPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-sm">
               <thead>
-                <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <tr className="border-b border-border bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-3 py-2 font-medium">Fecha</th>
                   <th className="px-3 py-2 font-medium">Turno</th>
                   <th className="px-3 py-2 font-medium">Folio Z</th>
@@ -71,7 +71,7 @@ export default async function CortesPage() {
                   <th className="px-3 py-2 font-medium">Origen</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--color-border)]">
+              <tbody className="divide-y divide-border">
                 {cortes.map((c) => {
                   const sf = Number(c.sobranteFaltante.toString());
                   return (
@@ -85,7 +85,7 @@ export default async function CortesPage() {
                       <td className="px-3 py-2 text-muted-foreground">{c.folioCorteZ ?? "—"}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(c.totalVenta)}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(c.totalPropinas)}</td>
-                      <td className={`px-3 py-2 text-right tabular-nums ${sf < 0 ? "text-[var(--color-danger)]" : sf > 0 ? "text-brand-600" : "text-muted-foreground"}`}>
+                      <td className={`px-3 py-2 text-right tabular-nums ${sf < 0 ? "text-danger" : sf > 0 ? "text-brand-600" : "text-muted-foreground"}`}>
                         {formatMXN(sf)}
                       </td>
                       <td className="px-3 py-2">

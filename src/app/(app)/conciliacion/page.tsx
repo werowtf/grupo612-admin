@@ -50,7 +50,7 @@ export default async function ConciliacionPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
-                  <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr className="border-b border-border bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
                     <th className="px-3 py-2 font-medium">Archivo</th>
                     <th className="px-3 py-2 font-medium">Banco</th>
                     <th className="px-3 py-2 font-medium">Periodo</th>
@@ -60,7 +60,7 @@ export default async function ConciliacionPage() {
                     <th className="px-3 py-2 font-medium">Importado</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--color-border)]">
+                <tbody className="divide-y divide-border">
                   {statements.map((s) => (
                     <tr key={s.id} className="hover:bg-muted/60">
                       <td className="max-w-[240px] px-3 py-2">
@@ -83,7 +83,7 @@ export default async function ConciliacionPage() {
                       <td className="px-3 py-2 text-right tabular-nums text-brand-600">
                         {formatMXN(s.totalAbonos)}
                       </td>
-                      <td className="px-3 py-2 text-right tabular-nums text-[var(--color-danger)]">
+                      <td className="px-3 py-2 text-right tabular-nums text-danger">
                         {formatMXN(s.totalCargos)}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">

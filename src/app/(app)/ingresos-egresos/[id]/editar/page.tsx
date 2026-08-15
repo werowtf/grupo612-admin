@@ -41,7 +41,7 @@ export default async function EditarMovimientoPage({
   return (
     <div className="space-y-6">
       <div>
-        <Link href={`/ingresos-egresos/${entry.id}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]">
+        <Link href={`/ingresos-egresos/${entry.id}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
           Volver al movimiento
         </Link>

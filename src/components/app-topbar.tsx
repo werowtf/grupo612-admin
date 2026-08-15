@@ -47,7 +47,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
   }
 
   return (
-    <header className="flex h-14 items-center justify-between gap-4 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 print:hidden">
+    <header className="flex h-14 items-center justify-between gap-4 border-b border-border bg-card px-4 print:hidden">
       <div className="flex items-center gap-2">
         <button
           type="button"

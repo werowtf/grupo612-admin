@@ -42,7 +42,7 @@ export default async function EntryDetailPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href="/ingresos-egresos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]">
+          <Link href="/ingresos-egresos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
             Ingresos y egresos
           </Link>
@@ -62,14 +62,14 @@ export default async function EntryDetailPage({
         </div>
       </div>
 
-      <div className={`text-3xl font-semibold tabular-nums ${isEgreso ? "text-[var(--color-danger)]" : "text-brand-600"}`}>
+      <div className={`text-3xl font-semibold tabular-nums ${isEgreso ? "text-danger" : "text-brand-600"}`}>
         {isEgreso ? "−" : "+"}
         {formatMXN(entry.amount)}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="card p-5">
-          <dl className="divide-y divide-[var(--color-border)]">
+          <dl className="divide-y divide-border">
             {rows.map(([k, v]) => (
               <div key={k} className="flex items-center justify-between py-1.5 text-sm">
                 <dt className="text-muted-foreground">{k}</dt>
@@ -78,7 +78,7 @@ export default async function EntryDetailPage({
             ))}
           </dl>
           {entry.description && (
-            <p className="mt-3 border-t border-[var(--color-border)] pt-3 text-sm">
+            <p className="mt-3 border-t border-border pt-3 text-sm">
               {entry.description}
             </p>
           )}
@@ -96,7 +96,7 @@ export default async function EntryDetailPage({
             <img
               src={`/api/entries/${entry.id}/photo`}
               alt="Ticket de compra"
-              className="max-h-[480px] w-full rounded-lg border border-[var(--color-border)] object-contain"
+              className="max-h-[480px] w-full rounded-lg border border-border object-contain"
             />
           </div>
         )}

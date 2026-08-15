@@ -120,14 +120,14 @@ export default async function BitacoraPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <tr className="border-b border-border bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="px-3 py-2 font-medium">Fecha</th>
                 <th className="px-3 py-2 font-medium">Usuario</th>
                 <th className="px-3 py-2 font-medium">Acción</th>
                 <th className="px-3 py-2 font-medium">Detalle</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--color-border)]">
+            <tbody className="divide-y divide-border">
               {logs.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-3 py-8 text-center text-muted-foreground">

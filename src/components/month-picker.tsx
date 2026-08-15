@@ -40,7 +40,7 @@ export function MonthPicker({ name, defaultValue }: Props) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-sm outline-none focus:border-brand-500"
+          className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-sm outline-none focus:border-brand-500"
         >
           <CalendarIcon className="h-4 w-4 text-muted-foreground" />
           {label}
@@ -82,7 +82,7 @@ export function MonthPicker({ name, defaultValue }: Props) {
                   "rounded-md px-2 py-1.5 text-sm",
                   active
                     ? "bg-brand-500 font-medium text-white"
-                    : "text-[var(--color-fg)] hover:bg-brand-50",
+                    : "text-foreground hover:bg-brand-50",
                 )}
               >
                 {m}

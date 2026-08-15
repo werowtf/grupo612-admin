@@ -91,7 +91,7 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
         {mode === "edit" && (
           <div className="flex items-end pb-1.5">
             <label className="flex items-center gap-2 text-sm font-medium">
-              <input type="checkbox" name="active" defaultChecked={initial?.active} className="h-4 w-4 rounded border-[var(--color-border)]" />
+              <input type="checkbox" name="active" defaultChecked={initial?.active} className="h-4 w-4 rounded border-border" />
               Usuario activo
             </label>
           </div>
@@ -103,14 +103,14 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
           <label className="label">Negocios con acceso</label>
           <div className="grid gap-2 sm:grid-cols-2">
             {venues.map((v) => (
-              <label key={v.id} className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm">
+              <label key={v.id} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm">
                 <input
                   type="checkbox"
                   name="venueIds"
                   value={v.id}
                   checked={venueIds.has(v.id)}
                   onChange={() => toggleVenue(v.id)}
-                  className="h-4 w-4 rounded border-[var(--color-border)]"
+                  className="h-4 w-4 rounded border-border"
                 />
                 {v.name}
               </label>
@@ -125,7 +125,7 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
       )}
 
       {state.error && (
-        <p className="flex items-center gap-2 rounded-lg bg-[var(--color-danger-bg)] px-3 py-2 text-sm text-[var(--color-danger)]">
+        <p className="flex items-center gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
           <AlertCircle className="h-4 w-4" />
           {state.error}
         </p>

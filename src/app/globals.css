@@ -54,7 +54,7 @@ body {
    @layer components, por eso las variantes de botón repiten la base. */
 @layer components {
   .card {
-    @apply rounded-xl bg-[var(--color-surface)];
+    @apply rounded-xl bg-card;
     box-shadow:
       0 0px 23px -3px var(--tw-shadow-color, #0000001a),
       0 0px 6px -4px var(--tw-shadow-color, #0000001a);
@@ -66,13 +66,13 @@ body {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-brand-500 text-white hover:bg-brand-700;
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-fg)] hover:bg-muted;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-border bg-card text-foreground hover:bg-muted;
   }
   .input {
-    @apply w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
+    @apply w-full rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
   }
   .label {
-    @apply mb-1 block text-sm font-medium text-[var(--color-fg)];
+    @apply mb-1 block text-sm font-medium text-foreground;
   }
   .logo {
     @apply h-12 w-auto;

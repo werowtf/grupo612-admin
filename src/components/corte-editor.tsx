@@ -263,7 +263,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                 "flex items-start gap-2 rounded-lg px-3 py-2 text-sm",
                 procMsg.ok
                   ? "bg-brand-50 text-brand-700"
-                  : "bg-[var(--color-danger-bg)] text-[var(--color-danger)]",
+                  : "bg-danger-bg text-danger",
               )}
             >
               {procMsg.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
@@ -327,7 +327,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
         </div>
 
         {saveState.error && (
-          <p className="flex items-center gap-2 rounded-lg bg-[var(--color-danger-bg)] px-3 py-2 text-sm text-[var(--color-danger)]">
+          <p className="flex items-center gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
             <AlertCircle className="h-4 w-4" />
             {saveState.error}
           </p>

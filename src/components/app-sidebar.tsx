@@ -98,12 +98,12 @@ export function AppSidebar({ role, mobileOpen = false, onCloseMobile }: Props) {
   return (
     <>
       {/* Escritorio: fija en el layout */}
-      <aside className="hidden w-60 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-surface)] md:flex md:flex-col print:hidden">
-        <div className="flex h-14 items-center justify-center border-b border-[var(--color-border)] px-4">
+      <aside className="hidden w-60 shrink-0 border-r border-border bg-card md:flex md:flex-col print:hidden">
+        <div className="flex h-14 items-center justify-center border-b border-border px-4">
           <Logo className="h-9 w-auto" />
         </div>
         <NavLinks role={role} />
-        <div className="border-t border-[var(--color-border)] p-3 text-[11px] text-muted-foreground">
+        <div className="border-t border-border p-3 text-[11px] text-muted-foreground">
           Grupo612 Admin v0.1
         </div>
       </aside>
@@ -116,8 +116,8 @@ export function AppSidebar({ role, mobileOpen = false, onCloseMobile }: Props) {
             onClick={onCloseMobile}
             aria-hidden="true"
           />
-          <aside className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-[var(--color-surface)] shadow-xl">
-            <div className="flex h-14 items-center justify-between border-b border-[var(--color-border)] px-4">
+          <aside className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-card shadow-xl">
+            <div className="flex h-14 items-center justify-between border-b border-border px-4">
               <Logo className="h-9 w-auto" />
               <button
                 type="button"
@@ -129,7 +129,7 @@ export function AppSidebar({ role, mobileOpen = false, onCloseMobile }: Props) {
               </button>
             </div>
             <NavLinks role={role} onNavigate={onCloseMobile} />
-            <div className="border-t border-[var(--color-border)] p-3 text-[11px] text-muted-foreground">
+            <div className="border-t border-border p-3 text-[11px] text-muted-foreground">
               Grupo612 Admin v0.1
             </div>
           </aside>

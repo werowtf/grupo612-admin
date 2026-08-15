@@ -138,17 +138,17 @@ export default async function ReportesPage({
       <section className="card p-5">
         <h2 className="mb-4 text-base font-semibold">Conciliación de ventas con tarjeta</h2>
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border border-[var(--color-border)] p-3">
+          <div className="rounded-lg border border-border p-3">
             <div className="text-xs text-muted-foreground">Tarjeta esperada (cortes)</div>
             <div className="mt-0.5 text-lg font-semibold tabular-nums">{formatMXN(report.conciliacion.tarjetaEsperada)}</div>
           </div>
-          <div className="rounded-lg border border-[var(--color-border)] p-3">
+          <div className="rounded-lg border border-border p-3">
             <div className="text-xs text-muted-foreground">Depositado en banco</div>
             <div className="mt-0.5 text-lg font-semibold tabular-nums text-brand-600">{formatMXN(report.conciliacion.depositado)}</div>
           </div>
-          <div className="rounded-lg border border-[var(--color-border)] p-3">
+          <div className="rounded-lg border border-border p-3">
             <div className="text-xs text-muted-foreground">Diferencia (≈ comisión)</div>
-            <div className="mt-0.5 text-lg font-semibold tabular-nums text-[var(--color-warning)]">
+            <div className="mt-0.5 text-lg font-semibold tabular-nums text-warning">
               {formatMXN(report.conciliacion.tarjetaEsperada - report.conciliacion.depositado)}
             </div>
           </div>

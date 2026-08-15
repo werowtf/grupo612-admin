@@ -9,9 +9,9 @@ interface Props {
 }
 
 const toneClass: Record<NonNullable<Props["tone"]>, string> = {
-  default: "text-[var(--color-fg)]",
+  default: "text-foreground",
   positive: "text-brand-600",
-  negative: "text-[var(--color-danger)]",
+  negative: "text-danger",
   warning: "text-orange-500",
 };
 

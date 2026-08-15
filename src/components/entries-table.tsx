@@ -24,7 +24,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
-            <tr className="border-b border-[var(--color-border)] bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
+            <tr className="border-b border-border bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <th className="px-3 py-2 font-medium">Fecha</th>
               <th className="px-3 py-2 font-medium">Tipo</th>
               <th className="px-3 py-2 font-medium">Categoría</th>
@@ -34,7 +34,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
               <th className="px-3 py-2 font-medium"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--color-border)]">
+          <tbody className="divide-y divide-border">
             {rows.map((e) => {
               const isEgreso = e.type === "EGRESO";
               const dateCell = hrefBase ? (
@@ -61,7 +61,7 @@ export function EntriesTable({ rows, hrefBase, emptyText }: Props) {
                     <span className="line-clamp-1">{e.supplier ?? "—"}</span>
                   </td>
                   <td className="px-3 py-2 text-muted-foreground">{paymentLabels[e.paymentMethod]}</td>
-                  <td className={`px-3 py-2 text-right tabular-nums font-medium ${isEgreso ? "text-[var(--color-danger)]" : "text-brand-600"}`}>
+                  <td className={`px-3 py-2 text-right tabular-nums font-medium ${isEgreso ? "text-danger" : "text-brand-600"}`}>
                     {isEgreso ? "−" : "+"}
                     {formatMXN(e.amount)}
                   </td>

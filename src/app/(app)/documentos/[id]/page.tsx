@@ -38,7 +38,7 @@ export default async function DocumentDetailPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href="/documentos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]">
+          <Link href="/documentos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
             Documentos
           </Link>
@@ -58,18 +58,18 @@ export default async function DocumentDetailPage({
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="card p-5">
-          <dl className="divide-y divide-[var(--color-border)] text-sm">
+          <dl className="divide-y divide-border text-sm">
             <Row k="Archivo" v={doc.fileName} />
             <Row k="Tamaño" v={formatFileSize(doc.size)} />
             <Row k="Subido" v={formatDate(doc.createdAt)} />
             {doc.tags && <Row k="Etiquetas" v={doc.tags} />}
           </dl>
           {doc.notes && (
-            <p className="mt-3 border-t border-[var(--color-border)] pt-3 text-sm">{doc.notes}</p>
+            <p className="mt-3 border-t border-border pt-3 text-sm">{doc.notes}</p>
           )}
 
           {(doc.corte || doc.entry || doc.bankTransaction) && (
-            <div className="mt-4 border-t border-[var(--color-border)] pt-3">
+            <div className="mt-4 border-t border-border pt-3">
               <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <Link2 className="h-3.5 w-3.5" />
                 Vinculado a
@@ -99,9 +99,9 @@ export default async function DocumentDetailPage({
           </h2>
           {doc.mime.startsWith("image/") ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={fileUrl} alt={doc.title} className="max-h-[480px] w-full rounded-lg border border-[var(--color-border)] object-contain" />
+            <img src={fileUrl} alt={doc.title} className="max-h-[480px] w-full rounded-lg border border-border object-contain" />
           ) : doc.mime === "application/pdf" ? (
-            <iframe src={fileUrl} title={doc.title} className="h-[480px] w-full rounded-lg border border-[var(--color-border)]" />
+            <iframe src={fileUrl} title={doc.title} className="h-[480px] w-full rounded-lg border border-border" />
           ) : (
             <p className="text-sm text-muted-foreground">
               Vista previa no disponible para este tipo de archivo. Usa &quot;Descargar&quot;.

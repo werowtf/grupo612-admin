@@ -88,7 +88,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
       {linked.length > 0 && (
         <div>
           <h3 className="mb-2 text-sm font-medium">Depósitos vinculados</h3>
-          <ul className="divide-y divide-[var(--color-border)] rounded-lg border border-[var(--color-border)]">
+          <ul className="divide-y divide-border rounded-lg border border-border">
             {linked.map((d) => (
               <li key={d.id} className="flex items-center justify-between gap-3 px-3 py-2 text-sm">
                 <div className="min-w-0">
@@ -105,7 +105,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
                     type="button"
                     onClick={() => run(() => unlinkDepositAction(d.id))}
                     disabled={pending}
-                    className="text-muted-foreground hover:text-[var(--color-danger)]"
+                    className="text-muted-foreground hover:text-danger"
                     title="Desvincular"
                   >
                     <Unlink className="h-4 w-4" />
@@ -130,7 +130,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
             No hay depósitos sin conciliar en el rango de fechas del corte.
           </p>
         ) : (
-          <ul className="divide-y divide-[var(--color-border)] rounded-lg border border-[var(--color-border)]">
+          <ul className="divide-y divide-border rounded-lg border border-border">
             {suggestions.slice(0, 8).map((d) => {
               const close = Math.abs(d.amount - (cardTotal - linkedTotal)) < Math.max(cardTotal * 0.03, 50);
               return (
@@ -149,7 +149,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
                       type="button"
                       onClick={() => run(() => linkDepositAction(corteId, d.id))}
                       disabled={pending}
-                      className="inline-flex items-center gap-1 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-medium hover:bg-brand-50 hover:text-brand-700"
+                      className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs font-medium hover:bg-brand-50 hover:text-brand-700"
                     >
                       <Link2 className="h-3.5 w-3.5" />
                       Vincular
@@ -182,13 +182,13 @@ function Summary({
   hint?: string;
 }) {
   const toneClass = {
-    default: "text-[var(--color-fg)]",
+    default: "text-foreground",
     ok: "text-brand-600",
-    pending: "text-[var(--color-warning)]",
-    warn: "text-[var(--color-danger)]",
+    pending: "text-warning",
+    warn: "text-danger",
   }[tone];
   return (
-    <div className="rounded-lg border border-[var(--color-border)] p-3">
+    <div className="rounded-lg border border-border p-3">
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className={cn("mt-0.5 text-lg font-semibold tabular-nums", toneClass)}>{value}</div>
       {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}

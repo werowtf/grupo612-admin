@@ -44,7 +44,7 @@ export default async function EditarCortePage({
       <div>
         <Link
           href={`/cortes/${corte.id}`}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           Volver al corte

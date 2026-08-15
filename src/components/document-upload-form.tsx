@@ -101,7 +101,7 @@ export function DocumentUploadForm({
       </div>
 
       {state.error && (
-        <p className="flex items-center gap-2 rounded-lg bg-[var(--color-danger-bg)] px-3 py-2 text-sm text-[var(--color-danger)]">
+        <p className="flex items-center gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
           <AlertCircle className="h-4 w-4" />
           {state.error}
         </p>

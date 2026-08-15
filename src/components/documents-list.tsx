@@ -39,7 +39,7 @@ export function DocumentsList({ rows, emptyText }: { rows: DocRow[]; emptyText?:
               <div className="text-xs text-muted-foreground">{formatDate(d.createdAt)}</div>
             </div>
           </Link>
-          <div className="mt-3 flex items-center justify-between border-t border-[var(--color-border)] pt-2">
+          <div className="mt-3 flex items-center justify-between border-t border-border pt-2">
             <span className="truncate text-xs text-muted-foreground">{d.fileName}</span>
             <a
               href={`/api/documents/${d.id}/file?download=1`}

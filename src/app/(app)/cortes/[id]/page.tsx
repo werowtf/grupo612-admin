@@ -53,7 +53,7 @@ export default async function CorteDetailPage({
         <div>
           <Link
             href="/cortes"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-[var(--color-fg)]"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
             Cortes de caja
@@ -89,7 +89,7 @@ export default async function CorteDetailPage({
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               {section.title}
             </h2>
-            <dl className="divide-y divide-[var(--color-border)]">
+            <dl className="divide-y divide-border">
               {section.fields.map((f) => (
                 <div key={f.key} className="flex items-center justify-between py-1.5 text-sm">
                   <dt className="text-muted-foreground">{f.label}</dt>

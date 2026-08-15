@@ -239,7 +239,7 @@ export function EntryForm({
             <p
               className={cn(
                 "flex items-start gap-2 rounded-lg px-3 py-2 text-sm",
-                ocrMsg.ok ? "bg-brand-50 text-brand-700" : "bg-[var(--color-danger-bg)] text-[var(--color-danger)]",
+                ocrMsg.ok ? "bg-brand-50 text-brand-700" : "bg-danger-bg text-danger",
               )}
             >
               {ocrMsg.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
@@ -337,7 +337,7 @@ export function EntryForm({
       </div>
 
       {state.error && (
-        <p className="flex items-center gap-2 rounded-lg bg-[var(--color-danger-bg)] px-3 py-2 text-sm text-[var(--color-danger)]">
+        <p className="flex items-center gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
           <AlertCircle className="h-4 w-4" />
           {state.error}
         </p>

@@ -96,7 +96,7 @@ export default async function DashboardPage() {
                   {statements.slice(0, 6).map((s) => (
                     <li
                       key={s.id}
-                      className="flex items-center justify-between rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+                      className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm"
                     >
                       <div className="min-w-0">
                         <div className="truncate font-medium">{s.fileName}</div>

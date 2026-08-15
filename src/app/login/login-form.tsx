@@ -44,7 +44,7 @@ export function LoginForm({ next }: { next: string }) {
       </div>
 
       {state.error && (
-        <p className="rounded-lg bg-[var(--color-danger-bg)] px-3 py-2 text-sm text-[var(--color-danger)]">
+        <p className="rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
           {state.error}
         </p>
       )}
