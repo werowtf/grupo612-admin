@@ -106,7 +106,7 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
           <label className="label">Negocios con acceso</label>
           <div className="grid gap-2 sm:grid-cols-2">
             {venues.map((v) => (
-              <label key={v.id} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm">
+              <label key={v.id} className="flex min-w-0 items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm">
                 <input
                   type="checkbox"
                   name="venueIds"

@@ -40,6 +40,7 @@ export default async function UsuariosPage() {
                 <th className="px-3 py-2 font-semibold">Correo</th>
                 <th className="px-3 py-2 font-semibold">Rol</th>
                 <th className="px-3 py-2 font-semibold">Negocios</th>
+                <th className="px-3 py-2 font-semibold">URL</th>
                 <th className="px-3 py-2 font-semibold">Estado</th>
                 <th className="px-3 py-2 font-semibold"></th>
               </tr>
@@ -61,6 +62,9 @@ export default async function UsuariosPage() {
                     {u.role === "ADMIN"
                       ? "Todos"
                       : u.venues.map((v) => v.venue.name).join(", ") || "—"}
+                  </td>
+                  <td className="px-3 py-2 font-mono text-xs text-muted-foreground">
+                    {u.role === "CONTADOR_EXTERNO" ? "/portal" : "/dashboard"}
                   </td>
                   <td className="px-3 py-2">
                     <ToggleActiveButton userId={u.id} active={u.active} />
