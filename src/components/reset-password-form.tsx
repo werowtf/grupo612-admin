@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
-import { KeyRound, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useActionState, useState } from "react";
+import { KeyRound, AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { resetPasswordAction, type UserFormState } from "@/app/(app)/usuarios/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ const init: UserFormState = {};
 
 export function ResetPasswordForm({ userId, justReset }: { userId: string; justReset?: boolean }) {
   const [state, action, pending] = useActionState(resetPasswordAction, init);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <form action={action} className="card space-y-3 p-5">
@@ -17,7 +18,25 @@ export function ResetPasswordForm({ userId, justReset }: { userId: string; justR
       <h2 className="text-base font-semibold">Restablecer contraseña</h2>
       <div>
         <label className="label" htmlFor="password">Nueva contraseña</label>
-        <Input id="password" name="password" type="password" minLength={8} required placeholder="Mínimo 8 caracteres" />
+        <div className="relative">
+          <Input
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            minLength={8}
+            required
+            placeholder="Mínimo 8 caracteres"
+            className="pr-9"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
       {state.error && (
         <p className="flex items-center gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
