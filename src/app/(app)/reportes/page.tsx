@@ -7,9 +7,7 @@ import { PieChartCard } from "@/components/pie-chart-card";
 import { ReportActions } from "@/components/report-actions";
 import { categoryLabels } from "@/lib/labels";
 import { formatMXN } from "@/lib/utils";
-import { MonthPicker } from "@/components/month-picker";
-import { VenueSelect } from "@/components/venue-select";
-import { Button } from "@/components/ui/button";
+import { ReportMonthPicker } from "@/components/report-month-picker";
 import type { TxCategory } from "@/generated/prisma/enums";
 
 function parseMonth(mes: string | undefined): { year: number; month: number } {
@@ -24,7 +22,7 @@ export default async function ReportesPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const { venues, selected } = await getAppContext();
+  const { selected } = await getAppContext();
   const sp = await searchParams;
 
   if (!selected) {
@@ -37,18 +35,10 @@ export default async function ReportesPage({
 
   const { year, month } = parseMonth(sp.mes);
   const mesValue = `${year}-${String(month).padStart(2, "0")}`;
-  const venueParam = sp.venue ?? selected.id;
-  const consolidado = venueParam === "todas";
-  const venueIds = consolidado
-    ? venues.map((v) => v.id)
-    : [venues.find((v) => v.id === venueParam)?.id ?? selected.id];
-  const scopeName = consolidado
-    ? "Todos los negocios"
-    : venues.find((v) => v.id === venueIds[0])?.name ?? selected.name;
 
-  const report = await getMonthlyReport(venueIds, year, month);
+  const report = await getMonthlyReport([selected.id], year, month);
 
-  const exportHref = `/api/reportes/export?mes=${mesValue}&venue=${consolidado ? "todas" : venueIds[0]}`;
+  const exportHref = `/api/reportes/export?mes=${mesValue}&venue=${selected.id}`;
   const conciliadoPct =
     report.conciliacion.cortesConTarjeta > 0
       ? Math.round((report.conciliacion.cortesConciliados / report.conciliacion.cortesConTarjeta) * 100)
@@ -64,24 +54,12 @@ export default async function ReportesPage({
         <ReportActions exportHref={exportHref} />
       </header>
 
-      <form method="get" className="card flex flex-wrap items-end gap-3 p-4 print:hidden">
+      <div className="card flex flex-wrap items-end gap-3 p-4 print:hidden">
         <div>
           <label className="label">Mes</label>
-          <MonthPicker name="mes" defaultValue={mesValue} />
+          <ReportMonthPicker defaultValue={mesValue} />
         </div>
-        <div>
-          <label className="label">Negocio</label>
-          <VenueSelect
-            name="venue"
-            defaultValue={consolidado ? "todas" : venueIds[0]}
-            options={[
-              ...venues.map((v) => ({ value: v.id, label: v.name })),
-              ...(venues.length > 1 ? [{ value: "todas", label: "Todas (consolidado)" }] : []),
-            ]}
-          />
-        </div>
-        <Button type="submit">Ver</Button>
-      </form>
+      </div>
 
       {/* KPIs */}
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

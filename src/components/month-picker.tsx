@@ -24,9 +24,10 @@ function toValue(year: number, month: number): string {
 interface Props {
   name: string;
   defaultValue: string;
+  onChange?: (value: string) => void;
 }
 
-export function MonthPicker({ name, defaultValue }: Props) {
+export function MonthPicker({ name, defaultValue, onChange }: Props) {
   const [value, setValue] = useState(defaultValue);
   const [open, setOpen] = useState(false);
   const { year: selectedYear, month: selectedMonth } = parseValue(value);
@@ -75,8 +76,10 @@ export function MonthPicker({ name, defaultValue }: Props) {
                 key={m}
                 type="button"
                 onClick={() => {
-                  setValue(toValue(viewYear, monthNum));
+                  const next = toValue(viewYear, monthNum);
+                  setValue(next);
                   setOpen(false);
+                  onChange?.(next);
                 }}
                 className={cn(
                   "rounded-md px-2 py-1.5 text-sm",
