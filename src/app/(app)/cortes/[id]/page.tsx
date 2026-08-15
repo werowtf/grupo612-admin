@@ -107,7 +107,7 @@ export default async function CorteDetailPage({
         {CORTE_SECTIONS.map((section) => {
           const Icon = SECTION_ICONS[section.title];
           return (
-          <div key={section.title} className="card p-5">
+          <div key={section.title} className="card min-w-0 p-5">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 {section.title}

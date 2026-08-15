@@ -68,7 +68,7 @@ export default async function EntryDetailPage({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="card p-5">
+        <div className="card min-w-0 p-5">
           <dl className="divide-y divide-border">
             {rows.map(([k, v]) => (
               <div key={k} className="flex items-center justify-between py-1.5 text-sm">

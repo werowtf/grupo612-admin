@@ -57,7 +57,7 @@ export default async function DocumentDetailPage({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="card p-5">
+        <div className="card min-w-0 p-5">
           <dl className="divide-y divide-border text-sm">
             <Row k="Archivo" v={doc.fileName} />
             <Row k="Tamaño" v={formatFileSize(doc.size)} />

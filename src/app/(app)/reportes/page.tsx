@@ -72,7 +72,7 @@ export default async function ReportesPage({
       </section>
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <div className="card p-5">
+        <div className="card min-w-0 p-5">
           <h2 className="mb-4 text-base font-semibold">Ventas por forma de pago</h2>
           <PieChartCard
             items={[
@@ -83,7 +83,7 @@ export default async function ReportesPage({
             ]}
           />
         </div>
-        <div className="card p-5">
+        <div className="card min-w-0 p-5">
           <h2 className="mb-4 text-base font-semibold">Ventas por producto</h2>
           <PieChartCard
             items={[
@@ -92,7 +92,7 @@ export default async function ReportesPage({
             ]}
           />
         </div>
-        <div className="card p-5">
+        <div className="card min-w-0 p-5">
           <h2 className="mb-4 text-base font-semibold">Abonos vs. cargos del banco</h2>
           <PieChartCard
             items={[
@@ -105,7 +105,7 @@ export default async function ReportesPage({
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2">
-        <div className="card p-5">
+        <div className="card min-w-0 p-5">
           <h2 className="mb-4 text-base font-semibold">Salidas del banco por categoría</h2>
           <BarList
             items={report.banco.cargosByCategory.map((c) => ({
@@ -114,14 +114,14 @@ export default async function ReportesPage({
             }))}
           />
         </div>
-        <div className="card p-5">
+        <div className="card min-w-0 p-5">
           <h2 className="mb-4 text-base font-semibold">Egresos registrados por categoría</h2>
           <BarList items={report.finanzas.egresosByCategory.map((c) => ({ label: c.category, value: c.total }))} />
         </div>
       </section>
 
       {/* Conciliación */}
-      <section className="card p-5">
+      <section className="card min-w-0 p-5">
         <h2 className="mb-4 text-base font-semibold">Conciliación de ventas con tarjeta</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-lg border border-border p-3">

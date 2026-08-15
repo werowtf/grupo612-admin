@@ -75,12 +75,12 @@ export default async function DashboardPage() {
           <AreaChartInteractive data={dailyTotals} />
 
           <section className="grid gap-6 lg:grid-cols-2">
-            <div className="card p-5">
+            <div className="card min-w-0 p-5">
               <h2 className="mb-4 text-base font-semibold">Por categoría</h2>
               <CategoryBreakdown items={summary.byCategory} />
             </div>
 
-            <div className="card p-5">
+            <div className="card min-w-0 p-5">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-base font-semibold">Estados de cuenta recientes</h2>
                 <Link
