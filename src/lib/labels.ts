@@ -24,22 +24,22 @@ export const categoryLabels: Record<TxCategory, string> = {
   GASTO_TARJETA: "Tarjeta",
 };
 
-/** Clases Tailwind (badge) por categoría. */
+/** Clases Tailwind (badge) por categoría — paleta chart-1..5. */
 export const categoryBadge: Record<TxCategory, string> = {
-  TRANSFERENCIA: "bg-info-bg text-info",
-  CHEQUE: "bg-purple-bg text-purple",
-  DEPOSITO: "bg-success-bg text-success",
-  COMISION: "bg-warning-bg text-warning",
-  GASTO_TARJETA: "bg-danger-bg text-danger",
+  DEPOSITO: "bg-chart-1/15 text-chart-1",
+  TRANSFERENCIA: "bg-chart-2/15 text-chart-2",
+  COMISION: "bg-chart-3/15 text-chart-3",
+  CHEQUE: "bg-chart-4/15 text-chart-4",
+  GASTO_TARJETA: "bg-chart-5/15 text-chart-5",
 };
 
 /** Color sólido por categoría, para barras y gráficas (mismo tono que el badge). */
 export const categoryBar: Record<TxCategory, string> = {
-  TRANSFERENCIA: "bg-info",
-  CHEQUE: "bg-purple",
-  DEPOSITO: "bg-success",
-  COMISION: "bg-warning",
-  GASTO_TARJETA: "bg-danger",
+  DEPOSITO: "bg-chart-1",
+  TRANSFERENCIA: "bg-chart-2",
+  COMISION: "bg-chart-3",
+  CHEQUE: "bg-chart-4",
+  GASTO_TARJETA: "bg-chart-5",
 };
 
 export const statusLabels: Record<TxStatus, string> = {
