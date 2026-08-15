@@ -6,8 +6,8 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { Building2, ChevronDown, LogOut, Menu, Moon, ScrollText, Sun, Users } from "lucide-react";
 import { logoutAction, selectVenueAction } from "@/app/(app)/actions";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,18 +59,24 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
         </button>
         <Building2 className="hidden h-4 w-4 text-brand-500 sm:block" />
         {venues.length > 0 ? (
-          <Select value={selectedVenueId ?? undefined} onValueChange={onVenueChange} disabled={pending}>
-            <SelectTrigger>
-              <SelectValue>{venues.find((v) => v.id === selectedVenueId)?.name}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {venues.map((v) => (
-                <SelectItem key={v.id} value={v.id}>
-                  {v.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-1 overflow-x-auto rounded-full bg-muted/50 p-1">
+            {venues.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => onVenueChange(v.id)}
+                disabled={pending}
+                className={cn(
+                  "shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                  v.id === selectedVenueId
+                    ? "bg-brand-500 text-white"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
+              >
+                {v.name}
+              </button>
+            ))}
+          </div>
         ) : (
           <span className="text-sm text-muted-foreground">Sin negocios</span>
         )}
