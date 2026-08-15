@@ -77,7 +77,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                   {categoryLabels[c]}
                 </th>
               ))}
-              <th className="px-3 py-2 font-semibold">Estatus</th>
+              <th className="px-3 py-2 text-right font-semibold">Estatus</th>
             </tr>
           </thead>
           <tbody className={cn("divide-y divide-border", pending && "opacity-60")}>
@@ -130,13 +130,13 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                     <td key={c} className="px-3 py-2 text-right text-gray-300">—</td>
                   ),
                 )}
-                <td className="px-3 py-2">
+                <td className="px-3 py-2 text-right">
                   <Select
                     value={r.status}
                     onValueChange={(value) => onStatus(r.id, value)}
                     disabled={pending}
                   >
-                    <SelectTrigger className="border border-transparent bg-field-bg px-2 py-1 text-xs text-foreground hover:bg-muted/50">
+                    <SelectTrigger className="ml-auto border border-transparent bg-field-bg px-2 py-1 text-xs text-foreground hover:bg-muted/50">
                       <SelectValue>{statusLabels[r.status]}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
