@@ -55,12 +55,12 @@ function NavLinks({ role, onNavigate }: { role: UserRole; onNavigate?: () => voi
           return (
             <div
               key={item.label}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-400"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground"
               title="Próximamente"
             >
               <Icon className="h-4 w-4" />
               <span className="flex-1">{item.label}</span>
-              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-gray-400">
+              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                 Pronto
               </span>
             </div>

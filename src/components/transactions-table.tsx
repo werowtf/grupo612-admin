@@ -127,7 +127,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                       </Select>
                     </td>
                   ) : (
-                    <td key={c} className="px-3 py-2 text-right text-gray-300">—</td>
+                    <td key={c} className="px-3 py-2 text-right text-muted-foreground/40">—</td>
                   ),
                 )}
                 <td className="px-3 py-2 text-right">

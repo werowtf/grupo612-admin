@@ -5,14 +5,13 @@ interface Props {
   value: string;
   hint?: string;
   icon?: React.ReactNode;
-  tone?: "default" | "positive" | "negative" | "warning" | "pending";
+  tone?: "default" | "positive" | "negative" | "pending";
 }
 
 const toneClass: Record<NonNullable<Props["tone"]>, string> = {
   default: "text-foreground",
   positive: "text-abono",
   negative: "text-cargo",
-  warning: "text-orange-500",
   pending: "text-pending",
 };
 

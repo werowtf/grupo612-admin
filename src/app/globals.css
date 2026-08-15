@@ -6,8 +6,6 @@
 
 @theme {
   --color-bg: var(--background);
-  --color-surface: var(--card);
-  --color-border: var(--border);
   --color-fg: var(--foreground);
 
   --color-brand-50: #EDF6F3;
@@ -18,14 +16,8 @@
 
   --color-danger: #EE4273;
   --color-danger-bg: #F8D2DD;
-  --color-warning: #DA4F76;
-  --color-warning-bg: #fffbeb;
-  --color-info: #2563eb;
-  --color-info-bg: #eff6ff;
   --color-success: var(--color-brand-600);
   --color-success-bg: #E3F6EF;
-  --color-purple: #9333EA;
-  --color-purple-bg: #F3E8FF;
   --color-abono: #81C3AC;
   --color-abono-bg: #E3F3EC;
   --color-cargo: #84B3C7;
@@ -217,10 +209,7 @@ h2.text-xl {
   /* Tokens propios de la app sin equivalente directo en el sistema
      semántico de shadcn. */
   --color-danger-bg: oklch(0.396 0.141 25.723);
-  --color-warning-bg: oklch(0.279 0.077 76.958 / 40%);
-  --color-info-bg: oklch(0.282 0.091 267.935 / 40%);
   --color-success-bg: oklch(0.325 0.078 162 / 40%);
-  --color-purple-bg: oklch(0.325 0.11 305 / 40%);
   --color-abono-bg: oklch(0.325 0.078 162 / 40%);
   --color-cargo-bg: oklch(0.325 0.078 232 / 40%);
   --color-pending-bg: oklch(0.33 0.06 20 / 35%);
