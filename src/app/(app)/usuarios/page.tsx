@@ -63,8 +63,13 @@ export default async function UsuariosPage() {
                       ? "Todos"
                       : u.venues.map((v) => v.venue.name).join(", ") || "—"}
                   </td>
-                  <td className="px-3 py-2 font-mono text-xs text-muted-foreground">
-                    {u.role === "CONTADOR_EXTERNO" ? "/portal" : "/dashboard"}
+                  <td className="px-3 py-2 font-mono text-xs">
+                    <Link
+                      href={u.role === "CONTADOR_EXTERNO" ? "/portal" : "/dashboard"}
+                      className="text-muted-foreground hover:text-brand-600 hover:underline"
+                    >
+                      {u.role === "CONTADOR_EXTERNO" ? "/portal" : "/dashboard"}
+                    </Link>
                   </td>
                   <td className="px-3 py-2">
                     <ToggleActiveButton userId={u.id} active={u.active} />
