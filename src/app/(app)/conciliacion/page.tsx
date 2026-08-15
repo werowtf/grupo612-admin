@@ -115,7 +115,7 @@ export default async function ConciliacionPage() {
               Ver todos ({recent.total}) <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <TransactionsTable rows={recent.rows.map(toTxRow)} hideTime />
+          <TransactionsTable rows={recent.rows.map(toTxRow)} />
         </section>
       )}
     </div>

@@ -38,7 +38,7 @@ const CATEGORIES: TxCategory[] = [
 ];
 const STATUSES: TxStatus[] = ["PENDIENTE", "CONCILIADO", "IGNORADO"];
 
-export function TransactionsTable({ rows, hideTime }: { rows: TxRow[]; hideTime?: boolean }) {
+export function TransactionsTable({ rows }: { rows: TxRow[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -70,6 +70,7 @@ export function TransactionsTable({ rows, hideTime }: { rows: TxRow[]; hideTime?
           <thead>
             <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-700">
               <th className="px-3 py-2 font-semibold">Fecha</th>
+              <th className="px-3 py-2 font-semibold">Hora</th>
               <th className="px-3 py-2 font-semibold">Descripción</th>
               {CATEGORIES.map((c) => (
                 <th key={c} className="px-3 py-2 text-right font-medium">
@@ -82,10 +83,8 @@ export function TransactionsTable({ rows, hideTime }: { rows: TxRow[]; hideTime?
           <tbody className={cn("divide-y divide-border", pending && "opacity-60")}>
             {rows.map((r) => (
               <tr key={r.id} className="hover:bg-muted/60">
-                <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
-                  <div>{formatDate(r.date)}</div>
-                  {!hideTime && r.time && <div className="text-[11px]">{r.time}</div>}
-                </td>
+                <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{formatDate(r.date)}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{r.time || "—"}</td>
                 <td className="max-w-[320px] px-3 py-2">
                   <Tooltip>
                     <TooltipTrigger className="block max-w-full truncate text-left">
