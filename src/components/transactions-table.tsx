@@ -6,7 +6,7 @@ import {
   updateTransactionCategory,
   updateTransactionStatus,
 } from "@/app/(app)/conciliacion/actions";
-import { categoryLabels, statusLabels } from "@/lib/labels";
+import { categoryLabels, categoryText, statusLabels } from "@/lib/labels";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -113,7 +113,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
                           title={r.autoCategorized ? "Clasificación automática" : "Ajustada manualmente"}
                           className={cn(
                             "ml-auto justify-end border-0 bg-transparent px-1.5 py-1 text-sm font-semibold hover:bg-muted",
-                            r.direction === "CARGO" ? "text-cargo" : "text-abono",
+                            categoryText[r.category],
                           )}
                         >
                           <SelectValue>{formatMXN(r.amount)}</SelectValue>
