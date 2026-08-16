@@ -1,3 +1,4 @@
+import { Info } from "lucide-react";
 import { formatMXN } from "@/lib/utils";
 
 /** Paleta de categorías (consistente en toda la app). */
@@ -29,7 +30,12 @@ export function BarList({
 }) {
   const max = Math.max(...items.map((i) => i.value), 1);
   if (items.length === 0) {
-    return <p className="text-sm text-muted-foreground">Sin datos en el periodo.</p>;
+    return (
+      <div className="flex items-start gap-2 rounded-lg bg-pending-bg px-3 py-2 text-sm text-pending">
+        <Info className="mt-0.5 h-4 w-4 shrink-0" />
+        <span>Sin datos en el periodo.</span>
+      </div>
+    );
   }
   return (
     <ul className="space-y-2.5">

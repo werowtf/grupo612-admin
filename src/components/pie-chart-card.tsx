@@ -1,5 +1,6 @@
 "use client";
 
+import { Info } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 import {
   type ChartConfig,
@@ -28,7 +29,12 @@ export function PieChartCard({ items, colors = COLORS }: { items: PieChartItem[]
   const total = data.reduce((s, i) => s + i.value, 0);
 
   if (total <= 0) {
-    return <p className="text-sm text-muted-foreground">Sin datos en el periodo.</p>;
+    return (
+      <div className="flex items-start gap-2 rounded-lg bg-pending-bg px-3 py-2 text-sm text-pending">
+        <Info className="mt-0.5 h-4 w-4 shrink-0" />
+        <span>Sin datos en el periodo.</span>
+      </div>
+    );
   }
 
   const chartData = data.map((i, idx) => ({

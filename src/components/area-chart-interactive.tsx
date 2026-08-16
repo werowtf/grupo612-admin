@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Info } from "lucide-react";
 import {
   type ChartConfig,
   ChartContainer,
@@ -59,7 +60,10 @@ export function AreaChartInteractive({ data }: { data: DailyTotal[] }) {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Sin datos en el periodo.</p>
+        <div className="flex items-start gap-2 rounded-lg bg-pending-bg px-3 py-2 text-sm text-pending">
+          <Info className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>Sin datos en el periodo.</span>
+        </div>
       ) : (
         <ChartContainer config={chartConfig} className="aspect-auto h-[260px] w-full">
           <AreaChart data={filtered}>

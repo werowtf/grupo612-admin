@@ -101,6 +101,7 @@ export default async function CorteDetailPage({
         linked={matching.linked}
         linkedTotal={matching.linkedTotal}
         suggestions={matching.suggestions}
+        role={user.role}
       />
 
       <div className="grid gap-6 lg:grid-cols-2">

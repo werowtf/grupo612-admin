@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TrendingUp, TrendingDown, Wallet, Clock, ArrowRight } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, Clock, ArrowRight, Info } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { getVenueSummary, getVenueStatements, getVenueDailyTotals } from "@/lib/queries";
 import { StatCard } from "@/components/stat-card";
@@ -91,7 +91,10 @@ export default async function DashboardPage() {
                 </Link>
               </div>
               {statements.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Ninguno todavía.</p>
+                <div className="flex items-start gap-2 rounded-lg bg-pending-bg px-3 py-2 text-sm text-pending">
+                  <Info className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>Ninguno todavía.</span>
+                </div>
               ) : (
                 <ul className="space-y-2">
                   {statements.slice(0, 6).map((s) => (

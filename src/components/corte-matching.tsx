@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Link2, Unlink, Sparkles, ArrowRight } from "lucide-react";
+import { Link2, Unlink, Sparkles, ArrowRight, Info } from "lucide-react";
 import {
   linkDepositAction,
   unlinkDepositAction,
@@ -11,6 +11,7 @@ import {
 import type { DepositRow } from "@/lib/cortes/matching";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import type { UserRole } from "@/generated/prisma/enums";
 
 interface Props {
   corteId: string;
@@ -18,9 +19,10 @@ interface Props {
   linked: DepositRow[];
   linkedTotal: number;
   suggestions: DepositRow[];
+  role: UserRole;
 }
 
-export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggestions }: Props) {
+export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggestions, role }: Props) {
   const router = useRouter();
   const [pending, start] = useTransition();
 
@@ -55,15 +57,16 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
             Ventas con tarjeta del corte vs. depósitos recibidos en el banco.
           </p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => run(() => autoMatchCorteAction(corteId))}
-          disabled={pending}
-        >
-          <Sparkles className="h-4 w-4" />
-          Auto-conciliar
-        </Button>
+        {role !== "CAJERO" && (
+          <Button
+            type="button"
+            onClick={() => run(() => autoMatchCorteAction(corteId))}
+            disabled={pending}
+          >
+            <Sparkles className="h-4 w-4" />
+            Auto-conciliar
+          </Button>
+        )}
       </div>
 
       {/* Resumen */}
@@ -126,9 +129,10 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
           </span>
         </h3>
         {suggestions.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No hay depósitos sin conciliar en el rango de fechas del corte.
-          </p>
+          <div className="flex items-start gap-2 rounded-lg bg-pending-bg px-3 py-2 text-sm text-pending">
+            <Info className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>No hay depósitos sin conciliar en el rango de fechas del corte.</span>
+          </div>
         ) : (
           <ul className="divide-y divide-border rounded-lg border border-border">
             {suggestions.slice(0, 8).map((d) => {
