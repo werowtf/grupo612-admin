@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const FILTER_TRIGGER_CLASS =
-  "h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50";
+  "h-8 w-full border-transparent bg-field-bg font-semibold text-foreground hover:bg-muted/50";
 import type {
   TxCategory,
   TxDirection,
@@ -98,7 +98,7 @@ export default async function MovimientosPage({
 
       <form method="get" className="card flex flex-wrap items-end gap-3 p-4">
         <div className="min-w-[180px] flex-1">
-          <label className="label" htmlFor="search">
+          <label className="label font-semibold" htmlFor="search">
             Buscar
           </label>
           <div className="relative">
@@ -108,13 +108,13 @@ export default async function MovimientosPage({
               name="search"
               defaultValue={filters.search ?? ""}
               placeholder="Descripción, referencia…"
-              className="pl-8"
+              className="pl-8 font-semibold"
             />
           </div>
         </div>
 
-        <div>
-          <label className="label" htmlFor="category">
+        <div className="min-w-[160px]">
+          <label className="label font-semibold" htmlFor="category">
             Categoría
           </label>
           <Select name="category" defaultValue={filters.category ?? "todas"}>
@@ -132,8 +132,8 @@ export default async function MovimientosPage({
           </Select>
         </div>
 
-        <div>
-          <label className="label" htmlFor="direction">
+        <div className="min-w-[160px]">
+          <label className="label font-semibold" htmlFor="direction">
             Tipo
           </label>
           <Select name="direction" defaultValue={filters.direction ?? "todos"}>
@@ -148,8 +148,8 @@ export default async function MovimientosPage({
           </Select>
         </div>
 
-        <div>
-          <label className="label" htmlFor="status">
+        <div className="min-w-[160px]">
+          <label className="label font-semibold" htmlFor="status">
             Estatus
           </label>
           <Select name="status" defaultValue={filters.status ?? "todos"}>
