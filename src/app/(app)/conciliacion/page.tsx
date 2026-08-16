@@ -60,19 +60,19 @@ export default async function ConciliacionPage() {
                     <tr key={s.id} className="hover:bg-muted/60">
                       <td className="max-w-[240px] px-3 py-2">
                         <Tooltip>
-                          <TooltipTrigger className="block max-w-full truncate text-left font-semibold">
+                          <TooltipTrigger className="block max-w-full truncate text-left">
                             {s.fileName}
                           </TooltipTrigger>
                           <TooltipContent>{s.fileName}</TooltipContent>
                         </Tooltip>
                       </td>
-                      <td className="px-3 py-2 font-semibold">{bankLabels[s.bank]}</td>
+                      <td className="px-3 py-2">{bankLabels[s.bank]}</td>
                       <td className="whitespace-nowrap px-3 py-2 font-semibold text-muted-foreground">
                         {s.periodStart && s.periodEnd
                           ? `${formatDate(s.periodStart)} – ${formatDate(s.periodEnd)}`
                           : "—"}
                       </td>
-                      <td className="px-3 py-2 text-right font-semibold tabular-nums">
+                      <td className="px-3 py-2 text-right tabular-nums">
                         {s.importedCount}
                         {s.duplicateCount > 0 && (
                           <span className="ml-1 text-xs font-normal text-muted-foreground">

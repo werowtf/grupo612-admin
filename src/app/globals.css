@@ -15,9 +15,9 @@
   --color-danger-bg: #F8D2DD;
   --color-success: var(--color-brand-600);
   --color-success-bg: #E3F6EF;
-  --color-abono: #48D4A3;
+  --color-abono: #3AAF85;
   --color-abono-bg: #E3F3EC;
-  --color-cargo: #29B0E9;
+  --color-cargo: #6CB1CF;
   --color-cargo-bg: #E4EEF3;
   --color-pending: #E8AEAE;
   --color-pending-bg: #F9E7E7;
@@ -156,9 +156,9 @@ h2.text-xl {
   --ring: #9CA8AB;
   --chart-1: #3AAF85;
   --chart-2: #48D4A3;
-  --chart-3: #8F7EDE;
-  --chart-4: #5EC6F2;
-  --chart-5: #4BD9DE;
+  --chart-3: #6CB1CF;
+  --chart-4: #A3E4CD;
+  --chart-5: #70DFB8;
   --radius: 0.875rem;
   --sidebar: #0c0e0e;
   --sidebar-foreground: #090B0C;
