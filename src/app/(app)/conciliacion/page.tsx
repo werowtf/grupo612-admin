@@ -54,7 +54,7 @@ export default async function ConciliacionPage() {
                     <th className="px-3 py-2 font-semibold">Archivo</th>
                     <th className="px-3 py-2 font-semibold">Banco</th>
                     <th className="px-3 py-2 font-semibold">Periodo</th>
-                    <th className="px-3 py-2 text-right font-semibold">Movs.</th>
+                    <th className="px-3 py-2 text-right font-semibold">Movimientos</th>
                     <th className="px-3 py-2 text-right font-semibold">Abonos</th>
                     <th className="px-3 py-2 text-right font-semibold">Cargos</th>
                     <th className="px-3 py-2 font-semibold">Importado</th>
