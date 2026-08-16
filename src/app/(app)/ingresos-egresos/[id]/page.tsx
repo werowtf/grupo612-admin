@@ -72,7 +72,7 @@ export default async function EntryDetailPage({
           <dl className="divide-y divide-border">
             {rows.map(([k, v]) => (
               <div key={k} className="flex items-center justify-between py-1.5 text-sm">
-                <dt className="text-muted-foreground">{k}</dt>
+                <dt className="font-semibold text-muted-foreground">{k}</dt>
                 <dd className="font-medium">{v}</dd>
               </div>
             ))}

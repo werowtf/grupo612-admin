@@ -73,7 +73,7 @@ export function TransactionsTable({ rows }: { rows: TxRow[] }) {
               <th className="hidden px-3 py-2 font-semibold sm:table-cell">Hora</th>
               <th className="px-2 py-2 font-semibold sm:px-3">Descripción</th>
               {CATEGORIES.map((c) => (
-                <th key={c} className="hidden px-3 py-2 text-right font-medium sm:table-cell">
+                <th key={c} className="hidden px-3 py-2 text-right font-semibold sm:table-cell">
                   {categoryLabels[c]}
                 </th>
               ))}

@@ -116,7 +116,7 @@ export default async function DocumentDetailPage({
 function Row({ k, v }: { k: string; v: string }) {
   return (
     <div className="flex items-center justify-between py-1.5">
-      <dt className="text-muted-foreground">{k}</dt>
+      <dt className="font-semibold text-muted-foreground">{k}</dt>
       <dd className="font-medium">{v}</dd>
     </div>
   );

@@ -118,7 +118,7 @@ export default async function CorteDetailPage({
             <dl className="divide-y divide-border">
               {section.fields.map((f) => (
                 <div key={f.key} className="flex items-center justify-between py-1.5 text-sm">
-                  <dt className="text-muted-foreground">{f.label}</dt>
+                  <dt className="font-semibold text-muted-foreground">{f.label}</dt>
                   <dd className="tabular-nums font-medium">{format(f.key, f.type)}</dd>
                 </div>
               ))}

@@ -193,7 +193,7 @@ function Summary({
   }[tone];
   return (
     <div className="rounded-lg border border-border p-3">
-      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="text-xs font-semibold text-muted-foreground">{label}</div>
       <div className={cn("mt-0.5 text-lg font-semibold tabular-nums", toneClass)}>{value}</div>
       {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
     </div>
