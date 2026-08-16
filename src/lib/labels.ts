@@ -42,6 +42,15 @@ export const categoryBar: Record<TxCategory, string> = {
   GASTO_TARJETA: "bg-chart-5",
 };
 
+/** Color de texto por categoría (mismo esquema que categoryBar). */
+export const categoryText: Record<TxCategory, string> = {
+  DEPOSITO: "text-chart-1",
+  TRANSFERENCIA: "text-chart-2",
+  COMISION: "text-chart-3",
+  CHEQUE: "text-chart-4",
+  GASTO_TARJETA: "text-chart-5",
+};
+
 export const statusLabels: Record<TxStatus, string> = {
   PENDIENTE: "Pendiente",
   CONCILIADO: "Conciliado",

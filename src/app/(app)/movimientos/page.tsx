@@ -5,7 +5,7 @@ import { getVenueTransactions, getCategoryTotals, type TxFilters } from "@/lib/q
 import { TransactionsTable } from "@/components/transactions-table";
 import { StatCard } from "@/components/stat-card";
 import { toTxRow } from "@/lib/serialize";
-import { categoryLabels, statusLabels } from "@/lib/labels";
+import { categoryLabels, categoryText, statusLabels } from "@/lib/labels";
 import { formatMXN } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,7 +90,7 @@ export default async function MovimientosPage({
             key={c}
             label={categoryLabels[c]}
             value={formatMXN(categoryTotals[c])}
-            tone={c === "DEPOSITO" ? "positive" : "negative"}
+            valueClassName={categoryText[c]}
             icon={CATEGORY_ICONS[c]}
           />
         ))}
