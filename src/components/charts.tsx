@@ -31,7 +31,7 @@ export function BarList({
   const max = Math.max(...items.map((i) => i.value), 1);
   if (items.length === 0) {
     return (
-      <div className="flex items-start gap-2 rounded-lg bg-pending-bg px-3 py-2 text-sm text-pending">
+      <div className="flex items-start gap-2 rounded-lg bg-success-bg px-3 py-2 text-sm text-success">
         <Info className="mt-0.5 h-4 w-4 shrink-0" />
         <span>Sin datos en el periodo.</span>
       </div>

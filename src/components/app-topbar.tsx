@@ -92,7 +92,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
             </Select>
           </>
         ) : (
-          <span className="flex items-center gap-1.5 rounded-full bg-pending-bg px-3 py-1 text-sm text-pending">
+          <span className="flex items-center gap-1.5 rounded-full bg-success-bg px-3 py-1 text-sm text-success">
             <Info className="h-3.5 w-3.5 shrink-0" />
             Sin negocios
           </span>

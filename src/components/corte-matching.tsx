@@ -129,7 +129,7 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
           </span>
         </h3>
         {suggestions.length === 0 ? (
-          <div className="flex items-start gap-2 rounded-lg bg-pending-bg px-3 py-2 text-sm text-pending">
+          <div className="flex items-start gap-2 rounded-lg bg-success-bg px-3 py-2 text-sm text-success">
             <Info className="mt-0.5 h-4 w-4 shrink-0" />
             <span>No hay depósitos sin conciliar en el rango de fechas del corte.</span>
           </div>
