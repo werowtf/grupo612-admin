@@ -1,9 +1,7 @@
 import { getAppContext, getVenueBankAccounts } from "@/lib/context";
 import { getVenueStatements } from "@/lib/queries";
 import { ImportForm } from "@/components/import-form";
-import { formatDate, formatMXN } from "@/lib/utils";
-import { bankLabels } from "@/lib/labels";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { StatementRows } from "@/components/statement-rows";
 
 export default async function ConciliacionPage() {
   const { selected } = await getAppContext();
@@ -56,42 +54,21 @@ export default async function ConciliacionPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {statements.map((s) => (
-                    <tr key={s.id} className="hover:bg-muted/60">
-                      <td className="max-w-[240px] px-3 py-2">
-                        <Tooltip>
-                          <TooltipTrigger className="block max-w-full truncate text-left">
-                            {s.fileName}
-                          </TooltipTrigger>
-                          <TooltipContent>{s.fileName}</TooltipContent>
-                        </Tooltip>
-                      </td>
-                      <td className="px-3 py-2">{bankLabels[s.bank]}</td>
-                      <td className="whitespace-nowrap px-3 py-2 font-semibold text-muted-foreground">
-                        {s.periodStart && s.periodEnd
-                          ? `${formatDate(s.periodStart)} – ${formatDate(s.periodEnd)}`
-                          : "—"}
-                      </td>
-                      <td className="px-3 py-2 text-right tabular-nums">
-                        {s.importedCount}
-                        {s.duplicateCount > 0 && (
-                          <span className="ml-1 text-xs font-normal text-muted-foreground">
-                            (+{s.duplicateCount} dup)
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2 text-right font-semibold tabular-nums text-abono">
-                        {formatMXN(s.totalAbonos)}
-                      </td>
-                      <td className="px-3 py-2 text-right font-semibold tabular-nums text-cargo">
-                        {formatMXN(s.totalCargos)}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-2 font-semibold text-muted-foreground">
-                        {formatDate(s.createdAt)}
-                        {s.importedBy?.name ? ` · ${s.importedBy.name}` : ""}
-                      </td>
-                    </tr>
-                  ))}
+                  <StatementRows
+                    statements={statements.map((s) => ({
+                      id: s.id,
+                      fileName: s.fileName,
+                      bank: s.bank,
+                      periodStart: s.periodStart?.toISOString() ?? null,
+                      periodEnd: s.periodEnd?.toISOString() ?? null,
+                      importedCount: s.importedCount,
+                      duplicateCount: s.duplicateCount,
+                      totalAbonos: Number(s.totalAbonos.toString()),
+                      totalCargos: Number(s.totalCargos.toString()),
+                      createdAt: s.createdAt.toISOString(),
+                      importedByName: s.importedBy?.name ?? null,
+                    }))}
+                  />
                 </tbody>
               </table>
             </div>

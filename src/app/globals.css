@@ -9,12 +9,12 @@
   --color-fg: var(--foreground);
 
   --color-brand-50: #EDF6F3;
-  --color-brand-600: #5A7E71;
+  --color-brand-600: #3AAF85;
 
   --color-danger: #EE4273;
   --color-danger-bg: #F8D2DD;
   --color-success: var(--color-brand-600);
-  --color-success-bg: #E3F6EF;
+  --color-success-bg: #EFFBF6;
   --color-abono: #3AAF85;
   --color-abono-bg: #E3F3EC;
   --color-cargo: #6CB1CF;

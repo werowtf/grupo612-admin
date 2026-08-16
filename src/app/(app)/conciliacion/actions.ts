@@ -9,6 +9,8 @@ import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
 import { parseStatement, computeDedupeHash, ImportError } from "@/lib/import";
 import { bankLabels } from "@/lib/labels";
+import { toTxRow } from "@/lib/serialize";
+import type { TxRow } from "@/components/transactions-table";
 
 export interface ImportResult {
   ok?: boolean;
@@ -146,6 +148,24 @@ export async function importStatementAction(
     totalAbonos: parsed.totalAbonos,
     totalCargos: parsed.totalCargos,
   };
+}
+
+export async function getStatementTransactionsAction(statementId: string): Promise<TxRow[]> {
+  const user = await getCurrentUser();
+  if (!user) return [];
+
+  const statement = await prisma.bankStatement.findUnique({
+    where: { id: statementId },
+    include: { bankAccount: true },
+  });
+  if (!statement) return [];
+  await assertVenueAccess(user, statement.bankAccount.venueId);
+
+  const rows = await prisma.bankTransaction.findMany({
+    where: { statementId },
+    orderBy: [{ date: "asc" }, { createdAt: "asc" }],
+  });
+  return rows.map(toTxRow);
 }
 
 // ── Edición de movimientos ────────────────────────────────────

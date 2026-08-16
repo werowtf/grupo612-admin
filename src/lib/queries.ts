@@ -127,6 +127,7 @@ export interface TxFilters {
   direction?: TxDirection;
   status?: TxStatus;
   search?: string;
+  statementId?: string;
   take?: number;
 }
 
@@ -139,6 +140,7 @@ function buildTxWhere(
     ...(filters.category ? { category: filters.category } : {}),
     ...(filters.direction ? { direction: filters.direction } : {}),
     ...(filters.status ? { status: filters.status } : {}),
+    ...(filters.statementId ? { statementId: filters.statementId } : {}),
     ...(filters.search
       ? {
           OR: [
