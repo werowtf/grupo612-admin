@@ -60,22 +60,22 @@ export default async function ConciliacionPage() {
                     <tr key={s.id} className="hover:bg-muted/60">
                       <td className="max-w-[240px] px-3 py-2">
                         <Tooltip>
-                          <TooltipTrigger className="block max-w-full truncate text-left font-medium">
+                          <TooltipTrigger className="block max-w-full truncate text-left font-semibold">
                             {s.fileName}
                           </TooltipTrigger>
                           <TooltipContent>{s.fileName}</TooltipContent>
                         </Tooltip>
                       </td>
-                      <td className="px-3 py-2">{bankLabels[s.bank]}</td>
-                      <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
+                      <td className="px-3 py-2 font-semibold">{bankLabels[s.bank]}</td>
+                      <td className="whitespace-nowrap px-3 py-2 font-semibold text-muted-foreground">
                         {s.periodStart && s.periodEnd
                           ? `${formatDate(s.periodStart)} – ${formatDate(s.periodEnd)}`
                           : "—"}
                       </td>
-                      <td className="px-3 py-2 text-right tabular-nums">
+                      <td className="px-3 py-2 text-right font-semibold tabular-nums">
                         {s.importedCount}
                         {s.duplicateCount > 0 && (
-                          <span className="ml-1 text-xs text-muted-foreground">
+                          <span className="ml-1 text-xs font-normal text-muted-foreground">
                             (+{s.duplicateCount} dup)
                           </span>
                         )}
@@ -86,7 +86,7 @@ export default async function ConciliacionPage() {
                       <td className="px-3 py-2 text-right font-semibold tabular-nums text-cargo">
                         {formatMXN(s.totalCargos)}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
+                      <td className="whitespace-nowrap px-3 py-2 font-semibold text-muted-foreground">
                         {formatDate(s.createdAt)}
                         {s.importedBy?.name ? ` · ${s.importedBy.name}` : ""}
                       </td>
