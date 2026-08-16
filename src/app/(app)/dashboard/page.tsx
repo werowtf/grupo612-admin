@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { TrendingUp, TrendingDown, Wallet, Clock, ArrowRight, Info } from "lucide-react";
 import { getAppContext } from "@/lib/context";
-import { getVenueSummary, getVenueStatements, getVenueDailyTotals } from "@/lib/queries";
+import { getVenueSummary, getVenueTransactions, getVenueDailyTotals } from "@/lib/queries";
 import { StatCard } from "@/components/stat-card";
 import { CategoryBadge } from "@/components/badges";
 import { AreaChartInteractive } from "@/components/area-chart-interactive";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
-import { bankLabels, categoryBar } from "@/lib/labels";
+import { categoryBar } from "@/lib/labels";
 import { buttonVariants } from "@/components/ui/button";
 
 export default async function DashboardPage() {
@@ -20,9 +20,9 @@ export default async function DashboardPage() {
     );
   }
 
-  const [summary, statements, dailyTotals] = await Promise.all([
+  const [summary, recent, dailyTotals] = await Promise.all([
     getVenueSummary(selected.id),
-    getVenueStatements(selected.id),
+    getVenueTransactions(selected.id, { take: 6 }),
     getVenueDailyTotals(selected.id),
   ]);
 
@@ -82,37 +82,37 @@ export default async function DashboardPage() {
 
             <div className="card min-w-0 p-5">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-base font-semibold">Estados de cuenta recientes</h2>
+                <h2 className="text-base font-semibold">Movimientos recientes</h2>
                 <Link
-                  href="/conciliacion"
+                  href="/movimientos"
                   className="text-sm text-brand-600 hover:underline"
                 >
                   Ver todos
                 </Link>
               </div>
-              {statements.length === 0 ? (
+              {recent.rows.length === 0 ? (
                 <div className="flex items-start gap-2 rounded-lg bg-success-bg px-3 py-2 text-sm text-success">
                   <Info className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>Ninguno todavía.</span>
                 </div>
               ) : (
                 <ul className="space-y-2">
-                  {statements.slice(0, 6).map((s) => (
+                  {recent.rows.map((t) => (
                     <li
-                      key={s.id}
+                      key={t.id}
                       className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm"
                     >
                       <div className="min-w-0">
-                        <div className="truncate font-medium">{s.fileName}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {bankLabels[s.bank]} ·{" "}
-                          {s.periodStart && s.periodEnd
-                            ? `${formatDate(s.periodStart)} – ${formatDate(s.periodEnd)}`
-                            : formatDate(s.createdAt)}
-                        </div>
+                        <div className="truncate font-medium">{t.description}</div>
+                        <div className="text-xs text-muted-foreground">{formatDate(t.date)}</div>
                       </div>
-                      <span className="ml-3 shrink-0 rounded bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-600">
-                        {s.importedCount} mov.
+                      <span
+                        className={cn(
+                          "ml-3 shrink-0 font-semibold tabular-nums",
+                          t.direction === "CARGO" ? "text-cargo" : "text-abono",
+                        )}
+                      >
+                        {formatMXN(t.amount)}
                       </span>
                     </li>
                   ))}
