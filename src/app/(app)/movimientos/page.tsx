@@ -22,9 +22,9 @@ import type {
 const CATEGORIES: TxCategory[] = [
   "DEPOSITO",
   "TRANSFERENCIA",
+  "GASTO_TARJETA",
   "CHEQUE",
   "COMISION",
-  "GASTO_TARJETA",
 ];
 const STATUSES: TxStatus[] = ["PENDIENTE", "CONCILIADO", "IGNORADO"];
 
