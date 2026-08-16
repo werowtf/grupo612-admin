@@ -65,9 +65,9 @@ export default async function ReportesPage({
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard label="Ventas del mes" value={formatMXN(report.ventas.total)} hint={`${report.ventas.cortes} cortes`} tone="positive" icon={<TrendingUp className="h-4 w-4" />} />
         <StatCard label="Ventas con tarjeta" value={formatMXN(report.ventas.tarjeta)} tone="positive" icon={<CreditCard className="h-4 w-4" />} />
-        <StatCard label="Comisiones bancarias" value={formatMXN(report.banco.comisiones)} tone="negative" icon={<Percent className="h-4 w-4" />} />
+        <StatCard label="Comisiones bancarias" value={formatMXN(report.banco.comisiones)} valueClassName="text-chart-3" icon={<Percent className="h-4 w-4" />} />
         <StatCard label="Egresos registrados" value={formatMXN(report.finanzas.egresos)} tone="negative" icon={<TrendingDown className="h-4 w-4" />} />
-        <StatCard label="Propinas" value={formatMXN(report.ventas.propinas)} tone="positive" icon={<HandCoins className="h-4 w-4" />} />
+        <StatCard label="Propinas" value={formatMXN(report.ventas.propinas)} valueClassName="text-chart-3" icon={<HandCoins className="h-4 w-4" />} />
         <StatCard label="Cortes conciliados" value={`${report.conciliacion.cortesConciliados}/${report.conciliacion.cortesConTarjeta}`} hint={`${conciliadoPct}% con depósito bancario`} tone={conciliadoPct >= 100 ? "positive" : "default"} icon={<Link2 className="h-4 w-4" />} />
       </section>
 

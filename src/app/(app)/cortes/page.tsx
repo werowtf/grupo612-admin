@@ -83,7 +83,7 @@ export default async function CortesPage() {
                       <td className="px-3 py-2 text-muted-foreground">{c.turno ?? "—"}</td>
                       <td className="px-3 py-2 text-muted-foreground">{c.folioCorteZ ?? "—"}</td>
                       <td className="px-3 py-2 text-right tabular-nums text-abono">{formatMXN(c.totalVenta)}</td>
-                      <td className="px-3 py-2 text-right tabular-nums text-abono">{formatMXN(c.totalPropinas)}</td>
+                      <td className="px-3 py-2 text-right tabular-nums text-chart-3">{formatMXN(c.totalPropinas)}</td>
                       <td className={`px-3 py-2 text-right tabular-nums ${sf < 0 ? "text-danger" : sf > 0 ? "text-brand-600" : "text-muted-foreground"}`}>
                         {formatMXN(sf)}
                       </td>
