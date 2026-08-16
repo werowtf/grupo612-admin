@@ -1,10 +1,6 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { getAppContext, getVenueBankAccounts } from "@/lib/context";
-import { getVenueStatements, getVenueTransactions } from "@/lib/queries";
+import { getVenueStatements } from "@/lib/queries";
 import { ImportForm } from "@/components/import-form";
-import { TransactionsTable } from "@/components/transactions-table";
-import { toTxRow } from "@/lib/serialize";
 import { formatDate, formatMXN } from "@/lib/utils";
 import { bankLabels } from "@/lib/labels";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -20,10 +16,9 @@ export default async function ConciliacionPage() {
     );
   }
 
-  const [accounts, statements, recent] = await Promise.all([
+  const [accounts, statements] = await Promise.all([
     getVenueBankAccounts(selected.id),
     getVenueStatements(selected.id),
-    getVenueTransactions(selected.id, { take: 25 }),
   ]);
 
   return (
@@ -103,21 +98,6 @@ export default async function ConciliacionPage() {
           </div>
         )}
       </section>
-
-      {recent.total > 0 && (
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold">Movimientos recientes</h2>
-            <Link
-              href="/movimientos"
-              className="inline-flex items-center gap-1 text-sm text-brand-600 hover:underline"
-            >
-              Ver todos ({recent.total}) <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <TransactionsTable rows={recent.rows.map(toTxRow)} />
-        </section>
-      )}
     </div>
   );
 }
