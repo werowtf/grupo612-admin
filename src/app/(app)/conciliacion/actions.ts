@@ -163,7 +163,7 @@ export async function getStatementTransactionsAction(statementId: string): Promi
 
   const rows = await prisma.bankTransaction.findMany({
     where: { statementId },
-    orderBy: [{ date: "asc" }, { createdAt: "asc" }],
+    orderBy: [{ date: "asc" }, { time: "asc" }, { createdAt: "asc" }],
   });
   return rows.map(toTxRow);
 }

@@ -169,7 +169,7 @@ export async function getVenueTransactions(venueId: string, filters: TxFilters =
   const [rows, total] = await Promise.all([
     prisma.bankTransaction.findMany({
       where,
-      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+      orderBy: [{ date: "desc" }, { time: "desc" }, { createdAt: "desc" }],
       take: filters.take ?? 200,
     }),
     prisma.bankTransaction.count({ where }),
