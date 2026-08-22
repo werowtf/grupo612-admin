@@ -28,8 +28,8 @@ interface NavItem {
 const NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/conciliacion", label: "Estados de cuenta", icon: Landmark },
-  { href: "/movimientos", label: "Movimientos", icon: ListOrdered },
   { href: "/cortes", label: "Cortes de caja", icon: Receipt },
+  { href: "/movimientos", label: "Movimientos", icon: ListOrdered },
   { href: "/ingresos-egresos", label: "Ingresos y egresos", icon: Wallet },
   { href: "/reportes", label: "Reportes", icon: BarChart3 },
   { href: "/documentos", label: "Documentos", icon: FileText },
