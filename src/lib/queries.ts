@@ -128,6 +128,8 @@ export interface TxFilters {
   status?: TxStatus;
   search?: string;
   statementId?: string;
+  dateFrom?: Date;
+  dateTo?: Date; // exclusivo
   take?: number;
 }
 
@@ -141,6 +143,14 @@ function buildTxWhere(
     ...(filters.direction ? { direction: filters.direction } : {}),
     ...(filters.status ? { status: filters.status } : {}),
     ...(filters.statementId ? { statementId: filters.statementId } : {}),
+    ...(filters.dateFrom || filters.dateTo
+      ? {
+          date: {
+            ...(filters.dateFrom ? { gte: filters.dateFrom } : {}),
+            ...(filters.dateTo ? { lt: filters.dateTo } : {}),
+          },
+        }
+      : {}),
     ...(filters.search
       ? {
           OR: [

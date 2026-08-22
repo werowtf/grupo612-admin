@@ -10,6 +10,7 @@ import { formatMXN } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MonthPicker } from "@/components/month-picker";
 
 const FILTER_TRIGGER_CLASS =
   "h-8 w-full border-transparent bg-field-bg font-semibold text-foreground hover:bg-muted/50";
@@ -28,6 +29,11 @@ const CATEGORIES: TxCategory[] = [
 ];
 const STATUSES: TxStatus[] = ["PENDIENTE", "CONCILIADO", "IGNORADO"];
 
+const MONTHS = [
+  "enero", "febrero", "marzo", "abril", "mayo", "junio",
+  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+];
+
 const CATEGORY_ICONS: Record<TxCategory, React.ReactNode> = {
   DEPOSITO: <ArrowDownToLine className="h-4 w-4" />,
   TRANSFERENCIA: <ArrowLeftRight className="h-4 w-4" />,
@@ -38,6 +44,13 @@ const CATEGORY_ICONS: Record<TxCategory, React.ReactNode> = {
 
 function pick<T extends string>(value: string | undefined, allowed: readonly T[]): T | undefined {
   return value && (allowed as readonly string[]).includes(value) ? (value as T) : undefined;
+}
+
+function parseMonth(mes: string | undefined): { year: number; month: number } {
+  const m = /^(\d{4})-(\d{2})$/.exec(mes ?? "");
+  if (m) return { year: Number(m[1]), month: Number(m[2]) };
+  const now = new Date();
+  return { year: now.getUTCFullYear(), month: now.getUTCMonth() + 1 };
 }
 
 export default async function MovimientosPage({
@@ -56,11 +69,18 @@ export default async function MovimientosPage({
     );
   }
 
+  const { year, month } = parseMonth(sp.mes);
+  const mesValue = `${year}-${String(month).padStart(2, "0")}`;
+  const dateFrom = new Date(Date.UTC(year, month - 1, 1));
+  const dateTo = new Date(Date.UTC(year, month, 1)); // exclusivo
+
   const filters: TxFilters = {
     category: pick<TxCategory>(sp.category, CATEGORIES),
     direction: pick<TxDirection>(sp.direction, ["CARGO", "ABONO"]),
     status: pick<TxStatus>(sp.status, STATUSES),
     search: sp.search?.trim() || undefined,
+    dateFrom,
+    dateTo,
     take: 300,
   };
 
@@ -69,6 +89,8 @@ export default async function MovimientosPage({
     direction: filters.direction,
     status: filters.status,
     search: filters.search,
+    dateFrom: filters.dateFrom,
+    dateTo: filters.dateTo,
   });
   const hasFilters = Boolean(
     filters.category || filters.direction || filters.status || filters.search,
@@ -79,7 +101,7 @@ export default async function MovimientosPage({
       <header>
         <h1 className="text-xl">Movimientos</h1>
         <p className="text-sm text-muted-foreground">
-          {total} movimiento{total === 1 ? "" : "s"}
+          {total} movimiento{total === 1 ? "" : "s"} · {MONTHS[month - 1]} {year}
           {hasFilters ? " (filtrados)" : ""}
         </p>
       </header>
@@ -97,6 +119,11 @@ export default async function MovimientosPage({
       </div>
 
       <form method="get" className="card flex flex-wrap items-end gap-3 p-4">
+        <div>
+          <label className="label font-semibold">Mes</label>
+          <MonthPicker name="mes" defaultValue={mesValue} />
+        </div>
+
         <div className="min-w-[180px] flex-1">
           <label className="label font-semibold" htmlFor="search">
             Buscar
