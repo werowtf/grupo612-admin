@@ -41,11 +41,16 @@ const STATUSES: TxStatus[] = ["PENDIENTE", "CONCILIADO", "IGNORADO"];
 export function TransactionsTable({
   rows,
   categoryOrder = DEFAULT_CATEGORIES,
+  showTotals = false,
 }: {
   rows: TxRow[];
   categoryOrder?: TxCategory[];
+  showTotals?: boolean;
 }) {
   const CATEGORIES = categoryOrder;
+  const categoryTotals = CATEGORIES.map((c) =>
+    rows.filter((r) => r.category === c).reduce((sum, r) => sum + r.amount, 0),
+  );
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -169,6 +174,32 @@ export function TransactionsTable({
               </tr>
             ))}
           </tbody>
+          {showTotals && (
+            <tfoot>
+              <tr className="border-t border-border bg-table-header font-semibold">
+                <td className="px-2 py-2 sm:px-3">Total</td>
+                <td className="hidden px-3 py-2 sm:table-cell" />
+                <td className="px-2 py-2 text-xs font-normal text-muted-foreground sm:px-3">
+                  {rows.length} mov.
+                </td>
+                {CATEGORIES.map((c, i) => (
+                  <td
+                    key={c}
+                    className={cn(
+                      "hidden whitespace-nowrap px-3 py-2 text-right tabular-nums sm:table-cell",
+                      c === "COMISION" ? categoryText[c] : undefined,
+                    )}
+                  >
+                    {categoryTotals[i] !== 0 ? formatMXN(categoryTotals[i]) : "—"}
+                  </td>
+                ))}
+                <td className="px-2 py-2 text-right tabular-nums sm:hidden">
+                  {formatMXN(rows.reduce((sum, r) => sum + r.amount, 0))}
+                </td>
+                <td className="hidden px-3 py-2 sm:table-cell" />
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
     </div>
