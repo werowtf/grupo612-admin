@@ -7,7 +7,15 @@ import { TransactionsTable, type TxRow } from "@/components/transactions-table";
 import { formatDate, formatMXN, cn } from "@/lib/utils";
 import { bankLabels } from "@/lib/labels";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { Bank } from "@/generated/prisma/enums";
+import type { Bank, TxCategory } from "@/generated/prisma/enums";
+
+const STATEMENT_CATEGORY_ORDER: TxCategory[] = [
+  "DEPOSITO",
+  "COMISION",
+  "GASTO_TARJETA",
+  "TRANSFERENCIA",
+  "CHEQUE",
+];
 
 export interface StatementRow {
   id: string;
@@ -92,7 +100,7 @@ export function StatementRows({ statements }: { statements: StatementRow[] }) {
                 {pending && !rows ? (
                   <p className="p-2 text-sm text-muted-foreground">Cargando movimientos…</p>
                 ) : (
-                  <TransactionsTable rows={rows ?? []} />
+                  <TransactionsTable rows={rows ?? []} categoryOrder={STATEMENT_CATEGORY_ORDER} />
                 )}
               </td>
             </tr>

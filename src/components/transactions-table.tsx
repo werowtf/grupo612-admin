@@ -29,7 +29,7 @@ export interface TxRow {
   autoCategorized: boolean;
 }
 
-const CATEGORIES: TxCategory[] = [
+const DEFAULT_CATEGORIES: TxCategory[] = [
   "DEPOSITO",
   "TRANSFERENCIA",
   "GASTO_TARJETA",
@@ -38,7 +38,14 @@ const CATEGORIES: TxCategory[] = [
 ];
 const STATUSES: TxStatus[] = ["PENDIENTE", "CONCILIADO", "IGNORADO"];
 
-export function TransactionsTable({ rows }: { rows: TxRow[] }) {
+export function TransactionsTable({
+  rows,
+  categoryOrder = DEFAULT_CATEGORIES,
+}: {
+  rows: TxRow[];
+  categoryOrder?: TxCategory[];
+}) {
+  const CATEGORIES = categoryOrder;
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
