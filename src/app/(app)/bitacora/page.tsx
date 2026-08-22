@@ -142,6 +142,7 @@ export default async function BitacoraPage() {
                       {l.createdAt.toLocaleTimeString("es-MX", {
                         hour: "2-digit",
                         minute: "2-digit",
+                        timeZone: "America/Mazatlan",
                       })}
                     </td>
                     <td className="px-3 py-2">{l.user?.name ?? "—"}</td>

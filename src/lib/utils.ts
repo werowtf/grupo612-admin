@@ -17,10 +17,14 @@ export function formatMXN(value: number | string | { toString(): string }): stri
   return currencyFmt.format(Number.isFinite(n) ? n : 0);
 }
 
+// Las fechas de negocio (cortes, movimientos, periodos de estados de cuenta)
+// se guardan como medianoche UTC para representar un día de calendario puro,
+// sin importar en qué zona horaria corra el proceso que las renderiza.
 const dateFmt = new Intl.DateTimeFormat("es-MX", {
   day: "2-digit",
   month: "short",
   year: "numeric",
+  timeZone: "UTC",
 });
 
 export function formatDate(value: Date | string): string {
