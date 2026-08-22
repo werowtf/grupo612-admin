@@ -100,7 +100,12 @@ export function StatementRows({ statements }: { statements: StatementRow[] }) {
                 {pending && !rows ? (
                   <p className="p-2 text-sm text-muted-foreground">Cargando movimientos…</p>
                 ) : (
-                  <TransactionsTable rows={rows ?? []} categoryOrder={STATEMENT_CATEGORY_ORDER} showTotals />
+                  <TransactionsTable
+                    rows={rows ?? []}
+                    categoryOrder={STATEMENT_CATEGORY_ORDER}
+                    showTotals
+                    showStatus={false}
+                  />
                 )}
               </td>
             </tr>

@@ -42,10 +42,12 @@ export function TransactionsTable({
   rows,
   categoryOrder = DEFAULT_CATEGORIES,
   showTotals = false,
+  showStatus = true,
 }: {
   rows: TxRow[];
   categoryOrder?: TxCategory[];
   showTotals?: boolean;
+  showStatus?: boolean;
 }) {
   const CATEGORIES = categoryOrder;
   const categoryTotals = CATEGORIES.map((c) =>
@@ -90,7 +92,9 @@ export function TransactionsTable({
                 </th>
               ))}
               <th className="px-2 py-2 text-right font-semibold sm:hidden">Cargo/Abono</th>
-              <th className="hidden px-3 py-2 text-right font-semibold sm:table-cell">Estatus</th>
+              {showStatus && (
+                <th className="hidden px-3 py-2 text-right font-semibold sm:table-cell">Estatus</th>
+              )}
             </tr>
           </thead>
           <tbody className={cn("divide-y divide-border", pending && "opacity-60")}>
@@ -153,24 +157,26 @@ export function TransactionsTable({
                 >
                   {formatMXN(r.amount)}
                 </td>
-                <td className="hidden px-3 py-2 text-right sm:table-cell">
-                  <Select
-                    value={r.status}
-                    onValueChange={(value) => onStatus(r.id, value)}
-                    disabled={pending}
-                  >
-                    <SelectTrigger className="ml-auto border border-transparent bg-field-bg px-2 py-1 text-xs text-foreground hover:bg-muted/50">
-                      <SelectValue>{statusLabels[r.status]}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {STATUSES.map((s) => (
-                        <SelectItem key={s} value={s}>
-                          {statusLabels[s]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </td>
+                {showStatus && (
+                  <td className="hidden px-3 py-2 text-right sm:table-cell">
+                    <Select
+                      value={r.status}
+                      onValueChange={(value) => onStatus(r.id, value)}
+                      disabled={pending}
+                    >
+                      <SelectTrigger className="ml-auto border border-transparent bg-field-bg px-2 py-1 text-xs text-foreground hover:bg-muted/50">
+                        <SelectValue>{statusLabels[r.status]}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STATUSES.map((s) => (
+                          <SelectItem key={s} value={s}>
+                            {statusLabels[s]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -196,7 +202,7 @@ export function TransactionsTable({
                 <td className="px-2 py-2 text-right tabular-nums sm:hidden">
                   {formatMXN(rows.reduce((sum, r) => sum + r.amount, 0))}
                 </td>
-                <td className="hidden px-3 py-2 sm:table-cell" />
+                {showStatus && <td className="hidden px-3 py-2 sm:table-cell" />}
               </tr>
             </tfoot>
           )}
