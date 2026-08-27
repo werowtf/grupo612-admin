@@ -24,7 +24,7 @@ export function classifyTransaction(
   // en la cuenta...") tanto para depósitos reales como para retiros — hay que
   // distinguirlos por el verbo antes de llegar a la regla de depósito, o un
   // retiro (cargo) se cuela como si fuera dinero entrando.
-  if (/^RETIRO/.test(d) && /NEGOCIOS AFIL/.test(d)) return "COMISION";
+  if (/^RETIRO/.test(d) && /NEGOCIOS AFIL/.test(d)) return "GASTO_TARJETA";
   if (/^RETIRO DE RECURSOS/.test(d)) return "TRANSFERENCIA";
 
   // Abonos "de ajuste" que la contadora agrupa como depósito (contienen IVA/monto).
@@ -42,9 +42,11 @@ export function classifyTransaction(
   }
 
   // Transferencias electrónicas (SPEI / traspasos), incluido el pago de
-  // impuestos federales por transferencia electrónica.
+  // impuestos federales por transferencia electrónica. Una transferencia
+  // recibida es dinero que entra, y la contadora la cuenta como depósito:
+  // "Transferencia" agrupa solo las salidas.
   if (/SPEI|TRANSFEREN|TRASPASO|ENVIADO|INTERBANCARI|IMPTO FED|IMPUESTO FED/.test(d)) {
-    return "TRANSFERENCIA";
+    return direction === "ABONO" ? "DEPOSITO" : "TRANSFERENCIA";
   }
 
   // Cheques y documentos pagados (cámara / ventanilla / efectivo).
