@@ -46,15 +46,25 @@ export function visionAvailable(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY);
 }
 
-const money = () => z.number().nullable();
-const text = () => z.string().nullable();
+const money = () => z.number();
+const text = () => z.string();
 
 /**
- * El modelo devuelve todos los campos siempre; `null` significa "no aparece o
- * no se lee con certeza". Pedir null explícito en vez de omitir la clave evita
- * que invente un valor para completar el objeto.
+ * Todos los campos son obligatorios y el modelo reporta aparte, en
+ * `camposNoLegibles`, cuáles no pudo leer.
+ *
+ * Es contraintuitivo pero es lo que permiten las salidas estructuradas: como
+ * máximo 16 campos con tipo unión (`nullable` cuenta como unión) y 24 campos
+ * opcionales. Con ~37 campos, tanto `nullable` como `optional` devuelven un
+ * 400. La lista explícita conserva lo importante — que el modelo pueda decir
+ * "no lo leí" en vez de inventar un número — y además distingue un $0.00 real
+ * (p. ej. "VALES: $0.00") de un campo ilegible.
  */
 const CorteSchema = z.object({
+  camposNoLegibles: z
+    .array(z.string())
+    .describe("Nombres de los campos que no aparecen en el ticket o no se leen con certeza"),
+
   encabezado: text(),
   date: text(),
   turno: text(),
@@ -116,12 +126,26 @@ REGLAS
 - "SOBRANTE(+) O FALTANTE(-)" puede ser negativo; respeta el signo tal como aparece.
 - "date" en formato yyyy-mm-dd. El ticket suele traer la fecha como dd/mm/aaaa: 05/08/2026 es el 5 de agosto de 2026, no el 8 de mayo.
 - No confundas "VENTA POR TIPO DE PRODUCTO" (alimentos/bebidas) con "CORTESIA ALIMENTOS/BEBIDAS" ni con "DESCUENTO ALIMENTOS/BEBIDAS": son secciones distintas más abajo del ticket.
-- "efectivoDeclarado" es el efectivo final declarado en caja; "efectivoInicial" es el fondo con el que abrió.
+- La sección "CAJA" (arriba del ticket) lista movimientos de efectivo con signo. Mapea línea por línea, sin saltarte ninguna:
+    "+EFECTIVO INIC" -> efectivoInicial
+    "+DEPOSITOS EFE" -> depositos
+    "-RETIROS EFECT" -> retiros
+    "EFECTIVO FINA"  -> efectivoDeclarado
+  Son renglones consecutivos y parecidos; no confundas "-RETIROS EFECT" con la línea vecina "-PROPINAS PAGA" (esa no se captura), ni dejes retiros en 0 si el ticket trae un importe ahí.
+- Verificación útil: efectivoInicial + efectivo + tarjeta + vales + otros + depositos - retiros - propinas pagadas = "SALDO FINAL". Si tu lectura no cuadra con el SALDO FINAL impreso, revisa qué renglón leíste mal antes de responder.
 - "encabezado" es el nombre del negocio impreso arriba del ticket, tal cual (por ejemplo "BIZNAGA BAJA BISTRO ROOF EXPERIENCE").
-- Si un dato no aparece en el ticket, o no lo puedes leer con certeza, devuelve null. NUNCA inventes ni estimes un valor: es preferible que el usuario lo capture a mano a que quede un número equivocado en la contabilidad.`;
+
+CAMPOS QUE NO PUEDAS LEER
+El esquema obliga a mandar todos los campos, así que cuando un dato NO aparece en el ticket o no lo lees con certeza:
+1. Manda 0 (o "" si es texto) en ese campo, y
+2. Agrega su nombre exacto a "camposNoLegibles".
+
+Esa lista es la única forma de decir "no lo leí": los campos que NO estén ahí se toman como leídos con certeza y se guardan en la contabilidad. NUNCA inventes ni estimes un valor.
+
+Ojo con la diferencia: si el ticket dice "VALES: $0.00", entonces pagoVales es 0 y NO va en camposNoLegibles, porque sí lo leíste. Solo van los que están ausentes o ilegibles.`;
 
 const USER_PROMPT =
-  "Extrae los datos del ticket CORTE Z de esta foto. Recuerda: solo del Corte Z, y null en lo que no se lea con certeza.";
+  "Extrae los datos del ticket CORTE Z de esta foto. Recuerda: solo del Corte Z, y lista en camposNoLegibles todo lo que no se lea con certeza.";
 
 /** Lee un corte de caja desde una foto usando el modelo de visión. */
 export async function parseCorteVision(
@@ -154,7 +178,10 @@ export async function parseCorteVision(
         ],
       },
     ],
-    output_config: { format: zodOutputFormat(CorteSchema) },
+    // El esfuerzo alto (por defecto) tardaba ~60s, por encima del corte de la
+    // ruta y demasiado para un cajero esperando. En "medium" la lectura del
+    // ticket sale igual de precisa en bastante menos tiempo.
+    output_config: { effort: "medium", format: zodOutputFormat(CorteSchema) },
   });
 
   if (response.stop_reason === "refusal") {
@@ -165,10 +192,16 @@ export async function parseCorteVision(
     throw new VisionError("No se pudo leer el ticket. Intenta con otra foto o captura a mano.");
   }
 
-  const { encabezado, ...fields } = parsed;
+  const { encabezado, camposNoLegibles, ...fields } = parsed;
+  const ilegibles = new Set(camposNoLegibles ?? []);
+
   const draft: CorteDraft = {};
   const detected: (keyof CorteDraft)[] = [];
   for (const [key, value] of Object.entries(fields)) {
+    // Lo que el modelo marcó como ilegible viene relleno con 0 / "" para
+    // cumplir el esquema: descartarlo es justo lo que evita guardar un número
+    // inventado. El usuario lo captura a mano en la pantalla de revisión.
+    if (ilegibles.has(key)) continue;
     if (value === null || value === undefined || value === "") continue;
     (draft as Record<string, unknown>)[key] = value;
     detected.push(key as keyof CorteDraft);

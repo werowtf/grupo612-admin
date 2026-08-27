@@ -3,10 +3,18 @@
  * El OCR es ruidoso (mayúsculas mal leídas, acentos perdidos), así que se
  * compara sobre texto normalizado (mayúsculas, sin acentos).
  */
+/*
+ * El orden importa: gana la primera coincidencia, así que van primero los
+ * nombres propios de cada negocio y al final los lemas genéricos.
+ *
+ * "ROOF EXPERIENCE" NO identifica a un negocio por sí solo: el encabezado de
+ * Biznaga es "BIZNAGA BAJA BISTRO / ROOF EXPERIENCE", así que con este lema
+ * primero, los cortes de Biznaga se asignaban a UNO Bar.
+ */
 const VENUE_HEADER_HINTS: { venueName: string; hints: string[] }[] = [
-  { venueName: "UNO Bar", hints: ["ROOF EXPERIENCE"] },
-  { venueName: "612 Rooftop", hints: ["SEIS UNO DOS"] },
-  { venueName: "Biznaga", hints: ["BIZNAGA BAJA BISTRO"] },
+  { venueName: "Biznaga", hints: ["BIZNAGA BAJA BISTRO", "BIZNAGA"] },
+  { venueName: "612 Rooftop", hints: ["SEIS UNO DOS", "612 ROOFTOP"] },
+  { venueName: "UNO Bar", hints: ["UNO BAR", "ROOF EXPERIENCE"] },
 ];
 
 function normalize(text: string): string {
