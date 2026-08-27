@@ -35,9 +35,9 @@ function draftToValues(draft: CorteDraft): Values {
 const OCR_TIMEOUT_MS = 55_000;
 
 export function CorteEditor({ venueId, venueName, corteId, initialValues, initialSource }: Props) {
-  const [method, setMethod] = useState<Method>(
-    initialSource && initialSource !== "MANUAL" ? initialSource : "MANUAL",
-  );
+  // Al capturar un corte nuevo se arranca en foto/PDF, que es el flujo diario;
+  // al editar uno existente se respeta cómo se capturó.
+  const [method, setMethod] = useState<Method>(initialSource ?? "OCR");
   const [values, setValues] = useState<Values>(initialValues ?? {});
   const [detected, setDetected] = useState<Set<string>>(new Set());
   const [source, setSource] = useState<CorteSource>(initialSource ?? "MANUAL");
