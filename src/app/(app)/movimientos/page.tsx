@@ -81,7 +81,9 @@ export default async function MovimientosPage({
     search: sp.search?.trim() || undefined,
     dateFrom,
     dateTo,
-    take: 300,
+    // La vista está acotada a un mes; 2000 cubre con margen incluso un mes
+    // de actividad muy alta sin arriesgar recortar movimientos en silencio.
+    take: 2000,
   };
 
   const { rows, total } = await getVenueTransactions(selected.id, filters);
