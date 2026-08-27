@@ -30,17 +30,22 @@ export function classifyTransaction(
   // Abonos "de ajuste" que la contadora agrupa como depósito (contienen IVA/monto).
   if ((/\bBONIF/.test(d) || /CAMBIO DE MONEDA/.test(d)) && direction === "ABONO") return "DEPOSITO";
 
-  // Comisiones y cargos por servicio (incluye IVA de comisión).
+  // Comisiones y cargos por servicio (incluye IVA de comisión). Ojo con los
+  // límites de palabra: sin \b, ANUALIDAD casa dentro de "MANUALIDADES" y
+  // manda una compra en un comercio a Comisión.
   if (
-    /COMISION|COMISION POR|\bIVA\b|TASA DE DESCUENTO|RENTA TERMINAL|MANEJO DE CUENTA|ANUALIDAD|EMISION DE CHEQUERA/.test(
+    /COMISION|COMISION POR|\bIVA\b|TASA DE DESCUENTO|RENTA TERMINAL|MANEJO DE CUENTA|\bANUALIDAD|EMISION DE CHEQUERA/.test(
       d,
     )
   ) {
     return "COMISION";
   }
 
-  // Transferencias electrónicas (SPEI / traspasos).
-  if (/SPEI|TRANSFEREN|TRASPASO|ENVIADO|INTERBANCARI/.test(d)) return "TRANSFERENCIA";
+  // Transferencias electrónicas (SPEI / traspasos), incluido el pago de
+  // impuestos federales por transferencia electrónica.
+  if (/SPEI|TRANSFEREN|TRASPASO|ENVIADO|INTERBANCARI|IMPTO FED|IMPUESTO FED/.test(d)) {
+    return "TRANSFERENCIA";
+  }
 
   // Cheques y documentos pagados (cámara / ventanilla / efectivo).
   if (/CHEQUE|CHEQUERA|DOC\.? PAGADO|DOCUMENTO PAGADO|PAGO CHEQUE|PGO CHEQUE|CAMARA|CAMARA DE COMP/.test(d)) {
