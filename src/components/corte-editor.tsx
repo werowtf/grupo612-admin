@@ -212,9 +212,9 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
   }
 
   const methods: { id: Method; label: string; icon: React.ComponentType<{ className?: string }>; hint: string }[] = [
-    { id: "MANUAL", label: "Captura manual", icon: PencilLine, hint: "Escribe los datos del corte." },
-    { id: "EXCEL", label: "Subir Excel", icon: FileSpreadsheet, hint: "Export de Soft Restaurant (.xlsx)." },
     { id: "OCR", label: "Subir foto o PDF", icon: Camera, hint: "Foto del ticket o PDF del corte." },
+    { id: "EXCEL", label: "Subir Excel", icon: FileSpreadsheet, hint: "Export de Soft Restaurant (.xlsx)." },
+    { id: "MANUAL", label: "Captura manual", icon: PencilLine, hint: "Escribe los datos del corte." },
   ];
 
   return (
