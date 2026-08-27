@@ -6,9 +6,11 @@ import { createOcrWorker, type OcrProgress } from "@/lib/ocr-worker";
 /**
  * Lee un corte de caja desde una imagen (foto del ticket) usando OCR (Tesseract,
  * español). El texto reconocido se mapea a campos con el extractor por etiquetas.
- * Es "mejor esfuerzo": la calidad depende de la foto; el usuario revisa/edita.
- * `onProgress` (opcional) recibe el avance real reportado por Tesseract, para
- * que la UI pueda mostrar un porcentaje en vez de quedarse sin retroalimentación.
+ *
+ * Es el camino de respaldo: solo acierta con una foto limpia de un único
+ * ticket, de frente y bien iluminada. Cuando hay credencial configurada se usa
+ * {@link import("./vision").parseCorteVision} en su lugar, que sí resuelve las
+ * fotos reales de caja (varios documentos, ángulo, sombras).
  */
 export async function parseCorteImage(
   buffer: Buffer,

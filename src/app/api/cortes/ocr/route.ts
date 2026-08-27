@@ -1,5 +1,11 @@
 import { getCurrentUser } from "@/lib/auth";
 import { parseCorteImage } from "@/lib/cortes/ocr";
+import {
+  parseCorteVision,
+  resolveMediaType,
+  visionAvailable,
+  VisionError,
+} from "@/lib/cortes/vision";
 
 // El OCR (descarga del idioma + reconocimiento) puede tardar más que el límite
 // por defecto de una función serverless; ampliamos el máximo permitido.
@@ -71,18 +77,32 @@ export async function POST(req: Request) {
       }, HARD_TIMEOUT_MS);
 
       try {
-        const result = await parseCorteImage(buffer, (p) => {
-          safeEnqueue({ type: "progress", status: p.status, progress: p.progress });
-        });
+        let result;
+        if (visionAvailable()) {
+          // El modelo de visión no reporta avance parcial, así que mandamos un
+          // solo evento para que la UI no se quede sin retroalimentación.
+          safeEnqueue({ type: "progress", status: "leyendo la foto", progress: 0.3 });
+          const mediaType = resolveMediaType(file.name, file.type);
+          result = await parseCorteVision(buffer, mediaType);
+        } else {
+          result = await parseCorteImage(buffer, (p) => {
+            safeEnqueue({ type: "progress", status: p.status, progress: p.progress });
+          });
+        }
         clearTimeout(timeout);
         safeEnqueue({ type: "done", ok: true, result });
       } catch (err) {
         clearTimeout(timeout);
-        console.error("Error OCR de corte:", err);
+        console.error("Error al leer el corte:", err);
         safeEnqueue({
           type: "done",
           ok: false,
-          error: "No se pudo leer el ticket. Intenta con otra foto o captura los datos manualmente.",
+          // VisionError trae un mensaje accionable (formato, tamaño, credencial);
+          // cualquier otro error se reporta en genérico.
+          error:
+            err instanceof VisionError
+              ? err.message
+              : "No se pudo leer el ticket. Intenta con otra foto o captura los datos manualmente.",
         });
       } finally {
         finish();
