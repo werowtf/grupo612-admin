@@ -4,6 +4,7 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
 import type { CorteDraft, CorteExtraction } from "./types";
 import { detectVenueFromText } from "./venue-detect";
+import { validarCuadres } from "./validate";
 
 /**
  * Extrae un corte de caja desde una foto o un PDF usando un modelo de visión.
@@ -228,5 +229,6 @@ export async function parseCorteVision(
     rawText: encabezado ?? undefined,
     detected,
     detectedVenueName: encabezado ? detectVenueFromText(encabezado) : undefined,
+    warnings: validarCuadres(draft),
   };
 }

@@ -46,6 +46,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
   const [ocrPending, setOcrPending] = useState(false);
   const [ocrProgress, setOcrProgress] = useState<number | null>(null);
   const [procMsg, setProcMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [warnings, setWarnings] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [saveState, saveAction, saving] = useActionState(saveCorteAction, {});
@@ -60,11 +61,13 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
     extractionSource: CorteSource,
     name: string,
     detectedVenueName?: string,
+    extractionWarnings?: string[],
   ) {
     setValues((v) => ({ ...v, ...draftToValues(draft) }));
     setDetected(new Set(detectedKeys));
     setSource(extractionSource);
     setFileName(name);
+    setWarnings(extractionWarnings ?? []);
     const n = detectedKeys.length;
 
     if (detectedVenueName && detectedVenueName !== venueName) {
@@ -104,7 +107,14 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
           setProcMsg({ ok: false, text: res.error });
           return;
         }
-        applyExtraction(res.extraction.draft, res.extraction.detected as string[], res.extraction.source, file.name);
+        applyExtraction(
+          res.extraction.draft,
+          res.extraction.detected as string[],
+          res.extraction.source,
+          file.name,
+          undefined,
+          res.extraction.warnings,
+        );
       } catch (err) {
         console.error("Error al procesar archivo:", err);
         setProcMsg({
@@ -155,7 +165,13 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
             | {
                 type: "done";
                 ok: true;
-                result: { draft: CorteDraft; detected: string[]; source: CorteSource; detectedVenueName?: string };
+                result: {
+                  draft: CorteDraft;
+                  detected: string[];
+                  source: CorteSource;
+                  detectedVenueName?: string;
+                  warnings?: string[];
+                };
               }
             | { type: "done"; ok: false; error: string };
 
@@ -168,6 +184,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
               evt.result.source,
               file.name,
               evt.result.detectedVenueName,
+              evt.result.warnings,
             );
           } else {
             setProcMsg({ ok: false, text: evt.error });
@@ -273,6 +290,24 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
               {procMsg.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
               {procMsg.text}
             </p>
+          )}
+
+          {warnings.length > 0 && (
+            <div className="flex items-start gap-2 rounded-lg bg-pending-bg px-3 py-2 text-sm text-pending">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div className="min-w-0">
+                <p className="font-medium">
+                  {warnings.length === 1
+                    ? "Un total del ticket no cuadra:"
+                    : `${warnings.length} totales del ticket no cuadran:`}
+                </p>
+                <ul className="mt-1 list-disc space-y-1 pl-4">
+                  {warnings.map((w) => (
+                    <li key={w}>{w}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           )}
         </div>
       )}

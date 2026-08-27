@@ -1,6 +1,7 @@
 import ExcelJS from "exceljs";
 import type { CorteExtraction } from "./types";
 import { extractCorteFromLines } from "./extract";
+import { validarCuadres } from "./validate";
 
 function cellText(value: ExcelJS.CellValue): string {
   if (value == null) return "";
@@ -47,5 +48,6 @@ export async function parseCorteExcel(buffer: Buffer): Promise<CorteExtraction> 
     draft,
     raw: { rows: rawRows.slice(0, 200) },
     detected,
+    warnings: validarCuadres(draft),
   };
 }

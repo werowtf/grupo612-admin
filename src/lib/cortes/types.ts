@@ -57,6 +57,11 @@ export interface CorteExtraction {
   raw?: Record<string, unknown>;
   /** Campos que sí se pudieron detectar (para resaltar en la revisión). */
   detected: (keyof CorteDraft)[];
+  /**
+   * Cuadres del ticket que no dan (ver `validate.ts`). Señalan qué campos
+   * revisar antes de guardar; no bloquean nada.
+   */
+  warnings?: string[];
   /** Negocio inferido del encabezado del ticket (OCR), si se reconoció alguno. */
   detectedVenueName?: string;
 }
