@@ -7,7 +7,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth";
 import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
-import { parseStatement, computeDedupeHash, ImportError } from "@/lib/import";
+import { parseStatement, computeDedupeHash, classifyWithMatch, ImportError } from "@/lib/import";
 import { bankLabels } from "@/lib/labels";
 import { toTxRow } from "@/lib/serialize";
 import type { TxRow } from "@/components/transactions-table";
@@ -20,6 +20,10 @@ export interface ImportResult {
   total?: number;
   totalAbonos?: number;
   totalCargos?: number;
+  /** Movimientos cuyo concepto no casó con ninguna regla de clasificación. */
+  unmatched?: number;
+  /** Conceptos distintos sin regla, para revisarlos en Movimientos. */
+  unmatchedSamples?: string[];
 }
 
 export async function importStatementAction(
@@ -127,12 +131,22 @@ export async function importStatementAction(
     };
   }
 
+  // Los bancos cambian la redacción de un mes a otro. Cuando un concepto no
+  // casa con ninguna regla se usa el criterio por defecto, que puede quedar en
+  // la categoría equivocada sin que nadie lo note; lo reportamos para revisión.
+  const unmatchedDescs = new Set<string>();
+  for (const r of parsed.rows) {
+    if (!classifyWithMatch(r.description, r.direction).matched) {
+      unmatchedDescs.add(r.description.split("|")[0].trim());
+    }
+  }
+
   await logAudit({
     userId: user.id,
     action: "statement.import",
     entity: "BankStatement",
     entityId: statement.id,
-    meta: { fileName: file.name, imported: count, duplicates },
+    meta: { fileName: file.name, imported: count, duplicates, unmatched: unmatchedDescs.size },
   });
 
   revalidatePath("/conciliacion");
@@ -147,6 +161,8 @@ export async function importStatementAction(
     total: parsed.rows.length,
     totalAbonos: parsed.totalAbonos,
     totalCargos: parsed.totalCargos,
+    unmatched: unmatchedDescs.size,
+    unmatchedSamples: [...unmatchedDescs].slice(0, 8),
   };
 }
 

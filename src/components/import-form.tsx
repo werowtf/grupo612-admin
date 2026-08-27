@@ -113,6 +113,27 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
         </div>
       )}
 
+      {state.ok && (state.unmatched ?? 0) > 0 && (
+        <div className="flex items-start gap-2 rounded-lg bg-pending-bg px-3 py-2 text-sm text-pending">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <div className="min-w-0">
+            <p>
+              <strong>{state.unmatched}</strong>{" "}
+              {state.unmatched === 1 ? "concepto no coincidió" : "conceptos no coincidieron"} con
+              ninguna regla y {state.unmatched === 1 ? "se clasificó" : "se clasificaron"} por
+              defecto. Revísalos en Movimientos y corrige la categoría si hace falta.
+            </p>
+            <ul className="mt-1 space-y-0.5">
+              {state.unmatchedSamples?.map((s) => (
+                <li key={s} className="truncate text-xs opacity-80">
+                  · {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
       <Button type="submit" disabled={pending}>
         <UploadCloud className="h-4 w-4" />
         {pending ? "Procesando…" : "Importar"}
