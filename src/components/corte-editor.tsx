@@ -197,7 +197,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
   const methods: { id: Method; label: string; icon: React.ComponentType<{ className?: string }>; hint: string }[] = [
     { id: "MANUAL", label: "Captura manual", icon: PencilLine, hint: "Escribe los datos del corte." },
     { id: "EXCEL", label: "Subir Excel", icon: FileSpreadsheet, hint: "Export de Soft Restaurant (.xlsx)." },
-    { id: "OCR", label: "Subir foto", icon: Camera, hint: "Foto del ticket Corte Z (OCR)." },
+    { id: "OCR", label: "Subir foto o PDF", icon: Camera, hint: "Foto del ticket o PDF del corte." },
   ];
 
   return (
@@ -233,13 +233,15 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex-1">
               <label className="label" htmlFor="corte-file">
-                {method === "EXCEL" ? "Archivo Excel (.xlsx)" : "Foto del ticket (.jpg / .png)"}
+                {method === "EXCEL"
+                  ? "Archivo Excel (.xlsx)"
+                  : "Foto del ticket (.jpg / .png) o PDF del corte"}
               </label>
               <Input
                 ref={fileRef}
                 id="corte-file"
                 type="file"
-                accept={method === "EXCEL" ? ".xlsx,.xls" : "image/*"}
+                accept={method === "EXCEL" ? ".xlsx,.xls" : "image/*,application/pdf,.pdf"}
                 className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-600"
               />
             </div>
@@ -254,7 +256,9 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
           </div>
           {method === "OCR" && (
             <p className="text-xs text-muted-foreground">
-              El OCR es un apoyo: en fotos de baja calidad algunos campos pueden salir mal. Revísalos siempre.
+              La lectura automática es un apoyo: revisa siempre los campos antes de guardar. El PDF
+              del sistema se lee mejor que una foto; los campos que no se puedan leer con certeza se
+              dejan vacíos para que los captures.
             </p>
           )}
           {procMsg && (

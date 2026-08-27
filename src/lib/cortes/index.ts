@@ -11,6 +11,7 @@ export { parseCorteImage } from "./ocr";
 
 const IMAGE_EXT = /\.(jpe?g|png|webp|bmp|tiff?)$/i;
 const EXCEL_EXT = /\.(xlsx|xls)$/i;
+const PDF_EXT = /\.pdf$/i;
 
 /** Detecta el tipo de archivo y extrae el borrador del corte. */
 export async function parseCorteFile(
@@ -18,8 +19,13 @@ export async function parseCorteFile(
   buffer: Buffer,
 ): Promise<CorteExtraction> {
   if (EXCEL_EXT.test(fileName)) return parseCorteExcel(buffer);
+  if (PDF_EXT.test(fileName)) {
+    // Los PDF solo se leen con el modelo de visión; Tesseract no los abre.
+    const { parseCorteVision, resolveMediaType } = await import("./vision");
+    return parseCorteVision(buffer, resolveMediaType(fileName));
+  }
   if (IMAGE_EXT.test(fileName)) return parseCorteImage(buffer);
   throw new CorteImportError(
-    "Formato no soportado. Sube un Excel (.xlsx) de Soft Restaurant o una foto (.jpg/.png) del ticket.",
+    "Formato no soportado. Sube un Excel (.xlsx) de Soft Restaurant, un PDF, o una foto (.jpg/.png) del ticket.",
   );
 }

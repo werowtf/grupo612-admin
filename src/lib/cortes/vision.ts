@@ -6,7 +6,7 @@ import type { CorteDraft, CorteExtraction } from "./types";
 import { detectVenueFromText } from "./venue-detect";
 
 /**
- * Extrae un corte de caja desde una foto usando un modelo de visión.
+ * Extrae un corte de caja desde una foto o un PDF usando un modelo de visión.
  *
  * Sustituye al OCR por plantillas (Tesseract), que solo funcionaba con una
  * foto limpia de un solo ticket: en las fotos reales de caja aparecen varios
@@ -14,7 +14,13 @@ import { detectVenueFromText } from "./venue-detect";
  * en ángulo y con sombras, y el texto de unos se mezclaba con el de otros.
  */
 
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // límite de la API por imagen
+// Las imágenes topan en 5 MB por archivo; los PDF viajan como documento y el
+// límite real es el de la petición completa (32 MB), pero base64 infla ~33%,
+// así que dejamos margen.
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_PDF_BYTES = 20 * 1024 * 1024;
+
+const PDF_MEDIA_TYPE = "application/pdf";
 
 const MEDIA_TYPES = {
   jpg: "image/jpeg",
@@ -22,6 +28,7 @@ const MEDIA_TYPES = {
   png: "image/png",
   webp: "image/webp",
   gif: "image/gif",
+  pdf: PDF_MEDIA_TYPE,
 } as const;
 
 export type SupportedMediaType = (typeof MEDIA_TYPES)[keyof typeof MEDIA_TYPES];
@@ -38,7 +45,7 @@ export function resolveMediaType(fileName: string, declared?: string): Supported
   const ext = fileName.toLowerCase().split(".").pop() ?? "";
   const byExt = MEDIA_TYPES[ext as keyof typeof MEDIA_TYPES];
   if (byExt) return byExt;
-  throw new VisionError("Formato de imagen no soportado. Usa JPG, PNG o WEBP.");
+  throw new VisionError("Formato no soportado. Sube una foto (JPG/PNG) o un PDF.");
 }
 
 /** ¿Está configurada la credencial para usar el modelo de visión? */
@@ -110,16 +117,18 @@ const CorteSchema = z.object({
   cuentaPromedio: money(),
 });
 
-const SYSTEM = `Eres un asistente contable de Grupo 612 (restaurantes en La Paz, BCS). Extraes los datos de un ticket "Corte Z" de Soft Restaurant a partir de una foto.
+const SYSTEM = `Eres un asistente contable de Grupo 612 (restaurantes en La Paz, BCS). Extraes los datos de un corte de caja de Soft Restaurant.
 
-CONTEXTO DE LA FOTO
-La foto se toma en la caja al cierre y suele incluir VARIOS documentos a la vez:
-- El ticket "CORTE Z" impreso por Soft Restaurant (el único del que debes extraer datos).
-- Una hoja manuscrita "CORTE DE CAJA" con el conteo de monedas y billetes.
-- El "INFORME DE CIERRE" de la terminal bancaria (BanBajío/Santander).
-- Vales de caja por retiros de efectivo.
+DE DÓNDE VIENE EL DOCUMENTO
+Te puede llegar de dos formas:
+1. Un PDF generado por el sistema: un solo documento, texto limpio. Es el caso fácil.
+2. Una foto tomada en la caja al cierre, que suele incluir VARIOS documentos a la vez:
+   - El ticket del corte impreso por Soft Restaurant (el único del que debes extraer datos).
+   - Una hoja manuscrita "CORTE DE CAJA" con el conteo de monedas y billetes.
+   - El "INFORME DE CIERRE" de la terminal bancaria (BanBajío/Santander).
+   - Vales de caja por retiros de efectivo.
 
-Extrae ÚNICAMENTE del ticket CORTE Z. Ignora por completo los otros documentos: sus cifras se parecen pero NO son las mismas.
+Si hay varios documentos, extrae ÚNICAMENTE del corte de Soft Restaurant e ignora los demás: sus cifras se parecen pero NO son las mismas.
 
 REGLAS
 - Devuelve números planos, sin "$" ni separadores de miles: 42697.25, no "$42,697.25".
@@ -147,19 +156,31 @@ Ojo con la diferencia: si el ticket dice "VALES: $0.00", entonces pagoVales es 0
 const USER_PROMPT =
   "Extrae los datos del ticket CORTE Z de esta foto. Recuerda: solo del Corte Z, y lista en camposNoLegibles todo lo que no se lea con certeza.";
 
-/** Lee un corte de caja desde una foto usando el modelo de visión. */
+/** Lee un corte de caja desde una foto o un PDF usando el modelo de visión. */
 export async function parseCorteVision(
   buffer: Buffer,
   mediaType: SupportedMediaType,
 ): Promise<CorteExtraction> {
   if (!visionAvailable()) {
-    throw new VisionError("Falta configurar ANTHROPIC_API_KEY para leer fotos.");
+    throw new VisionError("Falta configurar ANTHROPIC_API_KEY para leer archivos del corte.");
   }
-  if (buffer.byteLength > MAX_IMAGE_BYTES) {
+
+  const isPdf = mediaType === PDF_MEDIA_TYPE;
+  const limit = isPdf ? MAX_PDF_BYTES : MAX_IMAGE_BYTES;
+  if (buffer.byteLength > limit) {
     throw new VisionError(
-      "La foto pesa más de 5 MB. Vuelve a tomarla con menor resolución o compártela comprimida.",
+      isPdf
+        ? "El PDF pesa más de 20 MB. Sube solo las páginas del corte."
+        : "La foto pesa más de 5 MB. Vuelve a tomarla con menor resolución o compártela comprimida.",
     );
   }
+
+  const data = buffer.toString("base64");
+  // El PDF viaja como documento (el modelo lee su texto y su formato); las
+  // fotos van como imagen.
+  const fileBlock: Anthropic.ContentBlockParam = isPdf
+    ? { type: "document", source: { type: "base64", media_type: PDF_MEDIA_TYPE, data } }
+    : { type: "image", source: { type: "base64", media_type: mediaType, data } };
 
   const client = new Anthropic();
   const response = await client.messages.parse({
@@ -169,13 +190,7 @@ export async function parseCorteVision(
     messages: [
       {
         role: "user",
-        content: [
-          {
-            type: "image",
-            source: { type: "base64", media_type: mediaType, data: buffer.toString("base64") },
-          },
-          { type: "text", text: USER_PROMPT },
-        ],
+        content: [fileBlock, { type: "text", text: USER_PROMPT }],
       },
     ],
     // El esfuerzo alto (por defecto) tardaba ~60s, por encima del corte de la
@@ -185,11 +200,11 @@ export async function parseCorteVision(
   });
 
   if (response.stop_reason === "refusal") {
-    throw new VisionError("El modelo no pudo procesar esta imagen. Captura los datos a mano.");
+    throw new VisionError("El modelo no pudo procesar este archivo. Captura los datos a mano.");
   }
   const parsed = response.parsed_output;
   if (!parsed) {
-    throw new VisionError("No se pudo leer el ticket. Intenta con otra foto o captura a mano.");
+    throw new VisionError("No se pudo leer el corte. Intenta con otro archivo o captura a mano.");
   }
 
   const { encabezado, camposNoLegibles, ...fields } = parsed;
