@@ -20,8 +20,15 @@ export function classifyTransaction(
   const primary = description.split("|")[0];
   const d = normalize(primary);
 
+  // BanBajío reutiliza el mismo texto ("Negocios Afiliados", "para depósito
+  // en la cuenta...") tanto para depósitos reales como para retiros — hay que
+  // distinguirlos por el verbo antes de llegar a la regla de depósito, o un
+  // retiro (cargo) se cuela como si fuera dinero entrando.
+  if (/^RETIRO/.test(d) && /NEGOCIOS AFIL/.test(d)) return "COMISION";
+  if (/^RETIRO DE RECURSOS/.test(d)) return "TRANSFERENCIA";
+
   // Abonos "de ajuste" que la contadora agrupa como depósito (contienen IVA/monto).
-  if (/\bBONIF/.test(d) || /CAMBIO DE MONEDA/.test(d)) return "DEPOSITO";
+  if ((/\bBONIF/.test(d) || /CAMBIO DE MONEDA/.test(d)) && direction === "ABONO") return "DEPOSITO";
 
   // Comisiones y cargos por servicio (incluye IVA de comisión).
   if (
@@ -40,8 +47,10 @@ export function classifyTransaction(
     return "CHEQUE";
   }
 
-  // Depósitos (ventas del día, negocios afiliados, depósito genérico).
-  if (/DEPOSITO|NEGOCIOS AFIL|VENTAS DEL DIA/.test(d)) return "DEPOSITO";
+  // Depósitos (ventas del día, negocios afiliados, depósito genérico). Un
+  // depósito real siempre es un abono; si un cargo cae aquí por el texto,
+  // es un retiro mal etiquetado por el banco, no un depósito.
+  if (/DEPOSITO|NEGOCIOS AFIL|VENTAS DEL DIA/.test(d) && direction === "ABONO") return "DEPOSITO";
 
   // Gasto con tarjeta: consumos/compras en comercios pagados con la tarjeta del negocio.
   if (/CONSUMO LOCAL|CONSUMO|COMPRA|PAGO A |DOMICILIAD|CARGO RECURRENTE|SUSCRIP|TARJETA DE DEBITO|TARJETA DE CREDITO/.test(d)) {
