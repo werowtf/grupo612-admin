@@ -13,6 +13,7 @@ export const paymentLabels: Record<PaymentMethod, string> = {
   EFECTIVO: "Efectivo",
   TARJETA: "Tarjeta",
   TRANSFERENCIA: "Transferencia",
+  CHEQUE: "Cheque",
   OTRO: "Otro",
 };
 
@@ -25,27 +26,49 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
   "EFECTIVO",
   "TARJETA",
   "TRANSFERENCIA",
+  "CHEQUE",
   "OTRO",
 ];
 
-/** Categorías sugeridas para egresos (compras y gastos operativos). */
-export const EGRESO_CATEGORIES = [
-  "Insumos / Alimentos",
-  "Bebidas",
-  "Limpieza",
-  "Desechables",
-  "Mantenimiento",
+/**
+ * Conceptos con los que se da de alta un negocio nuevo, tomados del libro
+ * contable que lleva la contadora (UNO Bar, julio 2026).
+ *
+ * Son solo la semilla: a partir del alta, cada negocio administra su propia
+ * lista en la tabla `EntryCategory`, porque cada sede maneja conceptos
+ * distintos en su día a día.
+ */
+export const DEFAULT_EGRESO_CATEGORIES = [
+  "Cocina",
+  "Barra",
+  "Nómina cocina",
+  "Nómina servicio",
+  "Nómina admin",
+  "Pago propinas",
   "Renta",
-  "Servicios (luz/agua/gas)",
-  "Nómina",
-  "Proveedor",
+  "Servicios",
+  "Gas",
+  "Gasolina",
+  "Mantenimiento",
+  "Eq. restaurante",
+  "Limpieza",
+  "Papelería",
+  "Uniformes",
+  "Ambientación",
+  "Publicidad",
+  "Consultas médicas",
+  "Comisiones",
   "Impuestos",
-  "Otro",
+  "Otros",
 ];
 
-/** Categorías sugeridas para ingresos. */
-export const INGRESO_CATEGORIES = ["Venta", "Evento", "Otro ingreso"];
+export const DEFAULT_INGRESO_CATEGORIES = [
+  "Venta diaria",
+  "Covers",
+  "Fondo de emergencia",
+  "Otros ingresos",
+];
 
-export function categoriesFor(type: EntryType): string[] {
-  return type === "INGRESO" ? INGRESO_CATEGORIES : EGRESO_CATEGORIES;
+export function defaultCategoriesFor(type: EntryType): string[] {
+  return type === "INGRESO" ? DEFAULT_INGRESO_CATEGORIES : DEFAULT_EGRESO_CATEGORIES;
 }

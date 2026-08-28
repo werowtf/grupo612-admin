@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getAppContext } from "@/lib/context";
+import { getVenueCategories } from "@/lib/entries/queries";
 import { EntryForm } from "@/components/entry-form";
 
 export default async function NuevoMovimientoPage() {
@@ -13,6 +14,7 @@ export default async function NuevoMovimientoPage() {
     );
   }
   const today = new Date().toISOString().slice(0, 10);
+  const categories = await getVenueCategories(selected.id);
 
   return (
     <div className="space-y-6">
@@ -27,6 +29,7 @@ export default async function NuevoMovimientoPage() {
       <EntryForm
         venues={[{ id: selected.id, name: selected.name }]}
         defaultVenueId={selected.id}
+        categories={categories}
         mode="full"
         redirectTo="/ingresos-egresos"
         initialValues={{ date: today }}

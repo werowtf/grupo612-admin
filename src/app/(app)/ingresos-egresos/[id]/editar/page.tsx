@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { EntryForm } from "@/components/entry-form";
+import { getVenueCategories } from "@/lib/entries/queries";
 import { formatDate } from "@/lib/utils";
 
 export default async function EditarMovimientoPage({
@@ -38,6 +39,8 @@ export default async function EditarMovimientoPage({
     source: entry.source,
   };
 
+  const categories = await getVenueCategories(entry.venueId);
+
   return (
     <div className="space-y-6">
       <div>
@@ -52,6 +55,7 @@ export default async function EditarMovimientoPage({
       <EntryForm
         venues={[{ id: entry.venueId, name: entry.venue.name }]}
         defaultVenueId={entry.venueId}
+        categories={categories}
         mode="full"
         redirectTo={`/ingresos-egresos/${entry.id}`}
         entryId={entry.id}

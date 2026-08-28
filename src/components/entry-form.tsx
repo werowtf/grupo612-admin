@@ -3,7 +3,7 @@
 import { useRef, useState, useActionState } from "react";
 import { ScanLine, Save, AlertCircle, CheckCircle2, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { saveEntryAction, type EntryFormState } from "@/app/(app)/ingresos-egresos/actions";
-import { categoriesFor, PAYMENT_METHODS, paymentLabels } from "@/lib/entries/config";
+import { PAYMENT_METHODS, paymentLabels } from "@/lib/entries/config";
 import type { EntryType } from "@/generated/prisma/enums";
 import type { TicketDraft } from "@/lib/entries/ticket";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,8 @@ const OCR_TIMEOUT_MS = 55_000;
 interface Props {
   venues: { id: string; name: string }[];
   defaultVenueId: string;
+  /** Conceptos del negocio, por tipo. Cada sede lleva su propio catálogo. */
+  categories: Record<EntryType, string[]>;
   mode?: "full" | "compra"; // compra = sólo egreso, foto destacada
   redirectTo: string;
   entryId?: string;
@@ -40,6 +42,7 @@ export function EntryForm({
   entryId,
   initialValues,
   initialType,
+  categories: categoriesByType,
 }: Props) {
   const compra = mode === "compra";
   const [type, setType] = useState<EntryType>(compra ? "EGRESO" : initialType ?? "EGRESO");
@@ -55,7 +58,7 @@ export function EntryForm({
   const [state, action, saving] = useActionState(saveEntryAction, init);
 
   const set = (k: string, v: string) => setValues((p) => ({ ...p, [k]: v }));
-  const categories = categoriesFor(type);
+  const categories = categoriesByType[type] ?? [];
   const showPhoto = type === "EGRESO" || compra;
 
   function applyTicket(d: TicketDraft, detectedKeys: string[], rawText: string) {
@@ -291,7 +294,7 @@ export function EntryForm({
               <SelectValue placeholder="Selecciona…" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((c) => (
+              {categories.map((c: string) => (
                 <SelectItem key={c} value={c}>
                   {c}
                 </SelectItem>

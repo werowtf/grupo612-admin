@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser, getAccessibleVenues } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { EntryForm } from "@/components/entry-form";
+import { getVenueCategories } from "@/lib/entries/queries";
 import { EntriesTable } from "@/components/entries-table";
 
 export default async function ComprasPage() {
@@ -16,6 +17,8 @@ export default async function ComprasPage() {
     orderBy: { createdAt: "desc" },
     take: 30,
   });
+
+  const categories = await getVenueCategories(venues[0].id);
 
   return (
     <div className="space-y-8">
@@ -35,6 +38,7 @@ export default async function ComprasPage() {
         <EntryForm
           venues={venues.map((v) => ({ id: v.id, name: v.name }))}
           defaultVenueId={venues[0].id}
+          categories={categories}
           mode="compra"
           redirectTo="/compras"
           initialValues={{ date: today }}

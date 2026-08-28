@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { Plus, TrendingUp, TrendingDown, Wallet, X } from "lucide-react";
 import { getAppContext } from "@/lib/context";
-import { getEntrySummary, getVenueEntries, type EntryFilters } from "@/lib/entries/queries";
+import {
+  getEntrySummary,
+  getVenueEntries,
+  getVenueCategories,
+  type EntryFilters,
+} from "@/lib/entries/queries";
 import { EntriesTable } from "@/components/entries-table";
 import { StatCard } from "@/components/stat-card";
-import { EGRESO_CATEGORIES, INGRESO_CATEGORIES } from "@/lib/entries/config";
 import { formatMXN } from "@/lib/utils";
 import type { EntryType } from "@/generated/prisma/enums";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -13,8 +17,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const FILTER_TRIGGER_CLASS =
   "h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50";
-
-const ALL_CATEGORIES = [...new Set([...EGRESO_CATEGORIES, ...INGRESO_CATEGORIES])];
 
 export default async function IngresosEgresosPage({
   searchParams,
@@ -40,10 +42,15 @@ export default async function IngresosEgresosPage({
   };
   const hasFilters = Boolean(filters.type || filters.category || filters.search);
 
-  const [summary, { rows, total }] = await Promise.all([
+  const [summary, { rows, total }, categories] = await Promise.all([
     getEntrySummary(selected.id),
     getVenueEntries(selected.id, filters),
+    getVenueCategories(selected.id),
   ]);
+
+  // El filtro ofrece los conceptos del negocio, sin repetir los que existen en
+  // ingresos y egresos a la vez.
+  const allCategories = [...new Set([...categories.EGRESO, ...categories.INGRESO])];
 
   return (
     <div className="space-y-6">
@@ -92,7 +99,7 @@ export default async function IngresosEgresosPage({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todas">Todas</SelectItem>
-              {ALL_CATEGORIES.map((c) => (
+              {allCategories.map((c) => (
                 <SelectItem key={c} value={c}>{c}</SelectItem>
               ))}
             </SelectContent>

@@ -2,6 +2,7 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import type { EntryType } from "@/generated/prisma/enums";
+import { DEFAULT_EGRESO_CATEGORIES, DEFAULT_INGRESO_CATEGORIES } from "./config";
 
 function num(v: { toString(): string } | null | undefined): number {
   return v ? Number(v.toString()) : 0;
@@ -59,4 +60,24 @@ export async function getVenueEntries(venueId: string, filters: EntryFilters = {
     prisma.financialEntry.count({ where }),
   ]);
   return { rows, total };
+}
+
+/**
+ * Conceptos activos del negocio, en el orden configurado. Si el negocio aún no
+ * tiene catálogo (se dio de alta antes de esta función), devuelve la lista por
+ * defecto para que el selector nunca aparezca vacío.
+ */
+export async function getVenueCategories(
+  venueId: string,
+): Promise<Record<EntryType, string[]>> {
+  const rows = await prisma.entryCategory.findMany({
+    where: { venueId, active: true },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+  });
+
+  const out: Record<EntryType, string[]> = { INGRESO: [], EGRESO: [] };
+  for (const r of rows) out[r.type].push(r.name);
+  if (!out.INGRESO.length) out.INGRESO = [...DEFAULT_INGRESO_CATEGORIES];
+  if (!out.EGRESO.length) out.EGRESO = [...DEFAULT_EGRESO_CATEGORIES];
+  return out;
 }
