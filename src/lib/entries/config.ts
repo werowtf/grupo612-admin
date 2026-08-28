@@ -78,40 +78,40 @@ export function defaultCategoriesFor(type: EntryType): string[] {
 }
 
 /**
- * Color por concepto de egreso, tomado tal cual del "LISTA DE CONCEPTOS POR
- * COLOR" del libro contable de la contadora, para que la tabla se lea igual
- * que su Excel.
+ * Color por concepto de egreso. El libro contable de la contadora agrupa
+ * varios conceptos bajo el mismo color (todo lo "operativo" en azul, por
+ * ejemplo) — sirve para su Excel, pero como badge no distingue nada: 8
+ * conceptos del mismo azul son indistinguibles a simple vista. Aquí cada
+ * concepto tiene su propio color, uno por familia de Tailwind, para que el
+ * color sí identifique la categoría.
  */
 const EGRESO_CATEGORY_BADGE: Record<string, string> = {
   Cocina: "bg-green-100 text-green-700",
-  Servicios: "bg-green-100 text-green-700",
-
   Barra: "bg-blue-100 text-blue-700",
-  Ambientación: "bg-blue-100 text-blue-700",
-  "Pago propinas": "bg-blue-100 text-blue-700",
-  Uniformes: "bg-blue-100 text-blue-700",
-  Limpieza: "bg-blue-100 text-blue-700",
-  Publicidad: "bg-blue-100 text-blue-700",
-  "Nómina cocina": "bg-blue-100 text-blue-700",
-  "Nómina servicio": "bg-blue-100 text-blue-700",
-
-  Mantenimiento: "bg-teal-600 text-white",
-  "Eq. restaurante": "bg-teal-600 text-white",
-  Renta: "bg-teal-600 text-white",
-  "Nómina admin": "bg-teal-600 text-white",
-
-  Gas: "bg-yellow-100 text-yellow-800",
+  "Nómina cocina": "bg-indigo-100 text-indigo-700",
+  "Nómina servicio": "bg-violet-100 text-violet-700",
+  "Nómina admin": "bg-purple-100 text-purple-700",
+  "Pago propinas": "bg-fuchsia-100 text-fuchsia-700",
+  Renta: "bg-teal-100 text-teal-700",
+  Servicios: "bg-emerald-100 text-emerald-700",
+  Gas: "bg-amber-100 text-amber-800",
+  Gasolina: "bg-orange-100 text-orange-700",
+  Mantenimiento: "bg-cyan-100 text-cyan-700",
+  "Eq. restaurante": "bg-sky-100 text-sky-700",
+  Limpieza: "bg-lime-100 text-lime-700",
   Papelería: "bg-yellow-100 text-yellow-800",
-  Gasolina: "bg-yellow-100 text-yellow-800",
-
-  "Consultas médicas": "bg-pink-100 text-pink-700",
-
-  Comisiones: "bg-red-100 text-red-700",
-  Impuestos: "bg-red-100 text-red-700",
-
-  Otros: "bg-gray-100 text-gray-600",
+  Uniformes: "bg-rose-100 text-rose-700",
+  Ambientación: "bg-pink-100 text-pink-700",
+  Publicidad: "bg-red-100 text-red-700",
+  "Consultas médicas": "bg-stone-100 text-stone-700",
+  Comisiones: "bg-slate-100 text-slate-700",
+  Impuestos: "bg-zinc-100 text-zinc-700",
+  Otros: "bg-neutral-100 text-neutral-700",
 };
 
+// Sólo para conceptos que no están en la lista (p.ej. uno que un negocio
+// haya renombrado o agregado desde Conceptos): gris neutro, sin asignar un
+// color de la lista de arriba dos veces.
 const DEFAULT_CATEGORY_BADGE = "bg-gray-100 text-gray-600";
 
 export function egresoCategoryBadgeClass(category: string): string {
