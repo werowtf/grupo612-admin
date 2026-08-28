@@ -24,6 +24,7 @@ import {
 export interface DailySaleRow {
   id: string;
   date: string; // ISO yyyy-mm-dd
+  source: "MANUAL" | "CORTE";
   efectivo: number;
   tarjeta: number;
   credito: number;
@@ -52,6 +53,7 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
   const [editing, setEditing] = useState<DailySaleRow | null>(null);
   const [state, action, saving] = useActionState(saveDailySaleAction, init);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     if (state.ok) {
@@ -70,7 +72,9 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
   }
   async function onDelete(id: string) {
     setDeleting(id);
-    await deleteDailySaleAction(id);
+    setDeleteError(null);
+    const res = await deleteDailySaleAction(id);
+    if (res.error) setDeleteError(res.error);
     setDeleting(null);
     router.refresh();
   }
@@ -92,12 +96,25 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold">Venta diaria</h2>
+        <div>
+          <h2 className="text-base font-semibold">Venta diaria</h2>
+          <p className="text-xs text-muted-foreground">
+            Los días con corte de caja se calculan solos (●); usa &ldquo;Registrar venta&rdquo; sólo
+            para los días sin corte.
+          </p>
+        </div>
         <Button type="button" size="sm" onClick={openNew}>
           <Plus className="h-4 w-4" />
           Registrar venta
         </Button>
       </div>
+
+      {deleteError && (
+        <p className="flex items-start gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          {deleteError}
+        </p>
+      )}
 
       {rows.length === 0 ? (
         <div className="card p-8 text-center text-sm text-muted-foreground">
@@ -131,6 +148,10 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
                   return (
                     <tr key={r.id} className="hover:bg-muted/60">
                       <td className="whitespace-nowrap px-3 py-2 font-semibold">
+                        <span
+                          title={r.source === "CORTE" ? "Calculada del corte de caja del día" : "Capturada a mano"}
+                          className={cn("mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle", r.source === "CORTE" ? "bg-brand-600" : "bg-muted-foreground/40")}
+                        />
                         {new Date(`${r.date}T00:00:00.000Z`).toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" })}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{diaDeSemana(r.date)}</td>
@@ -148,19 +169,27 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
                       <td className="px-3 py-2 text-right tabular-nums font-semibold">{formatMXN(sinImp)}</td>
                       <td className="px-3 py-2">
                         <div className="flex items-center gap-1">
-                          <Button type="button" variant="ghost" size="icon-sm" title="Editar" onClick={() => openEdit(r)}>
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
                           <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
-                            title="Borrar"
-                            disabled={deleting === r.id}
-                            onClick={() => onDelete(r.id)}
+                            title={r.source === "CORTE" ? "Ver / anotar status de crédito" : "Editar"}
+                            onClick={() => openEdit(r)}
                           >
-                            <Trash2 className="h-3.5 w-3.5 text-danger" />
+                            <Pencil className="h-3.5 w-3.5" />
                           </Button>
+                          {r.source === "MANUAL" && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon-sm"
+                              title="Borrar"
+                              disabled={deleting === r.id}
+                              onClick={() => onDelete(r.id)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5 text-danger" />
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -195,42 +224,50 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
           </DialogHeader>
           <form action={action} className="space-y-3">
             <input type="hidden" name="venueId" value={venueId} />
+            {editing?.source === "CORTE" && (
+              <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
+                Estos montos vienen del corte de caja del día y se recalculan solos. Sólo puedes anotar
+                el status de crédito aquí; para corregir un monto, edita el corte.
+              </p>
+            )}
             <div>
               <label className="label font-semibold" htmlFor="date">Fecha</label>
               <Input id="date" name="date" type="date" defaultValue={editing?.date} required readOnly={!!editing} />
-              {editing && (
+              {editing && editing.source === "MANUAL" && (
                 <p className="mt-1 text-xs text-muted-foreground">
                   Para cambiar la fecha, borra este registro y captúralo de nuevo.
                 </p>
               )}
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <label className="label font-semibold" htmlFor="efectivo">Efectivo</label>
-                <Input id="efectivo" name="efectivo" type="number" step="0.01" min="0" defaultValue={editing?.efectivo ?? 0} />
+            <fieldset disabled={editing?.source === "CORTE"} className="space-y-3 disabled:opacity-60">
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="label font-semibold" htmlFor="efectivo">Efectivo</label>
+                  <Input id="efectivo" name="efectivo" type="number" step="0.01" min="0" defaultValue={editing?.efectivo ?? 0} />
+                </div>
+                <div>
+                  <label className="label font-semibold" htmlFor="tarjeta">Tarjeta</label>
+                  <Input id="tarjeta" name="tarjeta" type="number" step="0.01" min="0" defaultValue={editing?.tarjeta ?? 0} />
+                </div>
+                <div>
+                  <label className="label font-semibold" htmlFor="credito">Crédito</label>
+                  <Input id="credito" name="credito" type="number" step="0.01" min="0" defaultValue={editing?.credito ?? 0} />
+                </div>
               </div>
-              <div>
-                <label className="label font-semibold" htmlFor="tarjeta">Tarjeta</label>
-                <Input id="tarjeta" name="tarjeta" type="number" step="0.01" min="0" defaultValue={editing?.tarjeta ?? 0} />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="label font-semibold" htmlFor="comida">$ Comida (sin imp.)</label>
+                  <Input id="comida" name="comida" type="number" step="0.01" min="0" defaultValue={editing?.comida ?? 0} />
+                </div>
+                <div>
+                  <label className="label font-semibold" htmlFor="bebida">$ Bebida (sin imp.)</label>
+                  <Input id="bebida" name="bebida" type="number" step="0.01" min="0" defaultValue={editing?.bebida ?? 0} />
+                </div>
               </div>
-              <div>
-                <label className="label font-semibold" htmlFor="credito">Crédito</label>
-                <Input id="credito" name="credito" type="number" step="0.01" min="0" defaultValue={editing?.credito ?? 0} />
-              </div>
-            </div>
+            </fieldset>
             <div>
               <label className="label font-semibold" htmlFor="statusCredito">Status crédito</label>
               <Input id="statusCredito" name="statusCredito" placeholder="Ej. 300 DJ, 150 cortesías" defaultValue={editing?.statusCredito ?? ""} />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="label font-semibold" htmlFor="comida">$ Comida (sin imp.)</label>
-                <Input id="comida" name="comida" type="number" step="0.01" min="0" defaultValue={editing?.comida ?? 0} />
-              </div>
-              <div>
-                <label className="label font-semibold" htmlFor="bebida">$ Bebida (sin imp.)</label>
-                <Input id="bebida" name="bebida" type="number" step="0.01" min="0" defaultValue={editing?.bebida ?? 0} />
-              </div>
             </div>
 
             {state.error && (

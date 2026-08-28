@@ -64,10 +64,26 @@ export async function saveDailySaleAction(
   try {
     const user = await requireEditor(venueId);
 
+    // Si el día ya tiene un corte de caja, éste manda: los montos no se
+    // vuelven a capturar a mano, sólo las notas de crédito.
+    const existing = await prisma.dailySale.findUnique({ where: { venueId_date: { venueId, date } } });
+    if (existing?.source === "CORTE") {
+      const saved = await prisma.dailySale.update({ where: { id: existing.id }, data: { statusCredito } });
+      await logAudit({
+        userId: user.id,
+        action: "dailySale.updateStatusCredito",
+        entity: "DailySale",
+        entityId: saved.id,
+        meta: { venueId, date: dateStr },
+      });
+      revalidate();
+      return { ok: true };
+    }
+
     const saved = await prisma.dailySale.upsert({
       where: { venueId_date: { venueId, date } },
-      create: { venueId, date, efectivo, tarjeta, credito, statusCredito, comida, bebida, notes, createdById: user.id },
-      update: { efectivo, tarjeta, credito, statusCredito, comida, bebida, notes },
+      create: { venueId, date, source: "MANUAL", efectivo, tarjeta, credito, statusCredito, comida, bebida, notes, createdById: user.id },
+      update: { source: "MANUAL", efectivo, tarjeta, credito, statusCredito, comida, bebida, notes },
     });
 
     await logAudit({
@@ -90,6 +106,10 @@ export async function deleteDailySaleAction(id: string): Promise<DailySaleAction
     const sale = await prisma.dailySale.findUnique({ where: { id } });
     if (!sale) return { error: "Registro no encontrado." };
     const user = await requireEditor(sale.venueId);
+
+    if (sale.source === "CORTE") {
+      return { error: "Esta venta viene de un corte de caja: bórralo desde Cortes de caja en vez de aquí." };
+    }
 
     await prisma.dailySale.delete({ where: { id } });
     await logAudit({

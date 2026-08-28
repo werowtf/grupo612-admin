@@ -65,6 +65,7 @@ export default async function IngresosEgresosPage({
   const saleRows: DailySaleRow[] = dailySales.map((r) => ({
     id: r.id,
     date: r.date.toISOString().slice(0, 10),
+    source: r.source,
     efectivo: Number(r.efectivo),
     tarjeta: Number(r.tarjeta),
     credito: Number(r.credito),

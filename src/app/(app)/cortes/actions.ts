@@ -10,6 +10,7 @@ import { logAudit } from "@/lib/audit";
 import { parseCorteFile, CorteImportError, type CorteExtraction } from "@/lib/cortes";
 import { MONEY_KEYS, INT_KEYS } from "@/lib/cortes/fields";
 import { getCorteMatching } from "@/lib/cortes/matching";
+import { syncDailySaleFromCortes } from "@/lib/daily-sales/sync";
 import type { CorteSource } from "@/generated/prisma/enums";
 
 export type ProcessResult =
@@ -109,12 +110,14 @@ export async function saveCorteAction(
   }
 
   let savedId: string;
+  let previousDate: Date | null = null;
   try {
     if (corteId) {
       const existing = await prisma.corte.findUnique({ where: { id: corteId } });
       if (!existing || existing.venueId !== venueId) {
         return { error: "Corte no encontrado." };
       }
+      previousDate = existing.date;
       const updated = await prisma.corte.update({ where: { id: corteId }, data });
       savedId = updated.id;
       await logAudit({
@@ -143,8 +146,16 @@ export async function saveCorteAction(
     return { error: "No se pudo guardar el corte." };
   }
 
+  // La venta diaria se recalcula a partir del corte: si además se movió de
+  // fecha, hay que refrescar también el día que dejó (pudo quedar en 0).
+  await syncDailySaleFromCortes(venueId, date);
+  if (previousDate && previousDate.getTime() !== date.getTime()) {
+    await syncDailySaleFromCortes(venueId, previousDate);
+  }
+
   revalidatePath("/cortes");
   revalidatePath("/dashboard");
+  revalidatePath("/ingresos-egresos");
   redirect(`/cortes/${savedId}`);
 }
 
@@ -263,6 +274,9 @@ export async function deleteCorteAction(corteId: string) {
     entity: "Corte",
     entityId: corteId,
   });
+  // Recalcula (o borra) el renglón de venta diaria que dependía de este corte.
+  await syncDailySaleFromCortes(corte.venueId, corte.date);
   revalidatePath("/cortes");
+  revalidatePath("/ingresos-egresos");
   redirect("/cortes");
 }

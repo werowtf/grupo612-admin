@@ -365,17 +365,28 @@ model FinancialEntry {
   @@index([createdById])
 }
 
-/// Venta diaria del negocio, capturada con el mismo desglose que usa la
-/// contadora en su libro: un renglón por día con el total dividido por
-/// método de pago (efectivo/tarjeta/crédito) y por tipo de consumo
-/// (comida/bebida, montos sin impuesto). Va aparte de FinancialEntry porque
-/// esa tabla es un monto + un método de pago por movimiento, y aquí un solo
-/// día trae varios montos a la vez.
+enum DailySaleSource {
+  MANUAL // capturada a mano (negocio sin corte ese día)
+  CORTE // derivada automáticamente del/los corte(s) de caja del día
+}
+
+/// Venta diaria del negocio, con el mismo desglose que usa la contadora en su
+/// libro: un renglón por día con el total dividido por método de pago
+/// (efectivo/tarjeta/crédito) y por tipo de consumo (comida/bebida, montos
+/// sin impuesto). Va aparte de FinancialEntry porque esa tabla es un monto +
+/// un método de pago por movimiento, y aquí un solo día trae varios montos a
+/// la vez.
+///
+/// El corte de caja es la fuente de la verdad: cuando el negocio sube su
+/// corte del día, este renglón se recalcula solo a partir de él (ver
+/// `src/lib/daily-sales/sync.ts`). La captura manual sólo aplica a días sin
+/// corte.
 model DailySale {
-  id            String   @id @default(cuid())
+  id            String          @id @default(cuid())
   venueId       String
-  venue         Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  venue         Venue           @relation(fields: [venueId], references: [id], onDelete: Cascade)
   date          DateTime
+  source        DailySaleSource @default(MANUAL)
 
   efectivo      Decimal  @db.Decimal(14, 2) @default(0)
   tarjeta       Decimal  @db.Decimal(14, 2) @default(0)
