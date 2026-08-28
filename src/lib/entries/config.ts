@@ -62,8 +62,12 @@ export const DEFAULT_EGRESO_CATEGORIES = [
   "Otros",
 ];
 
+/**
+ * "Venta diaria" no está aquí: tiene su propio modelo (DailySale) con el
+ * desglose de efectivo/tarjeta/crédito y comida/bebida, así que no se
+ * captura como un movimiento genérico más.
+ */
 export const DEFAULT_INGRESO_CATEGORIES = [
-  "Venta diaria",
   "Covers",
   "Fondo de emergencia",
   "Otros ingresos",

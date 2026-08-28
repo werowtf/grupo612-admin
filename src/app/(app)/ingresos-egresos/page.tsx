@@ -7,7 +7,10 @@ import {
   getVenueCategories,
   type EntryFilters,
 } from "@/lib/entries/queries";
+import { getDailySales } from "@/lib/daily-sales/queries";
 import { EntriesTable } from "@/components/entries-table";
+import { DailySalesManager, type DailySaleRow } from "@/components/daily-sales-manager";
+import { MonthPicker } from "@/components/month-picker";
 import { StatCard } from "@/components/stat-card";
 import { formatMXN } from "@/lib/utils";
 import type { EntryType } from "@/generated/prisma/enums";
@@ -17,6 +20,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const FILTER_TRIGGER_CLASS =
   "h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50";
+
+function parseMonth(mes: string | undefined): { year: number; month: number } {
+  const m = /^(\d{4})-(\d{2})$/.exec(mes ?? "");
+  if (m) return { year: Number(m[1]), month: Number(m[2]) };
+  const now = new Date();
+  return { year: now.getUTCFullYear(), month: now.getUTCMonth() + 1 };
+}
 
 export default async function IngresosEgresosPage({
   searchParams,
@@ -42,11 +52,26 @@ export default async function IngresosEgresosPage({
   };
   const hasFilters = Boolean(filters.type || filters.category || filters.search);
 
-  const [summary, { rows, total }, categories] = await Promise.all([
+  const { year, month } = parseMonth(sp.mes);
+  const mesValue = `${year}-${String(month).padStart(2, "0")}`;
+
+  const [summary, { rows, total }, categories, { rows: dailySales }] = await Promise.all([
     getEntrySummary(selected.id),
     getVenueEntries(selected.id, filters),
     getVenueCategories(selected.id),
+    getDailySales(selected.id, year, month),
   ]);
+
+  const saleRows: DailySaleRow[] = dailySales.map((r) => ({
+    id: r.id,
+    date: r.date.toISOString().slice(0, 10),
+    efectivo: Number(r.efectivo),
+    tarjeta: Number(r.tarjeta),
+    credito: Number(r.credito),
+    statusCredito: r.statusCredito,
+    comida: Number(r.comida),
+    bebida: Number(r.bebida),
+  }));
 
   // El filtro ofrece los conceptos del negocio, sin repetir los que existen en
   // ingresos y egresos a la vez.
@@ -129,6 +154,17 @@ export default async function IngresosEgresosPage({
         </div>
       </form>
 
+      {/* La venta diaria se captura con el mismo desglose que usa la
+          contadora (efectivo/tarjeta/crédito + comida/bebida), un renglón
+          por día, así que vive aparte de los movimientos genéricos. */}
+      <section className="space-y-2">
+        <form method="get" className="flex items-center gap-2">
+          <MonthPicker name="mes" defaultValue={mesValue} />
+          <Button type="submit" variant="outline" size="sm">Ver</Button>
+        </form>
+        <DailySalesManager venueId={selected.id} rows={saleRows} />
+      </section>
+
       <div className="text-sm text-muted-foreground">
         {total} movimiento{total === 1 ? "" : "s"}{hasFilters ? " (filtrados)" : ""}
       </div>
@@ -137,7 +173,7 @@ export default async function IngresosEgresosPage({
           un ingreso, por ejemplo), así que van en tablas separadas. */}
       {filters.type !== "EGRESO" && (
         <section className="space-y-2">
-          <h2 className="text-base font-semibold">Ingresos</h2>
+          <h2 className="text-base font-semibold">Otros ingresos</h2>
           <EntriesTable
             type="INGRESO"
             rows={rows.filter((r) => r.type === "INGRESO")}

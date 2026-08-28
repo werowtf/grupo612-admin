@@ -35,6 +35,7 @@ model User {
   statements   BankStatement[]  @relation("ImportedBy")
   cortes       Corte[]          @relation("CorteCreatedBy")
   entries      FinancialEntry[] @relation("EntryCreatedBy")
+  dailySales   DailySale[]      @relation("DailySaleCreatedBy")
   documents    Document[]       @relation("DocumentUploadedBy")
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
@@ -51,6 +52,7 @@ model Venue {
   cortes          Corte[]
   entries         FinancialEntry[]
   entryCategories EntryCategory[]
+  dailySales      DailySale[]
   documents       Document[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -361,6 +363,38 @@ model FinancialEntry {
   @@index([type])
   @@index([category])
   @@index([createdById])
+}
+
+/// Venta diaria del negocio, capturada con el mismo desglose que usa la
+/// contadora en su libro: un renglón por día con el total dividido por
+/// método de pago (efectivo/tarjeta/crédito) y por tipo de consumo
+/// (comida/bebida, montos sin impuesto). Va aparte de FinancialEntry porque
+/// esa tabla es un monto + un método de pago por movimiento, y aquí un solo
+/// día trae varios montos a la vez.
+model DailySale {
+  id            String   @id @default(cuid())
+  venueId       String
+  venue         Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  date          DateTime
+
+  efectivo      Decimal  @db.Decimal(14, 2) @default(0)
+  tarjeta       Decimal  @db.Decimal(14, 2) @default(0)
+  credito       Decimal  @db.Decimal(14, 2) @default(0)
+  /// Notas de a quién/qué se le dio a crédito ese día (texto libre, como en el Excel).
+  statusCredito String?
+
+  /// Venta sin impuesto, dividida en comida y bebida.
+  comida        Decimal  @db.Decimal(14, 2) @default(0)
+  bebida        Decimal  @db.Decimal(14, 2) @default(0)
+
+  notes         String?
+  createdById   String?
+  createdBy     User?    @relation("DailySaleCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([venueId, date])
+  @@index([venueId, date])
 }
 
 // ─────────────────────────────────────────────────────────────
