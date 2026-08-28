@@ -92,7 +92,7 @@ export function EntriesTable({ type, rows, hrefBase, emptyText }: Props) {
               ))}
               <td></td>
             </tr>
-            <tr className="bg-pending-bg">
+            <tr className="bg-success-bg">
               <td colSpan={2 + cols.length} className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wide text-foreground">
                 Total general
               </td>
