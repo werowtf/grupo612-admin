@@ -141,8 +141,8 @@ REGLAS
     "+DEPOSITOS EFE" -> depositos
     "-RETIROS EFECT" -> retiros
     "EFECTIVO FINA"  -> efectivoDeclarado
-  Son renglones consecutivos y parecidos; no confundas "-RETIROS EFECT" con la línea vecina "-PROPINAS PAGA" (esa no se captura), ni dejes retiros en 0 si el ticket trae un importe ahí.
-- Verificación útil: efectivoInicial + efectivo + tarjeta + vales + otros + depositos - retiros - propinas pagadas = "SALDO FINAL". Si tu lectura no cuadra con el SALDO FINAL impreso, revisa qué renglón leíste mal antes de responder.
+  Ojo: "-RETIROS EFECT" y "-PROPINAS PAGA" son renglones vecinos y muy parecidos. "-PROPINAS PAGA" NO se captura, y suele ser el que trae el importe (las propinas de tarjeta que se pagan en efectivo al cierre), mientras que retiros normalmente va en 0. Lee el importe que está en el renglón de retiros, no el del vecino.
+- Comprueba con la aritmética antes de responder: efectivoInicial + efectivo + tarjeta + vales + otros + depositos − retiros − propinas pagadas = "SALDO FINAL". Si con tu lectura no da el SALDO FINAL impreso, tienes mal algún renglón; corrígelo antes de contestar.
 - "encabezado" es el nombre del negocio impreso arriba del ticket, tal cual (por ejemplo "BIZNAGA BAJA BISTRO ROOF EXPERIENCE").
 
 CAMPOS QUE NO PUEDAS LEER

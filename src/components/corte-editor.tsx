@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition, useActionState } from "react";
-import { UploadCloud, FileSpreadsheet, Camera, PencilLine, CheckCircle2, AlertCircle, Save } from "lucide-react";
+import { UploadCloud, FileSpreadsheet, FileText, Camera, PencilLine, CheckCircle2, AlertCircle, Save } from "lucide-react";
 import { processCorteFileAction, saveCorteAction } from "@/app/(app)/cortes/actions";
 import { CORTE_SECTIONS } from "@/lib/cortes/fields";
 import type { CorteDraft } from "@/lib/cortes/types";
@@ -12,7 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 type Values = Record<string, string>;
-type Method = "MANUAL" | "EXCEL" | "OCR";
+// "PDF" y "FOTO" son solo de la interfaz: ambos se guardan con origen OCR,
+// porque el enum CorteSource de la base no distingue entre los dos.
+type Method = "MANUAL" | "EXCEL" | "PDF" | "FOTO";
 
 interface Props {
   venueId: string;
@@ -37,7 +39,9 @@ const OCR_TIMEOUT_MS = 55_000;
 export function CorteEditor({ venueId, venueName, corteId, initialValues, initialSource }: Props) {
   // Al capturar un corte nuevo se arranca en foto/PDF, que es el flujo diario;
   // al editar uno existente se respeta cómo se capturó.
-  const [method, setMethod] = useState<Method>(initialSource ?? "OCR");
+  const [method, setMethod] = useState<Method>(
+    initialSource === "EXCEL" ? "EXCEL" : initialSource === "MANUAL" ? "MANUAL" : "PDF",
+  );
   const [values, setValues] = useState<Values>(initialValues ?? {});
   const [detected, setDetected] = useState<Set<string>>(new Set());
   const [source, setSource] = useState<CorteSource>(initialSource ?? "MANUAL");
@@ -91,7 +95,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
       return;
     }
 
-    if (method === "OCR") {
+    if (method === "PDF" || method === "FOTO") {
       void onProcessOcr(file);
       return;
     }
@@ -212,7 +216,8 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
   }
 
   const methods: { id: Method; label: string; icon: React.ComponentType<{ className?: string }>; hint: string }[] = [
-    { id: "OCR", label: "Subir foto o PDF", icon: Camera, hint: "Foto del ticket o PDF del corte." },
+    { id: "PDF", label: "Subir PDF", icon: FileText, hint: "PDF del corte de Soft Restaurant." },
+    { id: "FOTO", label: "Subir foto", icon: Camera, hint: "Foto del ticket impreso." },
     { id: "EXCEL", label: "Subir Excel", icon: FileSpreadsheet, hint: "Export de Soft Restaurant (.xlsx)." },
     { id: "MANUAL", label: "Captura manual", icon: PencilLine, hint: "Escribe los datos del corte." },
   ];
@@ -220,7 +225,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
   return (
     <div className="space-y-6">
       {/* Selector de método */}
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {methods.map((m) => {
           const Icon = m.icon;
           const active = method === m.id;
@@ -252,13 +257,21 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
               <label className="label" htmlFor="corte-file">
                 {method === "EXCEL"
                   ? "Archivo Excel (.xlsx)"
-                  : "Foto del ticket (.jpg / .png) o PDF del corte"}
+                  : method === "PDF"
+                    ? "PDF del corte (.pdf)"
+                    : "Foto del ticket (.jpg / .png)"}
               </label>
               <Input
                 ref={fileRef}
                 id="corte-file"
                 type="file"
-                accept={method === "EXCEL" ? ".xlsx,.xls" : "image/*,application/pdf,.pdf"}
+                accept={
+                  method === "EXCEL"
+                    ? ".xlsx,.xls"
+                    : method === "PDF"
+                      ? "application/pdf,.pdf"
+                      : "image/*"
+                }
                 className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-600"
               />
             </div>
@@ -271,7 +284,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                   : "Procesar archivo"}
             </Button>
           </div>
-          {method === "OCR" && (
+          {(method === "PDF" || method === "FOTO") && (
             <p className="text-xs text-muted-foreground">
               La lectura automática es un apoyo: revisa siempre los campos antes de guardar. El PDF
               del sistema se lee mejor que una foto; los campos que no se puedan leer con certeza se

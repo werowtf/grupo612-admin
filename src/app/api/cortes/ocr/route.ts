@@ -78,7 +78,13 @@ export async function POST(req: Request) {
 
       try {
         let result;
-        if (visionAvailable()) {
+        if (/\.pdf$/i.test(file.name) || file.type === "application/pdf") {
+          // El PDF de Soft Restaurant se lee en local sin llamar a ningún
+          // servicio; solo si viene escaneado cae al modelo de visión.
+          safeEnqueue({ type: "progress", status: "leyendo el PDF", progress: 0.5 });
+          const { parseCortePdf } = await import("@/lib/cortes");
+          result = await parseCortePdf(buffer);
+        } else if (visionAvailable()) {
           // El modelo de visión no reporta avance parcial, así que mandamos un
           // solo evento para que la UI no se quede sin retroalimentación.
           safeEnqueue({ type: "progress", status: "leyendo la foto", progress: 0.3 });
