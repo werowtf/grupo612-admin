@@ -54,7 +54,7 @@ export async function getVenueEntries(venueId: string, filters: EntryFilters = {
   const [rows, total] = await Promise.all([
     prisma.financialEntry.findMany({
       where,
-      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+      orderBy: [{ date: "asc" }, { createdAt: "asc" }],
       take: filters.take ?? 200,
     }),
     prisma.financialEntry.count({ where }),
