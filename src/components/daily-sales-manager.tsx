@@ -2,12 +2,13 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, AlertCircle } from "lucide-react";
+import { Pencil, Trash2, AlertCircle } from "lucide-react";
 import {
   saveDailySaleAction,
   deleteDailySaleAction,
   type DailySaleActionState,
 } from "@/app/(app)/ingresos-egresos/venta-diaria/actions";
+import { useDailySaleDialog } from "@/components/daily-sales-context";
 import { formatMXN, diaSemana } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -42,8 +43,7 @@ const init: DailySaleActionState = {};
 
 export function DailySalesManager({ venueId, rows }: { venueId: string; rows: DailySaleRow[] }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<DailySaleRow | null>(null);
+  const { open, editing, setOpen, openEdit } = useDailySaleDialog();
   const [state, action, saving] = useActionState(saveDailySaleAction, init);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -53,16 +53,8 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
       setOpen(false);
       router.refresh();
     }
-  }, [state.ok, router]);
+  }, [state.ok, router, setOpen]);
 
-  function openNew() {
-    setEditing(null);
-    setOpen(true);
-  }
-  function openEdit(row: DailySaleRow) {
-    setEditing(row);
-    setOpen(true);
-  }
   async function onDelete(id: string) {
     setDeleting(id);
     setDeleteError(null);
@@ -88,18 +80,12 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-base font-semibold">Venta diaria</h2>
-          <p className="text-xs text-muted-foreground">
-            Los días con corte de caja se calculan solos (●); usa &ldquo;Registrar venta&rdquo; sólo
-            para los días sin corte.
-          </p>
-        </div>
-        <Button type="button" size="sm" onClick={openNew}>
-          <Plus className="h-4 w-4" />
-          Registrar venta
-        </Button>
+      <div>
+        <h2 className="text-base font-semibold">Venta diaria</h2>
+        <p className="text-xs text-muted-foreground">
+          Los días con corte de caja se calculan solos (●); usa &ldquo;Registrar venta&rdquo; (arriba)
+          sólo para los días sin corte.
+        </p>
       </div>
 
       {deleteError && (
