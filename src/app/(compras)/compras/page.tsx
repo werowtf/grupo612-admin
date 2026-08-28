@@ -47,7 +47,7 @@ export default async function ComprasPage() {
 
       <section>
         <h2 className="mb-3 text-base font-semibold">Mis compras registradas</h2>
-        <EntriesTable rows={recent} emptyText="Todavía no has registrado compras." />
+        <EntriesTable type="EGRESO" rows={recent} emptyText="Todavía no has registrado compras." />
       </section>
     </div>
   );

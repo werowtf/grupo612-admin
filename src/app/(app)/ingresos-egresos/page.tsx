@@ -132,7 +132,32 @@ export default async function IngresosEgresosPage({
       <div className="text-sm text-muted-foreground">
         {total} movimiento{total === 1 ? "" : "s"}{hasFilters ? " (filtrados)" : ""}
       </div>
-      <EntriesTable rows={rows} hrefBase="/ingresos-egresos" emptyText="No hay movimientos que coincidan." />
+
+      {/* Ingresos y egresos tienen columnas distintas (proveedor no aplica a
+          un ingreso, por ejemplo), así que van en tablas separadas. */}
+      {filters.type !== "EGRESO" && (
+        <section className="space-y-2">
+          <h2 className="text-base font-semibold">Ingresos</h2>
+          <EntriesTable
+            type="INGRESO"
+            rows={rows.filter((r) => r.type === "INGRESO")}
+            hrefBase="/ingresos-egresos"
+            emptyText="No hay ingresos que coincidan."
+          />
+        </section>
+      )}
+
+      {filters.type !== "INGRESO" && (
+        <section className="space-y-2">
+          <h2 className="text-base font-semibold">Egresos</h2>
+          <EntriesTable
+            type="EGRESO"
+            rows={rows.filter((r) => r.type === "EGRESO")}
+            hrefBase="/ingresos-egresos"
+            emptyText="No hay egresos que coincidan."
+          />
+        </section>
+      )}
     </div>
   );
 }
