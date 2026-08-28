@@ -157,11 +157,11 @@ function EgresosTable({ rows, hrefBase }: { rows: FinancialEntry[]; hrefBase?: s
               ))}
               <td></td>
             </tr>
-            <tr className="border-t border-border bg-table-header/60">
-              <td colSpan={2 + cols.length} className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <tr className="bg-pending-bg">
+              <td colSpan={2 + cols.length} className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wide text-foreground">
                 Total general
               </td>
-              <td className="px-3 py-2 text-right tabular-nums font-semibold text-cargo">{formatMXN(total)}</td>
+              <td className="px-3 py-2 text-right tabular-nums font-semibold text-foreground">{formatMXN(total)}</td>
               <td></td>
             </tr>
           </tfoot>
