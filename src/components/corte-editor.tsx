@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition, useActionState } from "react";
-import { UploadCloud, FileSpreadsheet, FileText, Camera, PencilLine, CheckCircle2, AlertCircle, Save } from "lucide-react";
+import { UploadCloud, FileSpreadsheet, FileText, Camera, PencilLine, CheckCircle2, AlertCircle, Save, Plus, Trash2 } from "lucide-react";
 import { processCorteFileAction, saveCorteAction } from "@/app/(app)/cortes/actions";
 import { CORTE_SECTIONS } from "@/lib/cortes/fields";
 import type { CorteDraft } from "@/lib/cortes/types";
@@ -10,11 +10,18 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Values = Record<string, string>;
 // "PDF" y "FOTO" son solo de la interfaz: ambos se guardan con origen OCR,
 // porque el enum CorteSource de la base no distingue entre los dos.
 type Method = "MANUAL" | "EXCEL" | "PDF" | "FOTO";
+
+interface EgresoDia {
+  category: string;
+  description: string;
+  amount: string;
+}
 
 interface Props {
   venueId: string;
@@ -22,6 +29,8 @@ interface Props {
   corteId?: string;
   initialValues?: Values;
   initialSource?: CorteSource;
+  /** Conceptos de egreso del negocio; sólo se usan al capturar un corte nuevo. */
+  egresoCategories?: string[];
 }
 
 function draftToValues(draft: CorteDraft): Values {
@@ -36,7 +45,7 @@ function draftToValues(draft: CorteDraft): Values {
 // cliente nunca espere más que el propio servidor.
 const OCR_TIMEOUT_MS = 55_000;
 
-export function CorteEditor({ venueId, venueName, corteId, initialValues, initialSource }: Props) {
+export function CorteEditor({ venueId, venueName, corteId, initialValues, initialSource, egresoCategories }: Props) {
   // Al capturar un corte nuevo se arranca en foto/PDF, que es el flujo diario;
   // al editar uno existente se respeta cómo se capturó.
   const [method, setMethod] = useState<Method>(
@@ -53,10 +62,25 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
   const [warnings, setWarnings] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // Gastos en efectivo del mismo día del corte (propinas, una pipa de agua,
+  // etc.): sólo aplica al capturar un corte nuevo, para no duplicarlos si se
+  // vuelve a editar el mismo corte más tarde.
+  const [egresosDia, setEgresosDia] = useState<EgresoDia[]>([]);
+
   const [saveState, saveAction, saving] = useActionState(saveCorteAction, {});
 
   function setField(key: string, value: string) {
     setValues((v) => ({ ...v, [key]: value }));
+  }
+
+  function addEgresoDia() {
+    setEgresosDia((rows) => [...rows, { category: egresoCategories?.[0] ?? "", description: "", amount: "" }]);
+  }
+  function updateEgresoDia(i: number, patch: Partial<EgresoDia>) {
+    setEgresosDia((rows) => rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
+  }
+  function removeEgresoDia(i: number) {
+    setEgresosDia((rows) => rows.filter((_, idx) => idx !== i));
   }
 
   function applyExtraction(
@@ -363,6 +387,65 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
             </div>
           </div>
         ))}
+
+        {!corteId && egresoCategories && egresoCategories.length > 0 && (
+          <div className="card space-y-3 p-5">
+            <input type="hidden" name="egresosDia" value={JSON.stringify(egresosDia)} />
+            <div>
+              <h2 className="text-base font-semibold">Gastos en efectivo de hoy</h2>
+              <p className="text-sm text-muted-foreground">
+                Opcional: propinas pagadas, una pipa de agua, o cualquier otro gasto en efectivo del
+                mismo día. Se registran junto con el corte, en Egresos.
+              </p>
+            </div>
+
+            {egresosDia.map((row, i) => (
+              <div key={i} className="flex flex-wrap items-end gap-2 rounded-lg border border-border p-3">
+                <div className="min-w-[160px] flex-1">
+                  <label className="label" htmlFor={`egreso-cat-${i}`}>Concepto</label>
+                  <Select value={row.category} onValueChange={(v) => updateEgresoDia(i, { category: v })}>
+                    <SelectTrigger id={`egreso-cat-${i}`} className="h-8 w-full border-transparent bg-field-bg font-normal">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {egresoCategories.map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="min-w-[160px] flex-1">
+                  <label className="label" htmlFor={`egreso-desc-${i}`}>Descripción (opcional)</label>
+                  <Input
+                    id={`egreso-desc-${i}`}
+                    value={row.description}
+                    onChange={(e) => updateEgresoDia(i, { description: e.target.value })}
+                    placeholder="Ej. Pipa de agua"
+                  />
+                </div>
+                <div className="w-32">
+                  <label className="label" htmlFor={`egreso-amt-${i}`}>Monto</label>
+                  <Input
+                    id={`egreso-amt-${i}`}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={row.amount}
+                    onChange={(e) => updateEgresoDia(i, { amount: e.target.value })}
+                  />
+                </div>
+                <Button type="button" variant="ghost" size="icon-sm" title="Quitar" onClick={() => removeEgresoDia(i)}>
+                  <Trash2 className="h-3.5 w-3.5 text-danger" />
+                </Button>
+              </div>
+            ))}
+
+            <Button type="button" variant="outline" size="sm" onClick={addEgresoDia}>
+              <Plus className="h-4 w-4" />
+              Agregar gasto
+            </Button>
+          </div>
+        )}
 
         <div className="card p-5">
           <label className="label" htmlFor="notes">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getAppContext } from "@/lib/context";
+import { getVenueCategories } from "@/lib/entries/queries";
 import { CorteEditor } from "@/components/corte-editor";
 
 export default async function NuevoCortePage() {
@@ -15,6 +16,7 @@ export default async function NuevoCortePage() {
   }
 
   const today = new Date().toISOString().slice(0, 10);
+  const categories = await getVenueCategories(selected.id);
 
   return (
     <div className="space-y-6">
@@ -33,6 +35,7 @@ export default async function NuevoCortePage() {
         venueId={selected.id}
         venueName={selected.name}
         initialValues={{ date: today }}
+        egresoCategories={categories.EGRESO}
       />
     </div>
   );

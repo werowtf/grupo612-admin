@@ -153,6 +153,37 @@ export async function saveCorteAction(
     await syncDailySaleFromCortes(venueId, previousDate);
   }
 
+  // Gastos en efectivo del mismo día (propinas, una pipa de agua, etc.), que
+  // el gerente captura junto con el corte para no tener que hacerlo aparte.
+  // Sólo aplica al crear el corte (el formulario no muestra esta sección al
+  // editar), para no duplicarlos si el corte se vuelve a guardar después.
+  if (!corteId) {
+    const raw = String(formData.get("egresosDia") ?? "[]");
+    try {
+      const rows = JSON.parse(raw) as { category?: string; description?: string; amount?: string }[];
+      for (const row of rows) {
+        const amount = Number(row.amount);
+        const category = (row.category ?? "").trim();
+        if (!category || !Number.isFinite(amount) || amount <= 0) continue;
+        await prisma.financialEntry.create({
+          data: {
+            venueId,
+            type: "EGRESO",
+            date,
+            amount,
+            category,
+            description: row.description?.trim() || null,
+            paymentMethod: "EFECTIVO",
+            source: "MANUAL",
+            createdById: user.id,
+          },
+        });
+      }
+    } catch (err) {
+      console.error("Error al registrar gastos del día del corte:", err);
+    }
+  }
+
   revalidatePath("/cortes");
   revalidatePath("/dashboard");
   revalidatePath("/ingresos-egresos");
