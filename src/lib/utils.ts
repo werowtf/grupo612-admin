@@ -32,6 +32,14 @@ export function formatDate(value: Date | string): string {
   return dateFmt.format(d);
 }
 
+const DIAS_SEMANA = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+/** Día de la semana (en español) del día calendario UTC de una fecha. */
+export function diaSemana(value: Date | string): string {
+  const d = typeof value === "string" ? new Date(value) : value;
+  return DIAS_SEMANA[d.getUTCDay()];
+}
+
 export function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;

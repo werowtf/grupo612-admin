@@ -76,3 +76,44 @@ export const DEFAULT_INGRESO_CATEGORIES = [
 export function defaultCategoriesFor(type: EntryType): string[] {
   return type === "INGRESO" ? DEFAULT_INGRESO_CATEGORIES : DEFAULT_EGRESO_CATEGORIES;
 }
+
+/**
+ * Color por concepto de egreso, tomado tal cual del "LISTA DE CONCEPTOS POR
+ * COLOR" del libro contable de la contadora, para que la tabla se lea igual
+ * que su Excel.
+ */
+const EGRESO_CATEGORY_BADGE: Record<string, string> = {
+  Cocina: "bg-green-100 text-green-700",
+  Servicios: "bg-green-100 text-green-700",
+
+  Barra: "bg-blue-100 text-blue-700",
+  Ambientación: "bg-blue-100 text-blue-700",
+  "Pago propinas": "bg-blue-100 text-blue-700",
+  Uniformes: "bg-blue-100 text-blue-700",
+  Limpieza: "bg-blue-100 text-blue-700",
+  Publicidad: "bg-blue-100 text-blue-700",
+  "Nómina cocina": "bg-blue-100 text-blue-700",
+  "Nómina servicio": "bg-blue-100 text-blue-700",
+
+  Mantenimiento: "bg-teal-600 text-white",
+  "Eq. restaurante": "bg-teal-600 text-white",
+  Renta: "bg-teal-600 text-white",
+  "Nómina admin": "bg-teal-600 text-white",
+
+  Gas: "bg-yellow-100 text-yellow-800",
+  Papelería: "bg-yellow-100 text-yellow-800",
+  Gasolina: "bg-yellow-100 text-yellow-800",
+
+  "Consultas médicas": "bg-pink-100 text-pink-700",
+
+  Comisiones: "bg-red-100 text-red-700",
+  Impuestos: "bg-red-100 text-red-700",
+
+  Otros: "bg-gray-100 text-gray-600",
+};
+
+const DEFAULT_CATEGORY_BADGE = "bg-gray-100 text-gray-600";
+
+export function egresoCategoryBadgeClass(category: string): string {
+  return EGRESO_CATEGORY_BADGE[category] ?? DEFAULT_CATEGORY_BADGE;
+}

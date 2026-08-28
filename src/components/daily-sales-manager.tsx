@@ -8,7 +8,7 @@ import {
   deleteDailySaleAction,
   type DailySaleActionState,
 } from "@/app/(app)/ingresos-egresos/venta-diaria/actions";
-import { formatMXN } from "@/lib/utils";
+import { formatMXN, diaSemana } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,13 +31,6 @@ export interface DailySaleRow {
   statusCredito: string | null;
   comida: number;
   bebida: number;
-}
-
-const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-
-function diaDeSemana(iso: string): string {
-  const d = new Date(`${iso}T00:00:00.000Z`);
-  return DIAS[d.getUTCDay()];
 }
 
 function pct(part: number, whole: number): string {
@@ -154,7 +147,7 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
                         />
                         {new Date(`${r.date}T00:00:00.000Z`).toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" })}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{diaDeSemana(r.date)}</td>
+                      <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{diaSemana(`${r.date}T00:00:00.000Z`)}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(r.efectivo)}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(r.tarjeta)}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(r.credito)}</td>
