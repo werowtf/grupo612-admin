@@ -137,7 +137,7 @@ h2.text-xl {
    Button/Card/Dialog) sigue este esquema automáticamente. */
 :root {
   --background: #F4F8F6;
-  --foreground: #535353;
+  --foreground: #181818;
   --card: #FFFFFF;
   --card-foreground: #535353;
   --popover: #FFFFFF;
@@ -145,7 +145,7 @@ h2.text-xl {
   --primary: #5AA288;
   --primary-foreground: #EEF2FF;
   --secondary: #1C1C1D;
-  --secondary-foreground: #18181B;
+  --secondary-foreground: #181818;
   --muted: #F1F3F3;
   --muted-foreground: #49585C;
   --accent: #F1F3F3;

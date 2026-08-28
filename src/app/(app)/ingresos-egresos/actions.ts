@@ -14,7 +14,7 @@ export interface EntryFormState {
 }
 
 const TYPES: EntryType[] = ["INGRESO", "EGRESO"];
-const METHODS: PaymentMethod[] = ["EFECTIVO", "TARJETA", "TRANSFERENCIA", "OTRO"];
+const METHODS: PaymentMethod[] = ["EFECTIVO", "TARJETA", "TRANSFERENCIA", "CHEQUE", "OTRO"];
 
 function textOrNull(fd: FormData, key: string): string | null {
   const v = String(fd.get(key) ?? "").trim();

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, TrendingUp, TrendingDown, Wallet, X } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, Wallet, X, Tags } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import {
   getEntrySummary,
@@ -23,7 +23,7 @@ export default async function IngresosEgresosPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const { selected } = await getAppContext();
+  const { user, selected } = await getAppContext();
   const sp = await searchParams;
 
   if (!selected) {
@@ -52,6 +52,9 @@ export default async function IngresosEgresosPage({
   // ingresos y egresos a la vez.
   const allCategories = [...new Set([...categories.EGRESO, ...categories.INGRESO])];
 
+  // El catálogo lo administran quienes llevan la operación y la contabilidad.
+  const puedeEditarConceptos = ["ADMIN", "GERENTE", "CONTADOR"].includes(user.role);
+
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between">
@@ -61,10 +64,21 @@ export default async function IngresosEgresosPage({
             Registra y consulta los movimientos internos de caja
           </p>
         </div>
-        <Link href="/ingresos-egresos/nuevo" className={buttonVariants()}>
-          <Plus className="h-4 w-4" />
-          Nuevo movimiento
-        </Link>
+        <div className="flex gap-2">
+          {puedeEditarConceptos && (
+            <Link
+              href="/ingresos-egresos/conceptos"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              <Tags className="h-4 w-4" />
+              Conceptos
+            </Link>
+          )}
+          <Link href="/ingresos-egresos/nuevo" className={buttonVariants()}>
+            <Plus className="h-4 w-4" />
+            Nuevo movimiento
+          </Link>
+        </div>
       </header>
 
       <section className="grid gap-4 sm:grid-cols-3">
