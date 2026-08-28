@@ -89,7 +89,11 @@ const RULES: Rule[] = [
   { section: "caja", test: /DEPOSITO EF/, field: "depositos" },
   { section: "caja", test: /RETIROS EF/, field: "retiros" },
   { section: "caja", test: /EFECTIVO FINAL/, field: "efectivoDeclarado" },
-  { section: "caja", test: /^DECLARADO/, field: "totalFormasPago" },
+  // "DECLARADO" es lo que el cajero declaró en total (efectivo + tarjeta), no
+  // el total de formas de pago: en un corte con faltante son distintos
+  // (declarado 4,677 contra 5,330 de ventas) y de ahí sale justamente el
+  // faltante = declarado − saldo final. No corresponde a ningún campo, así que
+  // no se captura.
   { section: "caja", test: /^SOBRANTE/, field: "__sobrante" },
   { section: "caja", test: /^FALTANTE/, field: "__faltante" },
 
