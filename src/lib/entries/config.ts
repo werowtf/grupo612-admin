@@ -109,11 +109,18 @@ const EGRESO_CATEGORY_BADGE: Record<string, string> = {
   Otros: "bg-neutral-100 text-neutral-700",
 };
 
+const INGRESO_CATEGORY_BADGE: Record<string, string> = {
+  Covers: "bg-sky-100 text-sky-700",
+  "Fondo de emergencia": "bg-amber-100 text-amber-800",
+  "Otros ingresos": "bg-violet-100 text-violet-700",
+};
+
 // Sólo para conceptos que no están en la lista (p.ej. uno que un negocio
 // haya renombrado o agregado desde Conceptos): gris neutro, sin asignar un
 // color de la lista de arriba dos veces.
 const DEFAULT_CATEGORY_BADGE = "bg-gray-100 text-gray-600";
 
-export function egresoCategoryBadgeClass(category: string): string {
-  return EGRESO_CATEGORY_BADGE[category] ?? DEFAULT_CATEGORY_BADGE;
+export function categoryBadgeClass(type: EntryType, category: string): string {
+  const map = type === "INGRESO" ? INGRESO_CATEGORY_BADGE : EGRESO_CATEGORY_BADGE;
+  return map[category] ?? DEFAULT_CATEGORY_BADGE;
 }
