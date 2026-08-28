@@ -63,7 +63,13 @@ export default async function ReportesPage({
 
       {/* KPIs */}
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard label="Ventas del mes" value={formatMXN(report.ventas.total)} hint={`${report.ventas.cortes} cortes`} tone="positive" icon={<TrendingUp className="h-4 w-4" />} />
+        <StatCard
+          label="Ventas del mes"
+          value={formatMXN(report.ventas.total)}
+          hint={report.ventas.diasManual > 0 ? `${report.ventas.cortes} cortes + ${report.ventas.diasManual} días manuales` : `${report.ventas.cortes} cortes`}
+          tone="positive"
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
         <StatCard label="Ventas con tarjeta" value={formatMXN(report.ventas.tarjeta)} tone="positive" icon={<CreditCard className="h-4 w-4" />} />
         <StatCard label="Comisiones bancarias" value={formatMXN(report.banco.comisiones)} valueClassName="text-chart-3" icon={<Percent className="h-4 w-4" />} />
         <StatCard label="Egresos registrados" value={formatMXN(report.finanzas.egresos)} tone="negative" icon={<TrendingDown className="h-4 w-4" />} />
@@ -80,6 +86,11 @@ export default async function ReportesPage({
               { label: "Visa", value: report.ventas.visa },
               { label: "Mastercard", value: report.ventas.mastercard },
               { label: "American Express", value: report.ventas.amex },
+              // Tarjeta de días capturados a mano: no se sabe la marca, así
+              // que no se puede sumar a Visa/Mastercard/Amex.
+              ...(report.ventas.tarjetaManual > 0
+                ? [{ label: "Tarjeta (manual)", value: report.ventas.tarjetaManual }]
+                : []),
             ]}
           />
         </div>
@@ -142,8 +153,9 @@ export default async function ReportesPage({
       </section>
 
       <p className="text-xs text-muted-foreground">
-        Ventas e IVA provienen de los cortes de caja; comisiones y flujo, de los estados de cuenta;
-        egresos, de los movimientos registrados. Los importes reflejan lo capturado en el periodo.
+        Ventas e IVA provienen de los cortes de caja y, en los días sin corte, de la venta diaria
+        capturada a mano; comisiones y flujo, de los estados de cuenta; egresos, de los movimientos
+        registrados. Los importes reflejan lo capturado en el periodo.
       </p>
     </div>
   );

@@ -25,12 +25,16 @@ export interface MonthlyReport {
     visa: number;
     mastercard: number;
     amex: number;
+    /** Tarjeta manual: no se sabe la marca, así que no entra en visa/mastercard/amex. */
+    tarjetaManual: number;
     tarjeta: number;
     alimentos: number;
     bebidas: number;
     propinas: number;
     iva: number;
     cortes: number;
+    /** Días capturados a mano en Venta diaria (sin corte de caja ese día). */
+    diasManual: number;
   };
   banco: {
     abonos: number;
@@ -81,6 +85,32 @@ export async function getMonthlyReport(
   const visa = num(corteAgg._sum.pagoVisa);
   const mc = num(corteAgg._sum.pagoMastercard);
   const amex = num(corteAgg._sum.pagoAmex);
+
+  // ── Venta diaria capturada a mano (días sin corte de caja) ───
+  // Los días con corte no se tocan aquí: DailySale.source="CORTE" es un
+  // espejo del corte, ya contado arriba — sumarlo también sería duplicar.
+  const manualSales = await prisma.dailySale.findMany({
+    where: { venueId: { in: venueIds }, date: inPeriod, source: "MANUAL" },
+    select: { efectivo: true, tarjeta: true, credito: true, comida: true, bebida: true },
+  });
+  let manualEfectivo = 0;
+  let manualTarjeta = 0;
+  let manualTotal = 0;
+  let manualAlimentos = 0;
+  let manualBebidas = 0;
+  for (const s of manualSales) {
+    const ef = num(s.efectivo);
+    const ta = num(s.tarjeta);
+    const cr = num(s.credito);
+    manualEfectivo += ef;
+    manualTarjeta += ta;
+    manualTotal += ef + ta + cr;
+    manualAlimentos += num(s.comida);
+    manualBebidas += num(s.bebida);
+  }
+  // La venta diaria trae el total con impuesto y comida/bebida sin impuesto
+  // (igual que un corte), así que el IVA implícito es la diferencia.
+  const manualIva = manualTotal - (manualAlimentos + manualBebidas);
 
   // ── Banco (movimientos) ──────────────────────────────────────
   const bankWhere: Prisma.BankTransactionWhereInput = {
@@ -146,17 +176,19 @@ export async function getMonthlyReport(
   return {
     period: { year, month, label: `${MONTHS[month - 1]} ${year}`, start, end },
     ventas: {
-      total: r2(num(corteAgg._sum.totalVenta)),
-      efectivo: r2(num(corteAgg._sum.pagoEfectivo)),
+      total: r2(num(corteAgg._sum.totalVenta) + manualTotal),
+      efectivo: r2(num(corteAgg._sum.pagoEfectivo) + manualEfectivo),
       visa: r2(visa),
       mastercard: r2(mc),
       amex: r2(amex),
-      tarjeta: r2(visa + mc + amex),
-      alimentos: r2(num(corteAgg._sum.ventaAlimentos)),
-      bebidas: r2(num(corteAgg._sum.ventaBebidas)),
+      tarjetaManual: r2(manualTarjeta),
+      tarjeta: r2(visa + mc + amex + manualTarjeta),
+      alimentos: r2(num(corteAgg._sum.ventaAlimentos) + manualAlimentos),
+      bebidas: r2(num(corteAgg._sum.ventaBebidas) + manualBebidas),
       propinas: r2(num(corteAgg._sum.totalPropinas)),
-      iva: r2(num(corteAgg._sum.iva)),
+      iva: r2(num(corteAgg._sum.iva) + manualIva),
       cortes: corteAgg._count,
+      diasManual: manualSales.length,
     },
     banco: {
       abonos: r2(num(bankAbonos._sum.amount)),

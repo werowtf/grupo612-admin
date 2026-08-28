@@ -52,6 +52,8 @@ export async function GET(req: Request) {
   lines.push(csvRow("Ventas bebidas", r.ventas.bebidas));
   lines.push(csvRow("Propinas", r.ventas.propinas));
   lines.push(csvRow("IVA", r.ventas.iva));
+  lines.push(csvRow("Cortes de caja", r.ventas.cortes));
+  lines.push(csvRow("Días de venta diaria manual (sin corte)", r.ventas.diasManual));
   lines.push("");
   lines.push(csvRow("Banco — abonos", r.banco.abonos));
   lines.push(csvRow("Banco — cargos", r.banco.cargos));
