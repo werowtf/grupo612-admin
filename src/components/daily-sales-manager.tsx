@@ -10,7 +10,6 @@ import {
 } from "@/app/(app)/ingresos-egresos/venta-diaria/actions";
 import { useDailySaleDialog } from "@/components/daily-sales-context";
 import { formatMXN, diaSemana } from "@/lib/utils";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -80,13 +79,7 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
 
   return (
     <div className="space-y-3">
-      <div>
-        <h2 className="text-base font-semibold">Venta diaria</h2>
-        <p className="text-xs text-muted-foreground">
-          Los días con corte de caja se calculan solos (●); usa &ldquo;Registrar venta&rdquo; (arriba)
-          sólo para los días sin corte.
-        </p>
-      </div>
+      <h2 className="text-base font-semibold">Venta diaria</h2>
 
       {deleteError && (
         <p className="flex items-start gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
@@ -127,10 +120,6 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
                   return (
                     <tr key={r.id} className="hover:bg-muted/60">
                       <td className="whitespace-nowrap px-3 py-2 font-semibold">
-                        <span
-                          title={r.source === "CORTE" ? "Calculada del corte de caja del día" : "Capturada a mano"}
-                          className={cn("mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle", r.source === "CORTE" ? "bg-brand-600" : "bg-muted-foreground/40")}
-                        />
                         {new Date(`${r.date}T00:00:00.000Z`).toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" })}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{diaSemana(`${r.date}T00:00:00.000Z`)}</td>
