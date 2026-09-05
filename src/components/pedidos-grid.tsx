@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { savePedidosAction, marcarFacturadoAction, type PedidosActionState } from "@/app/(app)/pedidos/actions";
@@ -52,6 +52,8 @@ export function PedidosGrid({
   const [quantities, setQuantities] = useState<Record<string, number>>(initialQuantities);
   const [facturando, setFacturando] = useState(false);
   const [facturarError, setFacturarError] = useState<string | null>(null);
+  const [clearedKeys, setClearedKeys] = useState<Set<string>>(new Set());
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
     if (state.ok) router.refresh();
@@ -122,25 +124,48 @@ export function PedidosGrid({
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {productos.map((p) => (
+                {productos.map((p, rowIndex) => (
                   <tr key={p.id} className="hover:bg-muted/40">
                     <td className="sticky left-0 z-10 whitespace-nowrap bg-card px-3 py-1.5 font-medium">{p.name}</td>
                     <td className="px-2 py-1.5 text-right tabular-nums text-muted-foreground">{formatMXN(p.price)}</td>
                     {days.map((day) => {
                       const key = `${p.id}_${day}`;
+                      const value = quantities[key] ?? 0;
+                      const showEmpty = clearedKeys.has(key) && value === 0;
                       return (
                         <td key={day} className="px-0.5 py-1">
                           <input
+                            ref={(el) => {
+                              inputRefs.current[key] = el;
+                            }}
                             type="number"
                             min={0}
                             step={1}
                             name={`qty_${key}`}
                             disabled={readOnly}
-                            value={quantities[key] ?? 0}
+                            value={showEmpty ? "" : value}
+                            onFocus={() => {
+                              if (value === 0) setClearedKeys((s) => new Set(s).add(key));
+                            }}
+                            onBlur={() =>
+                              setClearedKeys((s) => {
+                                if (!s.has(key)) return s;
+                                const next = new Set(s);
+                                next.delete(key);
+                                return next;
+                              })
+                            }
                             onChange={(e) =>
                               setQuantities((q) => ({ ...q, [key]: Math.max(0, Math.trunc(Number(e.target.value) || 0)) }))
                             }
-                            className="w-12 rounded border border-border bg-transparent px-1 py-1 text-center text-xs tabular-nums outline-none focus:border-brand-600 disabled:opacity-60"
+                            onKeyDown={(e) => {
+                              if (e.key !== "Tab") return;
+                              const nextRow = e.shiftKey ? rowIndex - 1 : rowIndex + 1;
+                              if (nextRow < 0 || nextRow >= productos.length) return; // deja el Tab por defecto en el borde
+                              e.preventDefault();
+                              inputRefs.current[`${productos[nextRow].id}_${day}`]?.focus();
+                            }}
+                            className="w-12 rounded border border-border bg-transparent px-1 py-1 text-center text-xs tabular-nums outline-none focus:border-brand-600 disabled:opacity-60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           />
                         </td>
                       );
