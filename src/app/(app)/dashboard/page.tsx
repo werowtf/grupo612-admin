@@ -1,16 +1,34 @@
 import Link from "next/link";
-import { TrendingUp, TrendingDown, Wallet, Clock, ArrowRight, Info } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, Clock, ArrowRight, Info, ChefHat, Wine, Percent } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { getVenueSummary, getVenueTransactions, getVenueDailyTotals } from "@/lib/queries";
+import { getCostoVentaMes } from "@/lib/dashboard/costo-venta";
 import { StatCard } from "@/components/stat-card";
 import { CategoryBadge } from "@/components/badges";
 import { AreaChartInteractive } from "@/components/area-chart-interactive";
+import { MonthPicker } from "@/components/month-picker";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
 import { categoryBar } from "@/lib/labels";
 import { buttonVariants } from "@/components/ui/button";
 
-export default async function DashboardPage() {
+function parseMonth(raw: string | undefined): { year: number; month: number } {
+  const m = /^(\d{4})-(\d{2})$/.exec(raw ?? "");
+  if (m) return { year: Number(m[1]), month: Number(m[2]) };
+  const now = new Date();
+  return { year: now.getFullYear(), month: now.getMonth() + 1 };
+}
+
+function fmtPct(pct: number | null): string {
+  return pct === null ? "—" : `${pct.toFixed(1)}%`;
+}
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mes?: string }>;
+}) {
   const { selected } = await getAppContext();
+  const sp = await searchParams;
 
   if (!selected) {
     return (
@@ -20,10 +38,14 @@ export default async function DashboardPage() {
     );
   }
 
-  const [summary, recent, dailyTotals] = await Promise.all([
+  const { year, month } = parseMonth(sp.mes);
+  const mesValue = `${year}-${String(month).padStart(2, "0")}`;
+
+  const [summary, recent, dailyTotals, costoVenta] = await Promise.all([
     getVenueSummary(selected.id),
     getVenueTransactions(selected.id, { take: 6 }),
     getVenueDailyTotals(selected.id),
+    getCostoVentaMes(selected.id, year, month),
   ]);
 
   return (
@@ -73,6 +95,38 @@ export default async function DashboardPage() {
           </section>
 
           <AreaChartInteractive data={dailyTotals} />
+
+          <section className="card min-w-0 space-y-4 p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-base font-semibold">% Costo de venta</h2>
+              <form method="get" className="flex items-center gap-2">
+                <MonthPicker name="mes" defaultValue={mesValue} />
+                <button type="submit" className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted">
+                  Ver
+                </button>
+              </form>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <StatCard
+                label="Costo de venta — Cocina"
+                value={fmtPct(costoVenta.cocina.pct)}
+                hint={`${formatMXN(costoVenta.cocina.costo)} de gasto / ${formatMXN(costoVenta.cocina.venta)} de venta`}
+                icon={<ChefHat className="h-4 w-4" />}
+              />
+              <StatCard
+                label="Costo de venta — Barra"
+                value={fmtPct(costoVenta.barra.pct)}
+                hint={`${formatMXN(costoVenta.barra.costo)} de gasto / ${formatMXN(costoVenta.barra.venta)} de venta`}
+                icon={<Wine className="h-4 w-4" />}
+              />
+              <StatCard
+                label="Costo de venta general"
+                value={fmtPct(costoVenta.general.pct)}
+                hint={`${formatMXN(costoVenta.general.costo)} de gasto / ${formatMXN(costoVenta.general.venta)} de venta`}
+                icon={<Percent className="h-4 w-4" />}
+              />
+            </div>
+          </section>
 
           <section className="grid gap-6 lg:grid-cols-2">
             <div className="card min-w-0 p-5">
