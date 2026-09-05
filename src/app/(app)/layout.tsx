@@ -22,6 +22,7 @@ export default async function AppLayout({
       role={user.role}
       venues={venues.map((v) => ({ id: v.id, name: v.name }))}
       selectedVenueId={selected?.id ?? null}
+      selectedVenueSlug={selected?.slug ?? null}
       userName={user.name}
       roleLabel={roleLabels[user.role]}
     >
