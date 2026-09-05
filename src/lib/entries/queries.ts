@@ -15,11 +15,16 @@ export interface EntrySummary {
   count: number;
 }
 
-export async function getEntrySummary(venueId: string): Promise<EntrySummary> {
+function monthRange(year: number, month: number): { gte: Date; lt: Date } {
+  return { gte: new Date(Date.UTC(year, month - 1, 1)), lt: new Date(Date.UTC(year, month, 1)) };
+}
+
+export async function getEntrySummary(venueId: string, year: number, month: number): Promise<EntrySummary> {
+  const date = monthRange(year, month);
   const [ing, egr, count] = await Promise.all([
-    prisma.financialEntry.aggregate({ _sum: { amount: true }, where: { venueId, type: "INGRESO" } }),
-    prisma.financialEntry.aggregate({ _sum: { amount: true }, where: { venueId, type: "EGRESO" } }),
-    prisma.financialEntry.count({ where: { venueId } }),
+    prisma.financialEntry.aggregate({ _sum: { amount: true }, where: { venueId, type: "INGRESO", date } }),
+    prisma.financialEntry.aggregate({ _sum: { amount: true }, where: { venueId, type: "EGRESO", date } }),
+    prisma.financialEntry.count({ where: { venueId, date } }),
   ]);
   const ingresos = num(ing._sum.amount);
   const egresos = num(egr._sum.amount);
@@ -27,6 +32,8 @@ export async function getEntrySummary(venueId: string): Promise<EntrySummary> {
 }
 
 export interface EntryFilters {
+  year: number;
+  month: number;
   type?: EntryType;
   category?: string;
   search?: string;
@@ -34,9 +41,10 @@ export interface EntryFilters {
   take?: number;
 }
 
-export async function getVenueEntries(venueId: string, filters: EntryFilters = {}) {
+export async function getVenueEntries(venueId: string, filters: EntryFilters) {
   const where: Prisma.FinancialEntryWhereInput = {
     venueId,
+    date: monthRange(filters.year, filters.month),
     ...(filters.type ? { type: filters.type } : {}),
     ...(filters.category ? { category: filters.category } : {}),
     ...(filters.createdById ? { createdById: filters.createdById } : {}),

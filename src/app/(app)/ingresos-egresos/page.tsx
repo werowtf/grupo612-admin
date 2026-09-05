@@ -46,19 +46,23 @@ export default async function IngresosEgresosPage({
     );
   }
 
+  const { year, month } = parseMonth(sp.mes);
+  const mesValue = `${year}-${String(month).padStart(2, "0")}`;
+
   const filters: EntryFilters = {
+    year,
+    month,
     type: sp.type === "INGRESO" || sp.type === "EGRESO" ? (sp.type as EntryType) : undefined,
     category: sp.category && sp.category !== "todas" ? sp.category.trim() || undefined : undefined,
     search: sp.search?.trim() || undefined,
     take: 300,
   };
-  const hasFilters = Boolean(filters.type || filters.category || filters.search);
-
-  const { year, month } = parseMonth(sp.mes);
-  const mesValue = `${year}-${String(month).padStart(2, "0")}`;
+  const now = new Date();
+  const isCurrentMonth = year === now.getUTCFullYear() && month === now.getUTCMonth() + 1;
+  const hasFilters = Boolean(filters.type || filters.category || filters.search || !isCurrentMonth);
 
   const [summary, { rows, total }, categories, { rows: dailySales }] = await Promise.all([
-    getEntrySummary(selected.id),
+    getEntrySummary(selected.id, year, month),
     getVenueEntries(selected.id, filters),
     getVenueCategories(selected.id),
     getDailySales(selected.id, year, month),
@@ -117,56 +121,60 @@ export default async function IngresosEgresosPage({
         <StatCard label="Neto" value={formatMXN(summary.neto)} tone={summary.neto >= 0 ? "positive" : "negative"} icon={<Wallet className="h-4 w-4" />} />
       </section>
 
-      <form method="get" className="card flex flex-wrap items-end gap-3 p-4">
-        <div className="min-w-[160px] flex-1">
-          <label className="label" htmlFor="search">Buscar</label>
-          <Input id="search" name="search" defaultValue={filters.search ?? ""} placeholder="Proveedor, folio…" />
-        </div>
+      <form method="get" className="space-y-3">
         <div>
-          <label className="label" htmlFor="type">Tipo</label>
-          <Select name="type" defaultValue={filters.type ?? "todos"}>
-            <SelectTrigger id="type" className={FILTER_TRIGGER_CLASS}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todos">Todos</SelectItem>
-              <SelectItem value="EGRESO">Egresos</SelectItem>
-              <SelectItem value="INGRESO">Ingresos</SelectItem>
-            </SelectContent>
-          </Select>
+          <label className="label">Mes</label>
+          <MonthPicker name="mes" defaultValue={mesValue} />
         </div>
-        <div>
-          <label className="label" htmlFor="category">Categoría</label>
-          <Select name="category" defaultValue={filters.category ?? "todas"}>
-            <SelectTrigger id="category" className={FILTER_TRIGGER_CLASS}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todas">Todas</SelectItem>
-              {allCategories.map((c) => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex gap-2">
-          <Button type="submit">Filtrar</Button>
-          {hasFilters && (
-            <Link href="/ingresos-egresos" className={buttonVariants({ variant: "outline" })}>
-              <X className="h-4 w-4" /> Limpiar
-            </Link>
-          )}
+
+        <div className="card flex flex-wrap items-end gap-3 p-4">
+          <div className="min-w-[160px] flex-1">
+            <label className="label" htmlFor="search">Buscar</label>
+            <Input id="search" name="search" defaultValue={filters.search ?? ""} placeholder="Proveedor, folio…" />
+          </div>
+          <div>
+            <label className="label" htmlFor="type">Tipo</label>
+            <Select name="type" defaultValue={filters.type ?? "todos"}>
+              <SelectTrigger id="type" className={FILTER_TRIGGER_CLASS}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="EGRESO">Egresos</SelectItem>
+                <SelectItem value="INGRESO">Ingresos</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="label" htmlFor="category">Categoría</label>
+            <Select name="category" defaultValue={filters.category ?? "todas"}>
+              <SelectTrigger id="category" className={FILTER_TRIGGER_CLASS}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todas">Todas</SelectItem>
+                {allCategories.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-2">
+            <Button type="submit">Filtrar</Button>
+            {hasFilters && (
+              <Link href="/ingresos-egresos" className={buttonVariants({ variant: "outline" })}>
+                <X className="h-4 w-4" /> Limpiar
+              </Link>
+            )}
+          </div>
         </div>
       </form>
 
       {/* La venta diaria se captura con el mismo desglose que usa la
           contadora (efectivo/tarjeta/crédito + comida/bebida), un renglón
-          por día, así que vive aparte de los movimientos genéricos. */}
+          por día, así que vive aparte de los movimientos genéricos. Usa el
+          mismo mes que el filtro de arriba. */}
       <section className="space-y-2">
-        <form method="get" className="flex items-center gap-2">
-          <MonthPicker name="mes" defaultValue={mesValue} />
-          <Button type="submit" variant="outline" size="sm">Ver</Button>
-        </form>
         <DailySalesManager venueId={selected.id} rows={saleRows} />
       </section>
 
