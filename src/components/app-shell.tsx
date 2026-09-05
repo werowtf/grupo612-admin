@@ -45,10 +45,8 @@ export function AppShell({
         <main className="flex-1 overflow-x-hidden p-4 md:p-6">
           <div key={pathname} className="animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
             {logo && (
-              <div className="mb-4 inline-flex rounded-xl bg-white p-3 shadow-sm">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={logo} alt="" className="h-16 w-auto" />
-              </div>
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logo} alt="" className="mb-4 h-16 w-auto" />
             )}
             {children}
           </div>
