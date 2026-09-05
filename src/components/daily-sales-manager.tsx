@@ -12,6 +12,7 @@ import { useDailySaleDialog } from "@/components/daily-sales-context";
 import { formatMXN, diaSemana } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/date-picker";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +32,17 @@ export interface DailySaleRow {
   statusCredito: string | null;
   comida: number;
   bebida: number;
+}
+
+/**
+ * El diálogo se remonta cada vez que se abre (el <form> vive dentro de
+ * DialogContent), así que este estado local siempre arranca en el valor
+ * correcto para la fila que se está editando — igual que hacía el
+ * <input defaultValue> que reemplaza, pero controlado, como pide DatePicker.
+ */
+function FechaField({ initialValue, readOnly }: { initialValue?: string; readOnly: boolean }) {
+  const [value, setValue] = useState(initialValue ?? "");
+  return <DatePicker id="date" name="date" value={value} onChange={setValue} required readOnly={readOnly} />;
 }
 
 function pct(part: number, whole: number): string {
@@ -200,7 +212,7 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
             )}
             <div>
               <label className="label font-semibold" htmlFor="date">Fecha</label>
-              <Input id="date" name="date" type="date" defaultValue={editing?.date} required readOnly={!!editing} />
+              <FechaField initialValue={editing?.date} readOnly={!!editing} />
               {editing && editing.source === "MANUAL" && (
                 <p className="mt-1 text-xs text-muted-foreground">
                   Para cambiar la fecha, borra este registro y captúralo de nuevo.

@@ -9,6 +9,7 @@ import type { CorteSource } from "@/generated/prisma/enums";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/date-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -372,15 +373,25 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                         </span>
                       )}
                     </label>
-                    <Input
-                      id={f.key}
-                      name={f.key}
-                      type={f.type === "date" ? "date" : f.type === "text" ? "text" : "number"}
-                      step={f.type === "money" ? "0.01" : f.type === "int" ? "1" : undefined}
-                      value={values[f.key] ?? ""}
-                      onChange={(e) => setField(f.key, e.target.value)}
-                      className={cn(wasDetected && "border-brand-600")}
-                    />
+                    {f.type === "date" ? (
+                      <DatePicker
+                        id={f.key}
+                        name={f.key}
+                        value={values[f.key] ?? ""}
+                        onChange={(v) => setField(f.key, v)}
+                        className={cn(wasDetected && "border-brand-600")}
+                      />
+                    ) : (
+                      <Input
+                        id={f.key}
+                        name={f.key}
+                        type={f.type === "text" ? "text" : "number"}
+                        step={f.type === "money" ? "0.01" : f.type === "int" ? "1" : undefined}
+                        value={values[f.key] ?? ""}
+                        onChange={(e) => setField(f.key, e.target.value)}
+                        className={cn(wasDetected && "border-brand-600")}
+                      />
+                    )}
                   </div>
                 );
               })}

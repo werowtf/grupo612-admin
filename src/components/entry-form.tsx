@@ -9,6 +9,7 @@ import type { TicketDraft } from "@/lib/entries/ticket";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/date-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -168,16 +169,26 @@ export function EntryForm({
             </span>
           )}
         </label>
-        <Input
-          id={key}
-          name={key}
-          type={type}
-          step={opts?.step}
-          placeholder={opts?.placeholder}
-          value={values[key] ?? ""}
-          onChange={(e) => set(key, e.target.value)}
-          className={cn(was && "border-brand-600")}
-        />
+        {type === "date" ? (
+          <DatePicker
+            id={key}
+            name={key}
+            value={values[key] ?? ""}
+            onChange={(v) => set(key, v)}
+            className={cn(was && "border-brand-600")}
+          />
+        ) : (
+          <Input
+            id={key}
+            name={key}
+            type={type}
+            step={opts?.step}
+            placeholder={opts?.placeholder}
+            value={values[key] ?? ""}
+            onChange={(e) => set(key, e.target.value)}
+            className={cn(was && "border-brand-600")}
+          />
+        )}
       </div>
     );
   };
