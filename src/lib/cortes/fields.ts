@@ -57,6 +57,18 @@ export const CORTE_SECTIONS: CorteSectionDef[] = [
     ],
   },
   {
+    title: "Ventas por terminal",
+    fields: [
+      { key: "ventaTerminalBanbajio", label: "Banbajio", type: "money" },
+      { key: "ventaTerminalPayefy", label: "Payefy", type: "money" },
+      { key: "ventaTerminalWuzi", label: "Wuzi", type: "money" },
+    ],
+  },
+  {
+    title: "Propinas por pagar",
+    fields: [{ key: "propinasPorPagar", label: "Monto", type: "money" }],
+  },
+  {
     title: "Totales",
     fields: [
       { key: "subtotal", label: "Subtotal", type: "money" },

@@ -267,6 +267,14 @@ model Corte {
   ventaBebidas   Decimal @default(0) @db.Decimal(14, 2)
   ventaOtros     Decimal @default(0) @db.Decimal(14, 2)
 
+  // Ventas por terminal (además de las formas de pago con tarjeta de arriba)
+  ventaTerminalBanbajio Decimal @default(0) @db.Decimal(14, 2)
+  ventaTerminalPayefy   Decimal @default(0) @db.Decimal(14, 2)
+  ventaTerminalWuzi     Decimal @default(0) @db.Decimal(14, 2)
+
+  /// Propinas ya cobradas pero que todavía no se le han pagado al personal.
+  propinasPorPagar Decimal @default(0) @db.Decimal(14, 2)
+
   // Totales
   subtotal   Decimal @default(0) @db.Decimal(14, 2)
   descuentos Decimal @default(0) @db.Decimal(14, 2)

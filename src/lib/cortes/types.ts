@@ -32,6 +32,12 @@ export interface CorteDraft {
   ventaBebidas?: number;
   ventaOtros?: number;
 
+  ventaTerminalBanbajio?: number;
+  ventaTerminalPayefy?: number;
+  ventaTerminalWuzi?: number;
+
+  propinasPorPagar?: number;
+
   subtotal?: number;
   descuentos?: number;
   ventaNeta?: number;
