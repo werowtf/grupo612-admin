@@ -6,7 +6,7 @@ import { processCorteFileAction, saveCorteAction } from "@/app/(app)/cortes/acti
 import { CORTE_SECTIONS } from "@/lib/cortes/fields";
 import type { CorteDraft } from "@/lib/cortes/types";
 import type { CorteSource } from "@/generated/prisma/enums";
-import { cn } from "@/lib/utils";
+import { cn, formatMXN } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/date-picker";
@@ -364,33 +364,54 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
               {section.fields.map((f) => {
                 const wasDetected = detected.has(f.key);
                 return (
-                  <div key={f.key}>
-                    <label className="label flex items-center gap-2" htmlFor={f.key}>
-                      {f.label}
-                      {wasDetected && (
-                        <span className="rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-600">
-                          detectado
-                        </span>
+                  <div key={f.key} className="contents">
+                    <div>
+                      <label className="label flex items-center gap-2" htmlFor={f.key}>
+                        {f.label}
+                        {wasDetected && (
+                          <span className="rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-600">
+                            detectado
+                          </span>
+                        )}
+                      </label>
+                      {f.type === "date" ? (
+                        <DatePicker
+                          id={f.key}
+                          name={f.key}
+                          value={values[f.key] ?? ""}
+                          onChange={(v) => setField(f.key, v)}
+                          className={cn(wasDetected && "border-brand-600")}
+                        />
+                      ) : (
+                        <Input
+                          id={f.key}
+                          name={f.key}
+                          type={f.type === "text" ? "text" : "number"}
+                          step={f.type === "money" ? "0.01" : f.type === "int" ? "1" : undefined}
+                          value={values[f.key] ?? ""}
+                          onChange={(e) => setField(f.key, e.target.value)}
+                          className={cn(wasDetected && "border-brand-600")}
+                        />
                       )}
-                    </label>
-                    {f.type === "date" ? (
-                      <DatePicker
-                        id={f.key}
-                        name={f.key}
-                        value={values[f.key] ?? ""}
-                        onChange={(v) => setField(f.key, v)}
-                        className={cn(wasDetected && "border-brand-600")}
-                      />
-                    ) : (
-                      <Input
-                        id={f.key}
-                        name={f.key}
-                        type={f.type === "text" ? "text" : "number"}
-                        step={f.type === "money" ? "0.01" : f.type === "int" ? "1" : undefined}
-                        value={values[f.key] ?? ""}
-                        onChange={(e) => setField(f.key, e.target.value)}
-                        className={cn(wasDetected && "border-brand-600")}
-                      />
+                    </div>
+                    {/* No es un campo del corte: es la suma de Visa/Mastercard/Amex
+                        que se acaban de capturar, para verificar de un vistazo sin
+                        tener que sumarlas a mano. No se guarda. */}
+                    {f.key === "pagoAmex" && (
+                      <div>
+                        <label className="label" htmlFor="totalTarjetas">Total Tarjetas</label>
+                        <Input
+                          id="totalTarjetas"
+                          type="text"
+                          disabled
+                          value={formatMXN(
+                            (Number(values.pagoVisa) || 0) +
+                              (Number(values.pagoMastercard) || 0) +
+                              (Number(values.pagoAmex) || 0),
+                          )}
+                          className="font-semibold text-muted-foreground"
+                        />
+                      </div>
                     )}
                   </div>
                 );
