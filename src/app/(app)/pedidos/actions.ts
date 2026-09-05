@@ -171,3 +171,64 @@ export async function marcarFacturadoAction(
     return { error: "No se pudo facturar." };
   }
 }
+
+/**
+ * Guarda los folios de factura diarios (vista "Todos"): una sola factura al
+ * día cubre los 3 cafés juntos, así que el folio se guarda a nivel de
+ * negocio y no de café. Los campos llegan como `folio_{day}`; un folio
+ * vacío borra el registro de ese día.
+ */
+export async function saveFoliosAction(
+  _prev: PedidosActionState,
+  formData: FormData,
+): Promise<PedidosActionState> {
+  const venueId = String(formData.get("venueId") ?? "");
+  const year = Number(formData.get("year"));
+  const month = Number(formData.get("month"));
+  if (!venueId || !Number.isInteger(year) || !Number.isInteger(month)) {
+    return { error: "Datos inválidos." };
+  }
+
+  try {
+    const user = await requireEditor(venueId);
+
+    const toUpsert: { day: number; folio: string }[] = [];
+    const toDelete: number[] = [];
+    for (const [key, raw] of formData.entries()) {
+      const m = /^folio_(\d+)$/.exec(key);
+      if (!m) continue;
+      const day = Number(m[1]);
+      const folio = String(raw).trim();
+      if (folio) toUpsert.push({ day, folio });
+      else toDelete.push(day);
+    }
+
+    await prisma.$transaction(async (tx) => {
+      for (const row of toUpsert) {
+        const date = new Date(Date.UTC(year, month - 1, row.day));
+        await tx.folioPedidoCafeteria.upsert({
+          where: { venueId_date: { venueId, date } },
+          update: { folio: row.folio },
+          create: { venueId, date, folio: row.folio },
+        });
+      }
+      for (const day of toDelete) {
+        const date = new Date(Date.UTC(year, month - 1, day));
+        await tx.folioPedidoCafeteria.delete({ where: { venueId_date: { venueId, date } } }).catch(() => {});
+      }
+    });
+
+    await logAudit({
+      userId: user.id,
+      action: "folioPedidoCafeteria.save",
+      entity: "Venue",
+      entityId: venueId,
+      meta: { year, month, celdas: toUpsert.length },
+    });
+    revalidate();
+    return { ok: true };
+  } catch (err) {
+    console.error("Error al guardar folios:", err);
+    return { error: "No se pudieron guardar los folios." };
+  }
+}

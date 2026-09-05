@@ -119,3 +119,13 @@ export async function getPedidosMesTodos(venueId: string, year: number, month: n
 
   return { productos: productosList, quantities, dailyTotals, subtotal, totalConIva: subtotal * (1 + IVA_RATE) };
 }
+
+/** Folios de factura diarios de un negocio/mes: día (1-31) -> folio. Una factura al día cubre los 3 cafés juntos. */
+export async function getFoliosMes(venueId: string, year: number, month: number): Promise<Record<number, string>> {
+  const gte = new Date(Date.UTC(year, month - 1, 1));
+  const lt = new Date(Date.UTC(year, month, 1));
+  const folios = await prisma.folioPedidoCafeteria.findMany({ where: { venueId, date: { gte, lt } } });
+  const result: Record<number, string> = {};
+  for (const f of folios) result[f.date.getUTCDate()] = f.folio;
+  return result;
+}

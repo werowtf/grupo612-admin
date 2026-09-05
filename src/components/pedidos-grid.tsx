@@ -118,7 +118,7 @@ export function PedidosGrid({
                   <th className="sticky left-0 z-10 bg-table-header px-3 py-2 font-semibold">Producto</th>
                   <th className="px-2 py-2 text-right font-semibold">Precio</th>
                   {days.map((d) => (
-                    <th key={d} className="px-1 py-2 text-center font-semibold">{d}</th>
+                    <th key={d} className="px-px py-2 text-center font-semibold">{d}</th>
                   ))}
                 </tr>
               </thead>
@@ -131,21 +131,24 @@ export function PedidosGrid({
                       const key = `${p.id}_${day}`;
                       const value = quantities[key] ?? 0;
                       return (
-                        <td key={day} className="px-0.5 py-1">
+                        <td key={day} className="px-px py-1">
                           <input
                             ref={(el) => {
                               inputRefs.current[key] = el;
                             }}
                             type="number"
                             min={0}
+                            max={9999}
+                            maxLength={4}
                             step={1}
                             name={`qty_${key}`}
                             disabled={readOnly}
                             value={value === 0 ? "" : value}
                             placeholder="—"
-                            onChange={(e) =>
-                              setQuantities((q) => ({ ...q, [key]: Math.max(0, Math.trunc(Number(e.target.value) || 0)) }))
-                            }
+                            onChange={(e) => {
+                              const digits = e.target.value.slice(0, 4);
+                              setQuantities((q) => ({ ...q, [key]: Math.max(0, Math.trunc(Number(digits) || 0)) }));
+                            }}
                             onKeyDown={(e) => {
                               if (e.key !== "Tab") return;
                               const nextRow = e.shiftKey ? rowIndex - 1 : rowIndex + 1;
@@ -153,7 +156,7 @@ export function PedidosGrid({
                               e.preventDefault();
                               inputRefs.current[`${productos[nextRow].id}_${day}`]?.focus();
                             }}
-                            className="w-12 rounded border border-border bg-transparent px-1 py-1 text-center text-xs tabular-nums outline-none placeholder:text-muted-foreground/40 focus:border-brand-600 disabled:opacity-60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            className="w-9 rounded border border-border bg-transparent px-0.5 py-1 text-center text-[11px] tabular-nums outline-none placeholder:text-muted-foreground/40 focus:border-brand-600 disabled:opacity-60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           />
                         </td>
                       );
@@ -168,7 +171,7 @@ export function PedidosGrid({
                   </td>
                   <td></td>
                   {dailyTotals.map((t, i) => (
-                    <td key={i} className="px-1 py-2 text-center text-[10px] tabular-nums">
+                    <td key={i} className="px-px py-2 text-center text-[9px] tabular-nums">
                       {t > 0 ? formatMXN(t).replace("$", "").split(".")[0] : <span className="text-muted-foreground/40">—</span>}
                     </td>
                   ))}

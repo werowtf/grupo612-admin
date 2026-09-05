@@ -58,6 +58,7 @@ model Venue {
   dailySales      DailySale[]
   cuentasPorPagar CuentaPorPagar[]
   cafeterias      Cafeteria[]
+  foliosPedidoCafeteria FolioPedidoCafeteria[]
   documents       Document[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -591,4 +592,20 @@ model FacturaCafeteria {
   createdAt DateTime @default(now())
 
   @@unique([cafeteriaId, year, month])
+}
+
+/// Folio de factura diario: la contadora emite una sola factura al día que
+/// cubre los pedidos de los 3 cafés juntos (no por café), así que vive a
+/// nivel de negocio, no de café.
+model FolioPedidoCafeteria {
+  id      String   @id @default(cuid())
+  venueId String
+  venue   Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  date    DateTime
+  folio   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([venueId, date])
 }
