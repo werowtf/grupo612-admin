@@ -87,25 +87,33 @@ export async function importStatementAction(
     },
   });
 
-  const data = parsed.rows.map((r) => ({
-    bankAccountId: account.id,
-    statementId: statement.id,
-    date: r.date,
-    time: r.time,
-    description: r.description,
-    descriptionLong: r.descriptionLong,
-    direction: r.direction,
-    amount: r.amount,
-    balance: r.balance,
-    reference: r.reference,
-    concept: r.concept,
-    category: r.category,
-    counterpartyName: r.counterpartyName,
-    counterpartyRfc: r.counterpartyRfc,
-    trackingKey: r.trackingKey,
-    dedupeHash: computeDedupeHash(r),
-    raw: r.raw as Prisma.InputJsonValue,
-  }));
+  const data = parsed.rows.map((r) => {
+    // Sin regla que lo reconozca, la categoría es una suposición (el criterio
+    // por defecto) — entra como Pendiente en vez de Conciliado, para que quien
+    // revise Movimientos lo note y corrija en vez de que se pierda entre lo
+    // que sí se conoce con certeza.
+    const { matched } = classifyWithMatch(r.description, r.direction);
+    return {
+      bankAccountId: account.id,
+      statementId: statement.id,
+      date: r.date,
+      time: r.time,
+      description: r.description,
+      descriptionLong: r.descriptionLong,
+      direction: r.direction,
+      amount: r.amount,
+      balance: r.balance,
+      reference: r.reference,
+      concept: r.concept,
+      category: r.category,
+      status: matched ? undefined : ("PENDIENTE" as const),
+      counterpartyName: r.counterpartyName,
+      counterpartyRfc: r.counterpartyRfc,
+      trackingKey: r.trackingKey,
+      dedupeHash: computeDedupeHash(r),
+      raw: r.raw as Prisma.InputJsonValue,
+    };
+  });
 
   const { count } = await prisma.bankTransaction.createMany({
     data,
