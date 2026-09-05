@@ -68,6 +68,26 @@ export async function importStatementAction(
       error: `El archivo parece ser de ${bankLabels[parsed.bank]}, pero la cuenta seleccionada es de ${bankLabels[account.bank]}.`,
     };
   }
+
+  // El archivo no dice a qué negocio pertenece, pero Santander (columna
+  // "Cuenta") y BanBajío ("Número cliente" en el encabezado) sí traen el
+  // número de cuenta — si no coincide con la cuenta elegida, es case casi
+  // seguro de que se subió el estado de cuenta del negocio equivocado.
+  if (parsed.detectedAccountNumber && account.accountNumber) {
+    const onlyDigits = (s: string) => s.replace(/\D/g, "");
+    if (onlyDigits(parsed.detectedAccountNumber) !== onlyDigits(account.accountNumber)) {
+      const realAccount = await prisma.bankAccount.findFirst({
+        where: { accountNumber: parsed.detectedAccountNumber },
+        include: { venue: true },
+      });
+      return {
+        error: realAccount
+          ? `Este archivo es de la cuenta de ${realAccount.venue.name} (···${parsed.detectedAccountNumber.slice(-4)}), no de la cuenta seleccionada. Cambia de cuenta antes de importar.`
+          : `El número de cuenta del archivo (···${parsed.detectedAccountNumber.slice(-4)}) no coincide con la cuenta seleccionada (···${account.accountNumber.slice(-4)}).`,
+      };
+    }
+  }
+
   if (parsed.rows.length === 0) {
     return { error: "No se encontraron movimientos en el archivo." };
   }

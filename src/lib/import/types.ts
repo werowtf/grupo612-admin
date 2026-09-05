@@ -25,4 +25,11 @@ export interface ParsedStatement {
   periodEnd?: Date;
   totalCargos: number; // suma de cargos (positivo)
   totalAbonos: number; // suma de abonos (positivo)
+  /**
+   * Número de cuenta que trae el propio archivo (columna "Cuenta" en
+   * Santander, "Número cliente" en el encabezado de BanBajío), para avisar
+   * si no coincide con la cuenta bancaria seleccionada al importar — el
+   * archivo no dice a qué negocio pertenece, pero si dice a qué cuenta sí.
+   */
+  detectedAccountNumber?: string;
 }

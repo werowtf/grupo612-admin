@@ -44,6 +44,7 @@ export function parseSantanderCsv(buffer: Buffer): ParsedStatement {
   const col = (name: string) => header.indexOf(name);
 
   const idx = {
+    cuenta: col("cuenta"),
     fecha: col("fecha"),
     hora: col("hora"),
     descripcion: col("descripcion"),
@@ -102,6 +103,9 @@ export function parseSantanderCsv(buffer: Buffer): ParsedStatement {
     });
   }
 
+  // La cuenta viene en cada renglón, idéntica; con la primera fila basta.
+  const detectedAccountNumber = idx.cuenta >= 0 ? clean(table[1]?.[idx.cuenta]) || undefined : undefined;
+
   return {
     bank: "SANTANDER",
     rows,
@@ -109,6 +113,7 @@ export function parseSantanderCsv(buffer: Buffer): ParsedStatement {
     periodEnd: maxDate ?? undefined,
     totalCargos: round2(totalCargos),
     totalAbonos: round2(totalAbonos),
+    detectedAccountNumber,
   };
 }
 

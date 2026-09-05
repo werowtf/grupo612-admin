@@ -89,13 +89,24 @@ export async function parseBanBajioXlsx(buffer: Buffer): Promise<ParsedStatement
 
   if (!ws) return { bank: "BANBAJIO", rows, totalCargos: 0, totalAbonos: 0 };
 
-  // 1) Localizar la fila de encabezados de movimientos.
+  // 1) Localizar la fila de encabezados de movimientos, y de paso el número
+  // de cliente del bloque "Datos Generales" que trae arriba — el archivo no
+  // dice a qué negocio pertenece, pero ese número sí identifica la cuenta.
   let headerRowNum = -1;
+  let detectedAccountNumber: string | undefined;
   const colIndex: Record<string, number> = {};
   ws.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-    if (headerRowNum !== -1) return;
     const values = row.values as ExcelJS.CellValue[];
     const texts = values.map((v) => cellText(v).toLowerCase());
+
+    if (headerRowNum === -1) {
+      const clienteIdx = texts.findIndex((t) => t === "número cliente" || t === "numero cliente");
+      if (clienteIdx !== -1) {
+        detectedAccountNumber = texts.slice(clienteIdx + 1).find((t) => t) || undefined;
+      }
+    }
+
+    if (headerRowNum !== -1) return;
     if (texts.some((t) => t === "fecha movimiento") && texts.some((t) => t.includes("saldo"))) {
       headerRowNum = rowNumber;
       texts.forEach((t, i) => {
@@ -105,7 +116,7 @@ export async function parseBanBajioXlsx(buffer: Buffer): Promise<ParsedStatement
   });
 
   if (headerRowNum === -1) {
-    return { bank: "BANBAJIO", rows, totalCargos: 0, totalAbonos: 0 };
+    return { bank: "BANBAJIO", rows, totalCargos: 0, totalAbonos: 0, detectedAccountNumber };
   }
 
   const c = {
@@ -178,5 +189,6 @@ export async function parseBanBajioXlsx(buffer: Buffer): Promise<ParsedStatement
     periodEnd: maxDate ?? undefined,
     totalCargos: Math.round(totalCargos * 100) / 100,
     totalAbonos: Math.round(totalAbonos * 100) / 100,
+    detectedAccountNumber,
   };
 }
