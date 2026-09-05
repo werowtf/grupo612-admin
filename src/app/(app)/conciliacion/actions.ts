@@ -233,7 +233,13 @@ export async function updateTransactionCategory(txId: string, category: string) 
   const { user, tx } = await loadTxForUser(txId);
   await prisma.bankTransaction.update({
     where: { id: tx.id },
-    data: { category: parsed, autoCategorized: false },
+    data: {
+      category: parsed,
+      autoCategorized: false,
+      // Corregir la categoría de un Pendiente ES la revisión: si se deja el
+      // estatus tal cual, queda pendiente para siempre aunque ya se arregló.
+      ...(tx.status === "PENDIENTE" ? { status: "CONCILIADO" as const } : {}),
+    },
   });
 
   // Corrección manual explícita: se aprende para la próxima importación. Un
@@ -265,6 +271,22 @@ export async function updateTransactionStatus(txId: string, status: string) {
     where: { id: tx.id },
     data: { status: parsed },
   });
+
+  // Pasar de Pendiente a Conciliado sin tocar la categoría también es una
+  // confirmación: el concepto no tenía regla, se usó el criterio por
+  // defecto, y si la categoría que ya trae era la correcta nadie va a
+  // tocarla en el selector sólo para "reseleccionarla" — cerrarlo como
+  // Conciliado es la señal de que está bien. No se aprende en ninguna otra
+  // transición de estatus, para no reforzar una categoría que nadie revisó.
+  if (tx.status === "PENDIENTE" && parsed === "CONCILIADO") {
+    const concept = normalizeConcept(tx.description);
+    await prisma.conceptRule.upsert({
+      where: { concept },
+      create: { concept, category: tx.category, createdById: user.id },
+      update: { category: tx.category, createdById: user.id },
+    });
+  }
+
   await logAudit({
     userId: user.id,
     action: "tx.setStatus",
