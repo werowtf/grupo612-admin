@@ -200,7 +200,13 @@ export async function getStatementTransactionsAction(statementId: string): Promi
 
   const rows = await prisma.bankTransaction.findMany({
     where: { statementId },
-    orderBy: [{ date: "asc" }, { time: "asc" }, { createdAt: "asc" }],
+    // Muchos estados de cuenta (BanBajío) no traen hora por movimiento, así
+    // que varios del mismo día empatan en date+time. `createdAt` no sirve de
+    // desempate porque un import por lotes (createMany) puede insertarlos
+    // todos con el mismo timestamp; `id` sí preserva el orden porque Prisma
+    // genera cada cuid() en el momento, en el mismo orden en que vienen las
+    // filas del archivo original.
+    orderBy: [{ date: "asc" }, { time: "asc" }, { id: "asc" }],
   });
   return rows.map(toTxRow);
 }

@@ -169,7 +169,11 @@ export async function getVenueTransactions(venueId: string, filters: TxFilters =
   const [rows, total] = await Promise.all([
     prisma.bankTransaction.findMany({
       where,
-      orderBy: [{ date: "desc" }, { time: "desc" }, { createdAt: "desc" }],
+      // `id` en vez de `createdAt` como desempate: un import por lotes
+      // (createMany) puede insertar varias filas con el mismo `createdAt`,
+      // mientras que `id` sí preserva el orden del archivo original porque
+      // Prisma genera cada cuid() en el momento, según el orden del array.
+      orderBy: [{ date: "desc" }, { time: "desc" }, { id: "desc" }],
       take: filters.take ?? 200,
     }),
     prisma.bankTransaction.count({ where }),
