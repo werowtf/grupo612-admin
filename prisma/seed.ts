@@ -62,6 +62,36 @@ async function main() {
 
   const allVenueIds = Object.values(venues);
 
+  // ── Cafeterías (Comisariato): cafés-cliente + catálogo de productos ────
+  // Datos reales tomados de "Cobranza Agosto 2026.xlsx" de la contadora externa.
+  const PRODUCTOS_CAFETERIA: { name: string; price: number }[] = [
+    { name: "Sándwich Jamón y Queso", price: 33 },
+    { name: "Croissant Jamón y Queso", price: 44 },
+    { name: "Burrito Carne", price: 32 },
+    { name: "Burrito Marlin", price: 32 },
+    { name: "Ensalada Verde con Pollo", price: 118 },
+    { name: "Yogurth con Frutos Rojos", price: 77 },
+  ];
+  const CAFETERIAS = ["SUE", "Aeropuerto 1", "Café 40"];
+  const comisariatoId = venues["comisariato"];
+  if (comisariatoId) {
+    for (let i = 0; i < CAFETERIAS.length; i++) {
+      const cafeteria = await prisma.cafeteria.upsert({
+        where: { venueId_name: { venueId: comisariatoId, name: CAFETERIAS[i] } },
+        update: {},
+        create: { venueId: comisariatoId, name: CAFETERIAS[i], sortOrder: i },
+      });
+      for (let j = 0; j < PRODUCTOS_CAFETERIA.length; j++) {
+        const p = PRODUCTOS_CAFETERIA[j];
+        await prisma.productoCafeteria.upsert({
+          where: { cafeteriaId_name: { cafeteriaId: cafeteria.id, name: p.name } },
+          update: {},
+          create: { cafeteriaId: cafeteria.id, name: p.name, price: p.price, sortOrder: j },
+        });
+      }
+    }
+  }
+
   // ── Usuarios ────────────────────────────────────────────────
   const admin = await prisma.user.upsert({
     where: { email: "admin@grupo612.mx" },

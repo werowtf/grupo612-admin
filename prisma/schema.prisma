@@ -38,6 +38,7 @@ model User {
   dailySales   DailySale[]      @relation("DailySaleCreatedBy")
   conceptRules ConceptRule[]
   cuentasPorPagar CuentaPorPagar[]
+  facturasCafeteria FacturaCafeteria[] @relation("FacturaCafeteriaCreatedBy")
   documents    Document[]       @relation("DocumentUploadedBy")
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
@@ -56,6 +57,7 @@ model Venue {
   entryCategories EntryCategory[]
   dailySales      DailySale[]
   cuentasPorPagar CuentaPorPagar[]
+  cafeterias      Cafeteria[]
   documents       Document[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -358,6 +360,7 @@ enum PaymentMethod {
 enum EntrySource {
   MANUAL
   OCR // capturado desde foto del ticket
+  SISTEMA // generado automáticamente (p.ej. facturación de cafetería)
 }
 
 /// Catálogo de conceptos de ingresos/egresos. Es por negocio: cada sede lleva
@@ -404,6 +407,7 @@ model FinancialEntry {
   createdById String?
   createdBy   User?      @relation("EntryCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   documents   Document[] @relation("DocumentEntry")
+  facturaCafeteria FacturaCafeteria?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
@@ -507,4 +511,84 @@ model Document {
   @@index([corteId])
   @@index([entryId])
   @@index([bankTransactionId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Cafetería (Comisariato): pedidos diarios de los cafés-cliente y
+// facturación mensual derivada de ellos.
+// ─────────────────────────────────────────────────────────────
+
+/// Un café-cliente al que Biznaga le vende producto de cocina a diario.
+model Cafeteria {
+  id        String              @id @default(cuid())
+  venueId   String
+  venue     Venue               @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  name      String
+  active    Boolean             @default(true)
+  sortOrder Int                 @default(0)
+  productos ProductoCafeteria[]
+  pedidos   PedidoCafeteria[]
+  facturas  FacturaCafeteria[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([venueId, name])
+}
+
+/// Catálogo de productos y precio (sin IVA) por café. El precio puede variar
+/// entre cafés aunque el producto se llame igual.
+model ProductoCafeteria {
+  id          String            @id @default(cuid())
+  cafeteriaId String
+  cafeteria   Cafeteria         @relation(fields: [cafeteriaId], references: [id], onDelete: Cascade)
+  name        String
+  price       Decimal           @db.Decimal(14, 2)
+  active      Boolean           @default(true)
+  sortOrder   Int               @default(0)
+  pedidos     PedidoCafeteria[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cafeteriaId, name])
+}
+
+/// Cantidad pedida de un producto en un día. `unitPrice` se congela al
+/// capturar el pedido para no alterar facturación ya calculada si el precio
+/// del producto cambia después.
+model PedidoCafeteria {
+  id          String            @id @default(cuid())
+  cafeteriaId String
+  cafeteria   Cafeteria         @relation(fields: [cafeteriaId], references: [id], onDelete: Cascade)
+  productoId  String
+  producto    ProductoCafeteria @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  date        DateTime
+  quantity    Int
+  unitPrice   Decimal           @db.Decimal(14, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cafeteriaId, productoId, date])
+  @@index([cafeteriaId, date])
+}
+
+/// Marca un mes de un café como facturado y liga el ingreso generado en
+/// Ingresos y egresos. Único por café/mes: no se puede facturar dos veces.
+model FacturaCafeteria {
+  id          String          @id @default(cuid())
+  cafeteriaId String
+  cafeteria   Cafeteria       @relation(fields: [cafeteriaId], references: [id], onDelete: Cascade)
+  year        Int
+  month       Int
+  amount      Decimal         @db.Decimal(14, 2) // total con IVA
+  entryId     String?         @unique
+  entry       FinancialEntry? @relation(fields: [entryId], references: [id], onDelete: SetNull)
+  createdById String?
+  createdBy   User?           @relation("FacturaCafeteriaCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@unique([cafeteriaId, year, month])
 }

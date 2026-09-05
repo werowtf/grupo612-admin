@@ -20,6 +20,7 @@ export const paymentLabels: Record<PaymentMethod, string> = {
 export const sourceLabels: Record<EntrySource, string> = {
   MANUAL: "Manual",
   OCR: "Foto",
+  SISTEMA: "Automático",
 };
 
 export const PAYMENT_METHODS: PaymentMethod[] = [
