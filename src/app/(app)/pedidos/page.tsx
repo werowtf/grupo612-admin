@@ -13,6 +13,8 @@ import {
 import { PedidosGrid } from "@/components/pedidos-grid";
 import { PedidosResumen } from "@/components/pedidos-resumen";
 import { MonthPicker } from "@/components/month-picker";
+import { PedidosSaveProvider } from "@/components/pedidos-save-context";
+import { PedidosTabs } from "@/components/pedidos-tabs";
 
 function parseMonth(raw: string | undefined): { year: number; month: number } {
   const m = /^(\d{4})-(\d{2})$/.exec(raw ?? "");
@@ -65,64 +67,56 @@ export default async function PedidosPage({
   const { year, month } = parseMonth(sp.mes);
   const mesValue = `${year}-${String(month).padStart(2, "0")}`;
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  // No se hacen pedidos los domingos: esos días no se muestran en la rejilla.
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1).filter(
+    (d) => new Date(Date.UTC(year, month - 1, d)).getUTCDay() !== 0,
+  );
+
+  const tabs = [
+    ...cafeterias.map((c) => ({
+      id: c.id,
+      label: c.name,
+      href: `/pedidos?cafe=${c.id}&mes=${mesValue}`,
+      active: c.id === selectedTab,
+    })),
+    { id: "all", label: "Todos", href: `/pedidos?cafe=all&mes=${mesValue}`, active: selectedTab === "all" },
+  ];
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl">Pedidos — Comisariato</h1>
-          <p className="text-sm text-muted-foreground">
-            Pedidos diarios de los cafés-cliente, para calcular la facturación mensual.
-          </p>
-        </div>
-        <Link
-          href="/pedidos/productos"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
-        >
-          <Settings className="h-4 w-4" />
-          Productos y precios
-        </Link>
-      </header>
-
-      <form method="get" className="flex flex-wrap items-center gap-3">
-        <div className="flex flex-wrap gap-1.5">
-          {cafeterias.map((c) => (
-            <Link
-              key={c.id}
-              href={`/pedidos?cafe=${c.id}&mes=${mesValue}`}
-              className={
-                c.id === selectedTab
-                  ? "rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white"
-                  : "rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
-              }
-            >
-              {c.name}
-            </Link>
-          ))}
+    <PedidosSaveProvider>
+      <div className="space-y-6">
+        <header className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl">Pedidos</h1>
+            <p className="text-sm text-muted-foreground">
+              Pedidos diarios de los cafés-cliente, para calcular la facturación mensual.
+            </p>
+          </div>
           <Link
-            href={`/pedidos?cafe=all&mes=${mesValue}`}
-            className={
-              selectedTab === "all"
-                ? "rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white"
-                : "rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
-            }
+            href="/pedidos/productos"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
           >
-            Todos
+            <Settings className="h-4 w-4" />
+            Productos y precios
           </Link>
-        </div>
-        <input type="hidden" name="cafe" value={selectedTab} />
-        <MonthPicker name="mes" defaultValue={mesValue} />
-        <button type="submit" className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted">
-          Ver
-        </button>
-      </form>
+        </header>
 
-      {isTodos ? (
-        <TodosView venueId={selected.id} year={year} month={month} daysInMonth={daysInMonth} />
-      ) : (
-        <CafeView cafeteriaId={cafeteriaId} cafeteriaName={cafeteria.name} year={year} month={month} daysInMonth={daysInMonth} />
-      )}
-    </div>
+        <form method="get" className="flex flex-wrap items-center gap-3">
+          <PedidosTabs tabs={tabs} />
+          <input type="hidden" name="cafe" value={selectedTab} />
+          <MonthPicker name="mes" defaultValue={mesValue} />
+          <button type="submit" className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted">
+            Ver
+          </button>
+        </form>
+
+        {isTodos ? (
+          <TodosView venueId={selected.id} year={year} month={month} days={days} />
+        ) : (
+          <CafeView cafeteriaId={cafeteriaId} cafeteriaName={cafeteria.name} year={year} month={month} days={days} />
+        )}
+      </div>
+    </PedidosSaveProvider>
   );
 }
 
@@ -131,13 +125,13 @@ async function CafeView({
   cafeteriaName,
   year,
   month,
-  daysInMonth,
+  days,
 }: {
   cafeteriaId: string;
   cafeteriaName: string;
   year: number;
   month: number;
-  daysInMonth: number;
+  days: number[];
 }) {
   const [productos, pedidos, factura] = await Promise.all([
     getProductosCafeteria(cafeteriaId),
@@ -154,7 +148,7 @@ async function CafeView({
       cafeteriaName={cafeteriaName}
       year={year}
       month={month}
-      daysInMonth={daysInMonth}
+      days={days}
       productos={productos.map((p) => ({ id: p.id, name: p.name, price: Number(p.price.toString()) }))}
       initialQuantities={initialQuantities}
       ivaRate={IVA_RATE}
@@ -167,12 +161,12 @@ async function TodosView({
   venueId,
   year,
   month,
-  daysInMonth,
+  days,
 }: {
   venueId: string;
   year: number;
   month: number;
-  daysInMonth: number;
+  days: number[];
 }) {
   const [resumen, folios] = await Promise.all([
     getPedidosMesTodos(venueId, year, month),
@@ -183,7 +177,7 @@ async function TodosView({
       venueId={venueId}
       year={year}
       month={month}
-      daysInMonth={daysInMonth}
+      days={days}
       productos={resumen.productos}
       quantities={resumen.quantities}
       dailyTotals={resumen.dailyTotals}

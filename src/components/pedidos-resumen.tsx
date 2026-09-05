@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import { saveFoliosAction, type PedidosActionState } from "@/app/(app)/pedidos/actions";
+import { usePedidosSaveRegistration } from "@/components/pedidos-save-context";
 import { formatMXN } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { ProductoResumen } from "@/lib/pedidos/queries";
@@ -14,10 +15,10 @@ export function PedidosResumen({
   venueId,
   year,
   month,
-  daysInMonth,
+  days,
   productos,
   quantities,
-  dailyTotals,
+  dailyTotals, // índice 0 = día 1 del mes completo (incluye domingos, aunque no se muestren)
   subtotal,
   totalConIva,
   ivaRate,
@@ -26,7 +27,7 @@ export function PedidosResumen({
   venueId: string;
   year: number;
   month: number;
-  daysInMonth: number;
+  days: number[];
   productos: ProductoResumen[];
   quantities: Record<string, number>;
   dailyTotals: number[];
@@ -38,11 +39,22 @@ export function PedidosResumen({
   const router = useRouter();
   const [state, action, saving] = useActionState(saveFoliosAction, init);
   const [folios, setFolios] = useState<Record<number, string>>(initialFolios);
-  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   useEffect(() => {
     if (state.ok) router.refresh();
   }, [state.ok, router]);
+
+  const dirty = JSON.stringify(folios) !== JSON.stringify(initialFolios);
+  const doAutoSave = useCallback(async () => {
+    const fd = new FormData();
+    fd.set("venueId", venueId);
+    fd.set("year", String(year));
+    fd.set("month", String(month));
+    for (const [day, folio] of Object.entries(folios)) fd.set(`folio_${day}`, folio);
+    await saveFoliosAction(init, fd);
+  }, [venueId, year, month, folios]);
+  // Guarda automáticamente los folios al cambiar de café o sección.
+  usePedidosSaveRegistration(dirty ? doAutoSave : null);
 
   return (
     <div className="space-y-3">
@@ -80,7 +92,7 @@ export function PedidosResumen({
                 {productos.map((p) => (
                   <tr key={p.name} className="hover:bg-muted/40">
                     <td className="sticky left-0 z-10 whitespace-nowrap bg-card px-3 py-1.5 font-medium">{p.name}</td>
-                    <td className="px-2 py-1.5 text-right tabular-nums text-cargo">{formatMXN(p.price)}</td>
+                    <td className="px-2 py-1.5 text-right font-semibold tabular-nums text-cargo">{formatMXN(p.price)}</td>
                     {days.map((day) => {
                       const qty = quantities[`${p.name}_${day}`] ?? 0;
                       return (
@@ -118,11 +130,14 @@ export function PedidosResumen({
                     Total del día
                   </td>
                   <td></td>
-                  {dailyTotals.map((t, i) => (
-                    <td key={i} className="px-px py-2 text-center text-[9px] tabular-nums">
-                      {t > 0 ? formatMXN(t).replace("$", "").split(".")[0] : <span className="text-muted-foreground/40">—</span>}
-                    </td>
-                  ))}
+                  {days.map((day) => {
+                    const t = dailyTotals[day - 1] ?? 0;
+                    return (
+                      <td key={day} className="px-px py-2 text-center text-[9px] tabular-nums">
+                        {t > 0 ? formatMXN(t).replace("$", "").split(".")[0] : <span className="text-muted-foreground/40">—</span>}
+                      </td>
+                    );
+                  })}
                 </tr>
               </tfoot>
             </table>

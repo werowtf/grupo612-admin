@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { savePedidosAction, marcarFacturadoAction, type PedidosActionState } from "@/app/(app)/pedidos/actions";
+import { usePedidosSaveRegistration } from "@/components/pedidos-save-context";
 import { formatMXN } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +32,7 @@ export function PedidosGrid({
   cafeteriaName,
   year,
   month,
-  daysInMonth,
+  days,
   productos,
   initialQuantities, // key `${productoId}_${day}` -> quantity
   ivaRate,
@@ -41,7 +42,7 @@ export function PedidosGrid({
   cafeteriaName: string;
   year: number;
   month: number;
-  daysInMonth: number;
+  days: number[];
   productos: ProductoRow[];
   initialQuantities: Record<string, number>;
   ivaRate: number;
@@ -58,7 +59,6 @@ export function PedidosGrid({
     if (state.ok) router.refresh();
   }, [state.ok, router]);
 
-  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const readOnly = !!facturado;
 
   const dailyTotals = days.map((day) =>
@@ -66,6 +66,19 @@ export function PedidosGrid({
   );
   const subtotal = dailyTotals.reduce((a, b) => a + b, 0);
   const totalConIva = subtotal * (1 + ivaRate);
+
+  const dirty = JSON.stringify(quantities) !== JSON.stringify(initialQuantities);
+  const doAutoSave = useCallback(async () => {
+    const fd = new FormData();
+    fd.set("cafeteriaId", cafeteriaId);
+    fd.set("year", String(year));
+    fd.set("month", String(month));
+    for (const [key, val] of Object.entries(quantities)) fd.set(`qty_${key}`, String(val));
+    await savePedidosAction(init, fd);
+  }, [cafeteriaId, year, month, quantities]);
+  // Guarda automáticamente lo capturado al cambiar de café o sección, para
+  // no perder ediciones sin guardar al navegar.
+  usePedidosSaveRegistration(!readOnly && dirty ? doAutoSave : null);
 
   async function onFacturar() {
     setFacturando(true);
@@ -126,7 +139,7 @@ export function PedidosGrid({
                 {productos.map((p, rowIndex) => (
                   <tr key={p.id} className="hover:bg-muted/40">
                     <td className="sticky left-0 z-10 whitespace-nowrap bg-card px-3 py-1.5 font-medium">{p.name}</td>
-                    <td className="px-2 py-1.5 text-right tabular-nums text-cargo">{formatMXN(p.price)}</td>
+                    <td className="px-2 py-1.5 text-right font-semibold tabular-nums text-cargo">{formatMXN(p.price)}</td>
                     {days.map((day) => {
                       const key = `${p.id}_${day}`;
                       const value = quantities[key] ?? 0;
