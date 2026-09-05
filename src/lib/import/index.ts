@@ -6,7 +6,7 @@ export class ImportError extends Error {}
 
 export type { NormalizedRow, ParsedStatement } from "./types";
 export { computeDedupeHash } from "./dedupe";
-export { classifyTransaction, classifyWithMatch } from "./classify";
+export { classifyTransaction, classifyWithMatch, normalizeConcept } from "./classify";
 
 /**
  * Detecta el banco por extensión + contenido y devuelve el estado de cuenta

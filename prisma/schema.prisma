@@ -36,6 +36,7 @@ model User {
   cortes       Corte[]          @relation("CorteCreatedBy")
   entries      FinancialEntry[] @relation("EntryCreatedBy")
   dailySales   DailySale[]      @relation("DailySaleCreatedBy")
+  conceptRules ConceptRule[]
   documents    Document[]       @relation("DocumentUploadedBy")
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
@@ -185,6 +186,22 @@ model BankTransaction {
   @@index([statementId])
   @@index([category])
   @@index([corteId])
+}
+
+/// Aprendida de correcciones manuales: cuando alguien corrige la categoría de
+/// un movimiento en Movimientos (updateTransactionCategory), ese concepto
+/// queda registrado aquí para que la próxima importación ya lo reconozca sin
+/// depender de que el patrón esté escrito a mano en classify.ts. Global (no
+/// por negocio): el texto del concepto lo define el banco, no la sucursal.
+model ConceptRule {
+  id          String     @id @default(cuid())
+  /// Concepto normalizado (mayúsculas, sin acentos) — ver normalizeConcept().
+  concept     String     @unique
+  category    TxCategory
+  createdById String?
+  createdBy   User?      @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 // ─────────────────────────────────────────────────────────────

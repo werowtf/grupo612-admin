@@ -7,7 +7,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth";
 import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
-import { parseStatement, computeDedupeHash, classifyWithMatch, ImportError } from "@/lib/import";
+import { parseStatement, computeDedupeHash, classifyWithMatch, normalizeConcept, ImportError } from "@/lib/import";
 import { bankLabels } from "@/lib/labels";
 import { toTxRow } from "@/lib/serialize";
 import type { TxRow } from "@/components/transactions-table";
@@ -87,12 +87,23 @@ export async function importStatementAction(
     },
   });
 
+  // Conceptos que alguien ya corrigió a mano en una importación anterior
+  // (ver updateTransactionCategory): se aplican antes que las reglas fijas de
+  // classify.ts, porque son más específicos y ya fueron confirmados por un
+  // humano para este texto exacto.
+  const learnedRules = await prisma.conceptRule.findMany();
+  const learnedByConcept = new Map(learnedRules.map((r) => [r.concept, r.category]));
+
   const data = parsed.rows.map((r) => {
-    // Sin regla que lo reconozca, la categoría es una suposición (el criterio
-    // por defecto) — entra como Pendiente en vez de Conciliado, para que quien
-    // revise Movimientos lo note y corrija en vez de que se pierda entre lo
-    // que sí se conoce con certeza.
-    const { matched } = classifyWithMatch(r.description, r.direction);
+    const concept = normalizeConcept(r.description);
+    const learned = learnedByConcept.get(concept);
+    const { category: staticCategory, matched: staticMatched } = classifyWithMatch(r.description, r.direction);
+    const category = learned ?? staticCategory;
+    // Sin regla (fija o aprendida) que lo reconozca, la categoría es una
+    // suposición (el criterio por defecto) — entra como Pendiente en vez de
+    // Conciliado, para que quien revise Movimientos lo note y corrija en vez
+    // de que se pierda entre lo que sí se conoce con certeza.
+    const matched = learned !== undefined || staticMatched;
     return {
       bankAccountId: account.id,
       statementId: statement.id,
@@ -105,7 +116,7 @@ export async function importStatementAction(
       balance: r.balance,
       reference: r.reference,
       concept: r.concept,
-      category: r.category,
+      category,
       status: matched ? undefined : ("PENDIENTE" as const),
       counterpartyName: r.counterpartyName,
       counterpartyRfc: r.counterpartyRfc,
@@ -140,11 +151,13 @@ export async function importStatementAction(
   }
 
   // Los bancos cambian la redacción de un mes a otro. Cuando un concepto no
-  // casa con ninguna regla se usa el criterio por defecto, que puede quedar en
-  // la categoría equivocada sin que nadie lo note; lo reportamos para revisión.
+  // casa con ninguna regla (fija o aprendida) se usa el criterio por defecto,
+  // que puede quedar en la categoría equivocada sin que nadie lo note; lo
+  // reportamos para revisión.
   const unmatchedDescs = new Set<string>();
   for (const r of parsed.rows) {
-    if (!classifyWithMatch(r.description, r.direction).matched) {
+    const isLearned = learnedByConcept.has(normalizeConcept(r.description));
+    if (!isLearned && !classifyWithMatch(r.description, r.direction).matched) {
       unmatchedDescs.add(r.description.split("|")[0].trim());
     }
   }
@@ -222,12 +235,24 @@ export async function updateTransactionCategory(txId: string, category: string) 
     where: { id: tx.id },
     data: { category: parsed, autoCategorized: false },
   });
+
+  // Corrección manual explícita: se aprende para la próxima importación. Un
+  // simple cambio de estatus (p.ej. marcar Conciliado) no dispara esto —
+  // sólo cuando el humano dice, en el selector, cuál es la categoría
+  // correcta, para no reforzar la adivinanza por defecto que lo dejó pendiente.
+  const concept = normalizeConcept(tx.description);
+  await prisma.conceptRule.upsert({
+    where: { concept },
+    create: { concept, category: parsed, createdById: user.id },
+    update: { category: parsed, createdById: user.id },
+  });
+
   await logAudit({
     userId: user.id,
     action: "tx.recategorize",
     entity: "BankTransaction",
     entityId: tx.id,
-    meta: { from: tx.category, to: parsed },
+    meta: { from: tx.category, to: parsed, concept },
   });
   revalidatePath("/conciliacion");
   revalidatePath("/movimientos");

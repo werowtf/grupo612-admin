@@ -29,6 +29,17 @@ export interface Classification {
   matched: boolean;
 }
 
+/**
+ * Concepto normalizado de un movimiento (mayúsculas, sin acentos, sin el
+ * detalle de fees/referencias que BanBajío concatena con "|"). Es la misma
+ * clave que usa {@link classifyWithMatch} y la que se guarda en
+ * `ConceptRule` al aprender de una corrección manual, para que ambos lados
+ * comparen exactamente lo mismo.
+ */
+export function normalizeConcept(description: string): string {
+  return normalize(description.split("|")[0]);
+}
+
 /** Igual que {@link classifyTransaction}, pero indica si alguna regla casó. */
 export function classifyWithMatch(
   description: string,
@@ -37,8 +48,7 @@ export function classifyWithMatch(
   // BanBajío concentra el detalle (fees, referencias) en una sola celda separada
   // por "|". El tipo real del movimiento está en el segmento principal, así que
   // clasificamos sobre él para no confundir un depósito con su comisión embebida.
-  const primary = description.split("|")[0];
-  const d = normalize(primary);
+  const d = normalizeConcept(description);
   const hit = (category: TxCategory): Classification => ({ category, matched: true });
 
   // BanBajío reutiliza el mismo texto ("Negocios Afiliados", "para depósito
