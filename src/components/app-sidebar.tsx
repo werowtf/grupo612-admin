@@ -8,6 +8,7 @@ import {
   ListOrdered,
   Receipt,
   Wallet,
+  HandCoins,
   FileText,
   BarChart3,
   X,
@@ -31,6 +32,7 @@ const NAV: NavItem[] = [
   { href: "/cortes", label: "Cortes de caja", icon: Receipt },
   { href: "/movimientos", label: "Movimientos", icon: ListOrdered },
   { href: "/ingresos-egresos", label: "Ingresos y egresos", icon: Wallet },
+  { href: "/por-pagar", label: "Por pagar", icon: HandCoins },
   { href: "/reportes", label: "Reportes", icon: BarChart3 },
   { href: "/documentos", label: "Documentos", icon: FileText },
 ];

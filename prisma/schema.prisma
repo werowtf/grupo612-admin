@@ -37,6 +37,7 @@ model User {
   entries      FinancialEntry[] @relation("EntryCreatedBy")
   dailySales   DailySale[]      @relation("DailySaleCreatedBy")
   conceptRules ConceptRule[]
+  cuentasPorPagar CuentaPorPagar[]
   documents    Document[]       @relation("DocumentUploadedBy")
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
@@ -54,6 +55,7 @@ model Venue {
   entries         FinancialEntry[]
   entryCategories EntryCategory[]
   dailySales      DailySale[]
+  cuentasPorPagar CuentaPorPagar[]
   documents       Document[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -202,6 +204,27 @@ model ConceptRule {
   createdBy   User?      @relation(fields: [createdById], references: [id], onDelete: SetNull)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+}
+
+/// Cuentas por pagar de la sección "Por pagar": deudas puntuales (renta,
+/// proveedores, lo que sea) capturadas a mano, con un botón para marcarlas
+/// pagadas. Las propinas por pagar NO viven aquí — esas ya se capturan por
+/// corte (Corte.propinasPorPagar) y esta sección sólo suma esa columna.
+model CuentaPorPagar {
+  id          String    @id @default(cuid())
+  venueId     String
+  venue       Venue     @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  date        DateTime
+  concept     String
+  amount      Decimal   @db.Decimal(14, 2)
+  /// null = pendiente; con fecha = pagada (y cuándo).
+  paidAt      DateTime?
+  createdById String?
+  createdBy   User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([venueId, paidAt])
 }
 
 // ─────────────────────────────────────────────────────────────
