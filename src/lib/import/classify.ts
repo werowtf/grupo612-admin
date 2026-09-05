@@ -49,13 +49,20 @@ export function classifyWithMatch(
   if (/^RETIRO DE RECURSOS/.test(d)) return hit("TRANSFERENCIA");
 
   // Abonos "de ajuste" que la contadora agrupa como depósito (contienen IVA/monto).
-  if ((/\bBONIF/.test(d) || /CAMBIO DE MONEDA/.test(d)) && direction === "ABONO") return hit("DEPOSITO");
+  if ((/\bBONIF/.test(d) || /CAMBIO DE MONEDA/.test(d) || /AJUSTE ABONO/.test(d)) && direction === "ABONO") {
+    return hit("DEPOSITO");
+  }
+
+  // Depósito de ventas del día que el banco canceló/revirtió: la contadora lo
+  // trata como comisión, no como depósito real, así que va antes de la regla
+  // general de depósito (más abajo) para que gane sobre ella.
+  if (/CANCEL.*DEPOSITO/.test(d)) return hit("COMISION");
 
   // Comisiones y cargos por servicio (incluye IVA de comisión). Ojo con los
   // límites de palabra: sin \b, ANUALIDAD casa dentro de "MANUALIDADES" y
   // manda una compra en un comercio a Comisión.
   if (
-    /COMISION|COMISION POR|\bIVA\b|TASA DE DESCUENTO|RENTA TERMINAL|MANEJO DE CUENTA|\bANUALIDAD|EMISION DE CHEQUERA/.test(
+    /COMISION|COMISION POR|\bIVA\b|TASA DE DESCUENTO|RENTA TERMINAL|ADMINISTRACION RENTA|MANEJO DE CUENTA|\bANUALIDAD|EMISION DE CHEQUERA/.test(
       d,
     )
   ) {
@@ -81,7 +88,11 @@ export function classifyWithMatch(
   if (/DEPOSITO|NEGOCIOS AFIL|VENTAS DEL DIA/.test(d) && direction === "ABONO") return hit("DEPOSITO");
 
   // Gasto con tarjeta: consumos/compras en comercios pagados con la tarjeta del negocio.
-  if (/CONSUMO LOCAL|CONSUMO|COMPRA|PAGO A |DOMICILIAD|CARGO RECURRENTE|SUSCRIP|TARJETA DE DEBITO|TARJETA DE CREDITO/.test(d)) {
+  if (
+    /CONSUMO LOCAL|CONSUMO|COMPRA|PAGO A |DOMICILIA|CARGO RECURRENTE|SUSCRIP|TARJETA DE DEBITO|TARJETA DE CREDITO|CONTRACARGO/.test(
+      d,
+    )
+  ) {
     return hit("GASTO_TARJETA");
   }
 
