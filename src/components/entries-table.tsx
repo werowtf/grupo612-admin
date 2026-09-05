@@ -3,6 +3,7 @@ import { ImageIcon } from "lucide-react";
 import type { FinancialEntry, EntryType, PaymentMethod } from "@/generated/prisma/client";
 import { paymentLabels, categoryBadgeClass } from "@/lib/entries/config";
 import { formatMXN, formatDate, diaSemana, cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Props {
   type: EntryType;
@@ -70,8 +71,17 @@ export function EntriesTable({ type, rows, hrefBase, emptyText }: Props) {
                     {e.category}
                   </span>
                 </td>
-                <td className="max-w-[220px] truncate px-3 py-2 text-muted-foreground" title={e.description ?? ""}>
-                  {e.description || "—"}
+                <td className="max-w-[220px] px-3 py-2 text-muted-foreground">
+                  {e.description ? (
+                    <Tooltip>
+                      <TooltipTrigger className="block max-w-full truncate text-left">
+                        {e.description}
+                      </TooltipTrigger>
+                      <TooltipContent>{e.description}</TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    "—"
+                  )}
                 </td>
                 {cols.map((m) => (
                   <td key={m} className="px-3 py-2 text-right tabular-nums">
