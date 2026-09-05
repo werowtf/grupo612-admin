@@ -58,3 +58,64 @@ export async function calcularTotalMes(cafeteriaId: string, year: number, month:
   const subtotal = pedidos.reduce((sum, p) => sum + p.quantity * num(p.unitPrice), 0);
   return subtotal * (1 + IVA_RATE);
 }
+
+export interface ProductoResumen {
+  name: string;
+  price: number;
+}
+
+export interface PedidosResumen {
+  productos: ProductoResumen[];
+  /** clave `${nombreProducto}_${día}` -> cantidad sumada de los 3 cafés */
+  quantities: Record<string, number>;
+  /** total en dinero por día (día 1 en el índice 0), suma de los cafés */
+  dailyTotals: number[];
+  subtotal: number;
+  totalConIva: number;
+}
+
+/**
+ * Vista de solo lectura "Todos": suma los pedidos de todos los cafés del
+ * negocio, agrupando por nombre de producto (no por café), para ver el
+ * consolidado del mes. Los montos se calculan con el precio congelado de
+ * cada pedido, así que son exactos aunque el precio difiera entre cafés.
+ */
+export async function getPedidosMesTodos(venueId: string, year: number, month: number): Promise<PedidosResumen> {
+  const cafeterias = await getCafeterias(venueId);
+  const cafeteriaIds = cafeterias.map((c) => c.id);
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  const gte = new Date(Date.UTC(year, month - 1, 1));
+  const lt = new Date(Date.UTC(year, month, 1));
+
+  const [productos, pedidos] = await Promise.all([
+    prisma.productoCafeteria.findMany({ where: { cafeteriaId: { in: cafeteriaIds } } }),
+    prisma.pedidoCafeteria.findMany({
+      where: { cafeteriaId: { in: cafeteriaIds }, date: { gte, lt } },
+      include: { producto: true },
+    }),
+  ]);
+
+  const productoInfo = new Map<string, { price: number; sortOrder: number }>();
+  for (const p of productos) {
+    if (!productoInfo.has(p.name)) productoInfo.set(p.name, { price: num(p.price), sortOrder: p.sortOrder });
+  }
+
+  const quantities: Record<string, number> = {};
+  const dailyTotals = new Array(daysInMonth).fill(0);
+  let subtotal = 0;
+  for (const pedido of pedidos) {
+    const name = pedido.producto.name;
+    const day = pedido.date.getUTCDate();
+    const key = `${name}_${day}`;
+    quantities[key] = (quantities[key] ?? 0) + pedido.quantity;
+    const amount = pedido.quantity * num(pedido.unitPrice);
+    dailyTotals[day - 1] += amount;
+    subtotal += amount;
+  }
+
+  const productosList = [...productoInfo.entries()]
+    .sort((a, b) => a[1].sortOrder - b[1].sortOrder || a[0].localeCompare(b[0]))
+    .map(([name, info]) => ({ name, price: info.price }));
+
+  return { productos: productosList, quantities, dailyTotals, subtotal, totalConIva: subtotal * (1 + IVA_RATE) };
+}

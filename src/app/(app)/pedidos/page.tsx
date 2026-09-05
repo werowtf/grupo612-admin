@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { Settings } from "lucide-react";
 import { getAppContext } from "@/lib/context";
-import { getCafeterias, getProductosCafeteria, getPedidosMes, getFacturaMes, IVA_RATE } from "@/lib/pedidos/queries";
+import {
+  getCafeterias,
+  getProductosCafeteria,
+  getPedidosMes,
+  getFacturaMes,
+  getPedidosMesTodos,
+  IVA_RATE,
+} from "@/lib/pedidos/queries";
 import { PedidosGrid } from "@/components/pedidos-grid";
+import { PedidosResumen } from "@/components/pedidos-resumen";
 import { MonthPicker } from "@/components/month-picker";
 
 function parseMonth(raw: string | undefined): { year: number; month: number } {
@@ -49,20 +57,13 @@ export default async function PedidosPage({
     );
   }
 
-  const cafeteriaId = cafeterias.some((c) => c.id === sp.cafe) ? sp.cafe! : cafeterias[0].id;
+  const isTodos = sp.cafe === "all";
+  const cafeteriaId = !isTodos && cafeterias.some((c) => c.id === sp.cafe) ? sp.cafe! : cafeterias[0].id;
+  const selectedTab = isTodos ? "all" : cafeteriaId;
   const cafeteria = cafeterias.find((c) => c.id === cafeteriaId)!;
   const { year, month } = parseMonth(sp.mes);
   const mesValue = `${year}-${String(month).padStart(2, "0")}`;
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
-
-  const [productos, pedidos, factura] = await Promise.all([
-    getProductosCafeteria(cafeteriaId),
-    getPedidosMes(cafeteriaId, year, month),
-    getFacturaMes(cafeteriaId, year, month),
-  ]);
-
-  const initialQuantities: Record<string, number> = {};
-  for (const p of pedidos) initialQuantities[`${p.productoId}_${p.day}`] = p.quantity;
 
   return (
     <div className="space-y-6">
@@ -89,7 +90,7 @@ export default async function PedidosPage({
               key={c.id}
               href={`/pedidos?cafe=${c.id}&mes=${mesValue}`}
               className={
-                c.id === cafeteriaId
+                c.id === selectedTab
                   ? "rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white"
                   : "rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
               }
@@ -97,25 +98,91 @@ export default async function PedidosPage({
               {c.name}
             </Link>
           ))}
+          <Link
+            href={`/pedidos?cafe=all&mes=${mesValue}`}
+            className={
+              selectedTab === "all"
+                ? "rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white"
+                : "rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
+            }
+          >
+            Todos
+          </Link>
         </div>
-        <input type="hidden" name="cafe" value={cafeteriaId} />
+        <input type="hidden" name="cafe" value={selectedTab} />
         <MonthPicker name="mes" defaultValue={mesValue} />
         <button type="submit" className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted">
           Ver
         </button>
       </form>
 
-      <PedidosGrid
-        cafeteriaId={cafeteriaId}
-        cafeteriaName={cafeteria.name}
-        year={year}
-        month={month}
-        daysInMonth={daysInMonth}
-        productos={productos.map((p) => ({ id: p.id, name: p.name, price: Number(p.price.toString()) }))}
-        initialQuantities={initialQuantities}
-        ivaRate={IVA_RATE}
-        facturado={factura ? { amount: Number(factura.amount.toString()), createdAt: factura.createdAt.toISOString() } : null}
-      />
+      {isTodos ? (
+        <TodosView venueId={selected.id} year={year} month={month} daysInMonth={daysInMonth} />
+      ) : (
+        <CafeView cafeteriaId={cafeteriaId} cafeteriaName={cafeteria.name} year={year} month={month} daysInMonth={daysInMonth} />
+      )}
     </div>
+  );
+}
+
+async function CafeView({
+  cafeteriaId,
+  cafeteriaName,
+  year,
+  month,
+  daysInMonth,
+}: {
+  cafeteriaId: string;
+  cafeteriaName: string;
+  year: number;
+  month: number;
+  daysInMonth: number;
+}) {
+  const [productos, pedidos, factura] = await Promise.all([
+    getProductosCafeteria(cafeteriaId),
+    getPedidosMes(cafeteriaId, year, month),
+    getFacturaMes(cafeteriaId, year, month),
+  ]);
+
+  const initialQuantities: Record<string, number> = {};
+  for (const p of pedidos) initialQuantities[`${p.productoId}_${p.day}`] = p.quantity;
+
+  return (
+    <PedidosGrid
+      cafeteriaId={cafeteriaId}
+      cafeteriaName={cafeteriaName}
+      year={year}
+      month={month}
+      daysInMonth={daysInMonth}
+      productos={productos.map((p) => ({ id: p.id, name: p.name, price: Number(p.price.toString()) }))}
+      initialQuantities={initialQuantities}
+      ivaRate={IVA_RATE}
+      facturado={factura ? { amount: Number(factura.amount.toString()), createdAt: factura.createdAt.toISOString() } : null}
+    />
+  );
+}
+
+async function TodosView({
+  venueId,
+  year,
+  month,
+  daysInMonth,
+}: {
+  venueId: string;
+  year: number;
+  month: number;
+  daysInMonth: number;
+}) {
+  const resumen = await getPedidosMesTodos(venueId, year, month);
+  return (
+    <PedidosResumen
+      daysInMonth={daysInMonth}
+      productos={resumen.productos}
+      quantities={resumen.quantities}
+      dailyTotals={resumen.dailyTotals}
+      subtotal={resumen.subtotal}
+      totalConIva={resumen.totalConIva}
+      ivaRate={IVA_RATE}
+    />
   );
 }
