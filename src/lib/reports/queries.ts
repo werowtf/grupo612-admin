@@ -113,9 +113,13 @@ export async function getMonthlyReport(
   const manualIva = manualTotal - (manualAlimentos + manualBebidas);
 
   // ── Banco (movimientos) ──────────────────────────────────────
+  // Ignorado significa que ese movimiento no debe contar (duplicado, error de
+  // captura, etc.); Pendiente sí se suma porque todavía es dinero real que
+  // entró o salió, aunque falte revisar la categoría.
   const bankWhere: Prisma.BankTransactionWhereInput = {
     bankAccount: { venueId: { in: venueIds } },
     date: inPeriod,
+    status: { not: "IGNORADO" },
   };
   const [bankAbonos, bankCargos, bankByCat] = await Promise.all([
     prisma.bankTransaction.aggregate({ _sum: { amount: true }, where: { ...bankWhere, direction: "ABONO" } }),
