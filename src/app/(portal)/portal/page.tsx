@@ -41,6 +41,8 @@ export default async function PortalPage() {
           alias: `${a.venue.name} — ${bankLabels[a.bank]}${a.accountNumber ? ` ·${a.accountNumber.slice(-4)}` : ""}`,
           bank: a.bank,
         }))}
+        showDescription={false}
+        accountLabel="Negocio - Cuenta Bancaria"
       />
 
       <section>

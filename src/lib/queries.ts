@@ -113,12 +113,23 @@ export async function getVenueDailyTotals(venueId: string, days = 90): Promise<D
   return result;
 }
 
-export async function getVenueStatements(venueId: string) {
+/**
+ * Estados de cuenta del mes: se filtra por el periodo que cubre el archivo
+ * (no por cuándo se subió), así que un estado de cuenta de junio aparece en
+ * junio aunque se haya importado en julio. Los estados de cuenta sin periodo
+ * detectado (parseo viejo/incompleto) siempre se muestran, para no
+ * esconderlos silenciosamente.
+ */
+export async function getVenueStatements(venueId: string, year: number, month: number) {
+  const gte = new Date(Date.UTC(year, month - 1, 1));
+  const lt = new Date(Date.UTC(year, month, 1));
   return prisma.bankStatement.findMany({
-    where: { bankAccount: { venueId } },
+    where: {
+      bankAccount: { venueId },
+      OR: [{ periodStart: { gte, lt } }, { periodStart: null }],
+    },
     include: { bankAccount: true, importedBy: { select: { name: true } } },
     orderBy: { createdAt: "desc" },
-    take: 20,
   });
 }
 

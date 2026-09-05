@@ -33,7 +33,15 @@ interface AccountOption {
 
 const initial: ImportResult = {};
 
-export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
+export function ImportForm({
+  accounts,
+  showDescription = true,
+  accountLabel = "Cuenta bancaria",
+}: {
+  accounts: AccountOption[];
+  showDescription?: boolean;
+  accountLabel?: string;
+}) {
   const router = useRouter();
   const [state, action, pending] = useActionState(importStatementAction, initial);
   const formRef = useRef<HTMLFormElement>(null);
@@ -63,16 +71,18 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
     <form ref={formRef} action={action} className="card space-y-4 p-6">
       <div>
         <h2 className="text-base font-semibold">Importar estado de cuenta</h2>
-        <p className="text-sm text-muted-foreground">
-          Sube el archivo del banco (CSV de Santander o Excel de BanBajío). Los
-          movimientos se clasifican automáticamente y se omiten duplicados.
-        </p>
+        {showDescription && (
+          <p className="text-sm text-muted-foreground">
+            Sube el archivo del banco (CSV de Santander o Excel de BanBajío). Los
+            movimientos se clasifican automáticamente y se omiten duplicados.
+          </p>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="bankAccountId">
-            Cuenta bancaria
+            {accountLabel}
           </label>
           <Select name="bankAccountId" required value={bankAccountId} onValueChange={setBankAccountId}>
             <SelectTrigger

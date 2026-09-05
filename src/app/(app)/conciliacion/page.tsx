@@ -2,9 +2,23 @@ import { getAppContext, getVenueBankAccounts } from "@/lib/context";
 import { getVenueStatements } from "@/lib/queries";
 import { ImportForm } from "@/components/import-form";
 import { StatementRows } from "@/components/statement-rows";
+import { MonthPicker } from "@/components/month-picker";
+import { Button } from "@/components/ui/button";
 
-export default async function ConciliacionPage() {
+function parseMonth(mes: string | undefined): { year: number; month: number } {
+  const m = /^(\d{4})-(\d{2})$/.exec(mes ?? "");
+  if (m) return { year: Number(m[1]), month: Number(m[2]) };
+  const now = new Date();
+  return { year: now.getUTCFullYear(), month: now.getUTCMonth() + 1 };
+}
+
+export default async function ConciliacionPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
   const { selected } = await getAppContext();
+  const sp = await searchParams;
 
   if (!selected) {
     return (
@@ -14,9 +28,12 @@ export default async function ConciliacionPage() {
     );
   }
 
+  const { year, month } = parseMonth(sp.mes);
+  const mesValue = `${year}-${String(month).padStart(2, "0")}`;
+
   const [accounts, statements] = await Promise.all([
     getVenueBankAccounts(selected.id),
-    getVenueStatements(selected.id),
+    getVenueStatements(selected.id, year, month),
   ]);
 
   return (
@@ -33,10 +50,16 @@ export default async function ConciliacionPage() {
       />
 
       <section className="space-y-3">
-        <h2 className="text-base font-semibold">Estados de cuenta importados</h2>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <h2 className="text-base font-semibold">Estados de cuenta importados</h2>
+          <form method="get" className="flex items-center gap-2">
+            <MonthPicker name="mes" defaultValue={mesValue} />
+            <Button type="submit" variant="outline" size="sm">Ver</Button>
+          </form>
+        </div>
         {statements.length === 0 ? (
           <div className="card p-6 text-sm text-muted-foreground">
-            Todavía no has importado estados de cuenta.
+            No hay estados de cuenta importados este mes.
           </div>
         ) : (
           <div className="card overflow-hidden">
