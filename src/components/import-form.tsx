@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UploadCloud, CheckCircle2, AlertCircle } from "lucide-react";
 import {
@@ -12,6 +12,17 @@ import { formatMXN } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import type { Bank } from "@/generated/prisma/enums";
 
 interface AccountOption {
@@ -26,13 +37,19 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
   const router = useRouter();
   const [state, action, pending] = useActionState(importStatementAction, initial);
   const formRef = useRef<HTMLFormElement>(null);
+  const [bankAccountId, setBankAccountId] = useState(accounts[0]?.id ?? "");
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (state.ok && (state.imported ?? 0) > 0) {
       formRef.current?.reset();
+      setFileName(null);
       router.refresh();
     }
   }, [state, router]);
+
+  const selectedAccount = accounts.find((a) => a.id === bankAccountId);
 
   if (accounts.length === 0) {
     return (
@@ -57,7 +74,7 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
           <label className="label" htmlFor="bankAccountId">
             Cuenta bancaria
           </label>
-          <Select name="bankAccountId" required defaultValue={accounts[0]?.id}>
+          <Select name="bankAccountId" required value={bankAccountId} onValueChange={setBankAccountId}>
             <SelectTrigger
               id="bankAccountId"
               className="h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50"
@@ -84,6 +101,7 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
             type="file"
             accept=".csv,.xlsx,.xls"
             required
+            onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
             className="file:mr-2 file:h-6 file:rounded file:border-0 file:bg-brand-50 file:px-2.5 file:py-0 file:text-xs file:text-brand-600"
           />
         </div>
@@ -134,10 +152,43 @@ export function ImportForm({ accounts }: { accounts: AccountOption[] }) {
         </div>
       )}
 
-      <Button type="submit" disabled={pending}>
-        <UploadCloud className="h-4 w-4" />
-        {pending ? "Procesando…" : "Importar"}
-      </Button>
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogTrigger
+          render={
+            <Button
+              type="button"
+              disabled={pending || !fileName}
+              onClick={() => setConfirmOpen(true)}
+            />
+          }
+        >
+          <UploadCloud className="h-4 w-4" />
+          {pending ? "Procesando…" : "Importar"}
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Importar a {selectedAccount?.alias ?? "esta cuenta"}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Vas a importar <strong>{fileName}</strong> a la cuenta{" "}
+              <strong>{selectedAccount?.alias}</strong> ({selectedAccount ? bankLabels[selectedAccount.bank] : ""}).
+              Verifica que sea el negocio correcto antes de continuar — el sistema no puede detectar
+              solo si el archivo corresponde a otro negocio.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel type="button">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              type="button"
+              onClick={() => {
+                setConfirmOpen(false);
+                formRef.current?.requestSubmit();
+              }}
+            >
+              Sí, importar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </form>
   );
 }
