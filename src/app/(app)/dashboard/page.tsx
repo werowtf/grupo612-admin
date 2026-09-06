@@ -7,6 +7,7 @@ import { getCostoVentaMes } from "@/lib/dashboard/costo-venta";
 import { StatCard } from "@/components/stat-card";
 import { CategoryBadge } from "@/components/badges";
 import { AreaChartInteractive } from "@/components/area-chart-interactive";
+import { RANGES, type RangeKey } from "@/lib/dashboard/ranges";
 import { MonthPicker } from "@/components/month-picker";
 import { formatMXN, formatDate, cn } from "@/lib/utils";
 import { categoryBar } from "@/lib/labels";
@@ -23,10 +24,14 @@ function fmtPct(pct: number | null): string {
   return pct === null ? "—" : `${pct.toFixed(1)}%`;
 }
 
+function parseRango(raw: string | undefined): RangeKey {
+  return raw === "7d" || raw === "90d" ? raw : "30d";
+}
+
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ mes?: string }>;
+  searchParams: Promise<{ mes?: string; rango?: string }>;
 }) {
   const { selected } = await getAppContext();
   const sp = await searchParams;
@@ -41,11 +46,14 @@ export default async function DashboardPage({
 
   const { year, month } = parseMonth(sp.mes);
   const mesValue = `${year}-${String(month).padStart(2, "0")}`;
+  const rango = parseRango(sp.rango);
+  const days = RANGES[rango].days;
 
-  const [summary, recent, dailySalesTotals, costoVenta] = await Promise.all([
-    getVenueSummary(selected.id),
+  const [summaryAll, summary, recent, dailySalesTotals, costoVenta] = await Promise.all([
+    getVenueSummary(selected.id), // sólo para saber si hay movimientos alguna vez (onboarding)
+    getVenueSummary(selected.id, days),
     getVenueTransactions(selected.id, { take: 6 }),
-    getVenueDailySalesTotals(selected.id),
+    getVenueDailySalesTotals(selected.id, days),
     getCostoVentaMes(selected.id, year, month),
   ]);
 
@@ -56,7 +64,7 @@ export default async function DashboardPage({
         <p className="text-sm text-muted-foreground">Resumen financiero</p>
       </header>
 
-      {summary.count === 0 ? (
+      {summaryAll.count === 0 ? (
         <EmptyMessage title="Aún no hay movimientos">
           Importa el primer estado de cuenta para ver el resumen financiero.
           <div className="mt-4">
@@ -95,7 +103,7 @@ export default async function DashboardPage({
             />
           </section>
 
-          <AreaChartInteractive data={dailySalesTotals} />
+          <AreaChartInteractive data={dailySalesTotals} range={rango} />
 
           <section className="card min-w-0 space-y-4 p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">

@@ -20,9 +20,31 @@ export interface VenueSummary {
   byCategory: { category: TxCategory; total: number; count: number }[];
 }
 
-export async function getVenueSummary(venueId: string): Promise<VenueSummary> {
+/**
+ * Resumen de movimientos bancarios. Con `days`, se limita a una ventana
+ * anclada a la fecha del movimiento más reciente (igual que
+ * getVenueDailyTotals / getVenueDailySalesTotals) para que coincida con el
+ * filtro de "Venta diaria" del dashboard; sin `days`, es todo el histórico.
+ */
+export async function getVenueSummary(venueId: string, days?: number): Promise<VenueSummary> {
+  let dateFilter: Prisma.BankTransactionWhereInput["date"];
+  if (days) {
+    const latest = await prisma.bankTransaction.findFirst({
+      where: { bankAccount: { venueId } },
+      orderBy: { date: "desc" },
+      select: { date: true },
+    });
+    if (latest) {
+      const since = new Date(latest.date);
+      since.setHours(0, 0, 0, 0);
+      since.setDate(since.getDate() - (days - 1));
+      dateFilter = { gte: since };
+    }
+  }
+
   const where: Prisma.BankTransactionWhereInput = {
     bankAccount: { venueId },
+    ...(dateFilter ? { date: dateFilter } : {}),
   };
 
   const [abonos, cargos, count, pendientes, grouped] = await Promise.all([

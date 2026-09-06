@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { Info } from "lucide-react";
 import {
@@ -12,17 +12,12 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatMXN } from "@/lib/utils";
 import type { DailySalesDailyTotal } from "@/lib/daily-sales/queries";
+import { RANGES, type RangeKey } from "@/lib/dashboard/ranges";
 
 const chartConfig = {
   comida: { label: "Comida", color: "var(--color-abono)" },
   bebida: { label: "Bebida", color: "var(--color-cargo)" },
 } satisfies ChartConfig;
-
-const RANGES = {
-  "7d": { label: "Últimos 7 días", days: 7 },
-  "30d": { label: "Últimos 30 días", days: 30 },
-  "90d": { label: "Últimos 90 días", days: 90 },
-} as const;
 
 function formatDayMonth(isoDate: string): string {
   const [, m, d] = isoDate.split("-");
@@ -30,13 +25,17 @@ function formatDayMonth(isoDate: string): string {
   return `${Number(d)} ${months[Number(m) - 1]}`;
 }
 
-export function AreaChartInteractive({ data }: { data: DailySalesDailyTotal[] }) {
-  const [range, setRange] = React.useState<keyof typeof RANGES>("30d");
+export function AreaChartInteractive({ data, range }: { data: DailySalesDailyTotal[]; range: RangeKey }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const filtered = data;
 
-  const filtered = React.useMemo(() => {
-    const days = RANGES[range].days;
-    return data.slice(-days);
-  }, [data, range]);
+  function setRange(next: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("rango", next);
+    router.push(`${pathname}?${params.toString()}`);
+  }
 
   return (
     <div className="card p-5">
@@ -45,7 +44,7 @@ export function AreaChartInteractive({ data }: { data: DailySalesDailyTotal[] })
           <h2 className="text-base font-semibold">Venta diaria</h2>
           <p className="text-sm text-muted-foreground">{RANGES[range].label}</p>
         </div>
-        <Select value={range} onValueChange={(v) => setRange(v as keyof typeof RANGES)}>
+        <Select value={range} onValueChange={setRange}>
           <SelectTrigger className="h-8 w-[160px] border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50">
             <SelectValue />
           </SelectTrigger>
