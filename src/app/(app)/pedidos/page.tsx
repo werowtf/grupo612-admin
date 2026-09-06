@@ -105,7 +105,10 @@ export default async function PedidosPage({
           <PedidosTabs tabs={tabs} />
           <input type="hidden" name="cafe" value={selectedTab} />
           <MonthPicker name="mes" defaultValue={mesValue} />
-          <button type="submit" className="rounded-lg border border-brand-600 px-3 py-1.5 text-sm text-brand-600 hover:bg-brand-50">
+          <button
+            type="submit"
+            className="cursor-pointer rounded-lg border border-brand-600 px-3 py-1.5 text-sm text-brand-600 hover:bg-brand-50"
+          >
             Ver
           </button>
         </form>

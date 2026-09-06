@@ -41,7 +41,7 @@ export function MonthPicker({ name, defaultValue, onChange }: Props) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-sm outline-none focus:border-brand-600"
+          className="flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-sm outline-none focus:border-brand-600"
         >
           <CalendarIcon className="h-4 w-4 text-muted-foreground" />
           {label}
@@ -52,7 +52,7 @@ export function MonthPicker({ name, defaultValue, onChange }: Props) {
           <button
             type="button"
             onClick={() => setViewYear((y) => y - 1)}
-            className="rounded p-1 hover:bg-muted"
+            className="cursor-pointer rounded p-1 hover:bg-muted"
             aria-label="Año anterior"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -61,7 +61,7 @@ export function MonthPicker({ name, defaultValue, onChange }: Props) {
           <button
             type="button"
             onClick={() => setViewYear((y) => y + 1)}
-            className="rounded p-1 hover:bg-muted"
+            className="cursor-pointer rounded p-1 hover:bg-muted"
             aria-label="Año siguiente"
           >
             <ChevronRight className="h-4 w-4" />
@@ -82,7 +82,7 @@ export function MonthPicker({ name, defaultValue, onChange }: Props) {
                   onChange?.(next);
                 }}
                 className={cn(
-                  "rounded-md px-2 py-1.5 text-sm",
+                  "cursor-pointer rounded-md px-2 py-1.5 text-sm",
                   active
                     ? "bg-brand-600 font-medium text-white"
                     : "text-foreground hover:bg-brand-50",
