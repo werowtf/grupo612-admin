@@ -216,7 +216,7 @@ export function PedidosGrid({
                       type="button"
                       variant="outline"
                       disabled={facturando || subtotal === 0}
-                      className="border-brand-600 text-brand-600 hover:bg-brand-50 hover:text-brand-600"
+                      className="border-brand-600 text-brand-600 hover:bg-brand-600 hover:text-white dark:hover:bg-brand-600 dark:hover:text-white"
                     />
                   }
                 >
