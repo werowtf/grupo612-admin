@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatMXN } from "@/lib/utils";
-import type { DailyTotal } from "@/lib/queries";
+import type { DailySalesDailyTotal } from "@/lib/daily-sales/queries";
 
 const chartConfig = {
-  abonos: { label: "Abonos", color: "var(--color-abono)" },
-  cargos: { label: "Cargos", color: "var(--color-cargo)" },
+  comida: { label: "Comida", color: "var(--color-abono)" },
+  bebida: { label: "Bebida", color: "var(--color-cargo)" },
 } satisfies ChartConfig;
 
 const RANGES = {
@@ -30,7 +30,7 @@ function formatDayMonth(isoDate: string): string {
   return `${Number(d)} ${months[Number(m) - 1]}`;
 }
 
-export function AreaChartInteractive({ data }: { data: DailyTotal[] }) {
+export function AreaChartInteractive({ data }: { data: DailySalesDailyTotal[] }) {
   const [range, setRange] = React.useState<keyof typeof RANGES>("30d");
 
   const filtered = React.useMemo(() => {
@@ -42,7 +42,7 @@ export function AreaChartInteractive({ data }: { data: DailyTotal[] }) {
     <div className="card p-5">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">Abonos vs. cargos</h2>
+          <h2 className="text-base font-semibold">Venta diaria</h2>
           <p className="text-sm text-muted-foreground">{RANGES[range].label}</p>
         </div>
         <Select value={range} onValueChange={(v) => setRange(v as keyof typeof RANGES)}>
@@ -68,13 +68,13 @@ export function AreaChartInteractive({ data }: { data: DailyTotal[] }) {
         <ChartContainer config={chartConfig} className="aspect-auto h-[260px] w-full">
           <AreaChart data={filtered}>
             <defs>
-              <linearGradient id="fillAbonos" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-abonos)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-abonos)" stopOpacity={0.05} />
+              <linearGradient id="fillComida" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="var(--color-comida)" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="var(--color-comida)" stopOpacity={0.05} />
               </linearGradient>
-              <linearGradient id="fillCargos" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-cargos)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-cargos)" stopOpacity={0.05} />
+              <linearGradient id="fillBebida" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="var(--color-bebida)" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="var(--color-bebida)" stopOpacity={0.05} />
               </linearGradient>
             </defs>
             <CartesianGrid vertical={false} />
@@ -110,17 +110,17 @@ export function AreaChartInteractive({ data }: { data: DailyTotal[] }) {
               }
             />
             <Area
-              dataKey="abonos"
+              dataKey="comida"
               type="monotone"
-              fill="url(#fillAbonos)"
-              stroke="var(--color-abonos)"
+              fill="url(#fillComida)"
+              stroke="var(--color-comida)"
               stackId="a"
             />
             <Area
-              dataKey="cargos"
+              dataKey="bebida"
               type="monotone"
-              fill="url(#fillCargos)"
-              stroke="var(--color-cargos)"
+              fill="url(#fillBebida)"
+              stroke="var(--color-bebida)"
               stackId="a"
             />
           </AreaChart>

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { TrendingUp, TrendingDown, Wallet, Clock, ArrowRight, Info, ChefHat, Wine, Percent } from "lucide-react";
 import { getAppContext } from "@/lib/context";
-import { getVenueSummary, getVenueTransactions, getVenueDailyTotals } from "@/lib/queries";
+import { getVenueSummary, getVenueTransactions } from "@/lib/queries";
+import { getVenueDailySalesTotals } from "@/lib/daily-sales/queries";
 import { getCostoVentaMes } from "@/lib/dashboard/costo-venta";
 import { StatCard } from "@/components/stat-card";
 import { CategoryBadge } from "@/components/badges";
@@ -41,10 +42,10 @@ export default async function DashboardPage({
   const { year, month } = parseMonth(sp.mes);
   const mesValue = `${year}-${String(month).padStart(2, "0")}`;
 
-  const [summary, recent, dailyTotals, costoVenta] = await Promise.all([
+  const [summary, recent, dailySalesTotals, costoVenta] = await Promise.all([
     getVenueSummary(selected.id),
     getVenueTransactions(selected.id, { take: 6 }),
-    getVenueDailyTotals(selected.id),
+    getVenueDailySalesTotals(selected.id),
     getCostoVentaMes(selected.id, year, month),
   ]);
 
@@ -94,7 +95,7 @@ export default async function DashboardPage({
             />
           </section>
 
-          <AreaChartInteractive data={dailyTotals} />
+          <AreaChartInteractive data={dailySalesTotals} />
 
           <section className="card min-w-0 space-y-4 p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
