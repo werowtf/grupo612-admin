@@ -49,9 +49,9 @@ function NavLinks({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
-  // Cajero sólo interactúa con Cortes de caja y Por pagar (ver también
+  // Cajero interactúa con Dashboard, Cortes de caja y Por pagar (ver también
   // proxy.ts, que confina su navegación al mismo alcance a nivel de ruta).
-  const CAJERO_HREFS = ["/cortes", "/por-pagar"];
+  const CAJERO_HREFS = ["/dashboard", "/cortes", "/por-pagar"];
   const isComisariato = venueSlug === "comisariato";
   const items = NAV.filter((i) => !i.roles || i.roles.includes(role))
     .filter((i) => role !== "CAJERO" || CAJERO_HREFS.includes(i.href))

@@ -21,7 +21,7 @@ export async function proxy(request: NextRequest) {
   // Roles confinados a un puñado de secciones DENTRO del panel principal,
   // sin volverlas exclusivas: los demás roles siguen entrando normalmente.
   const CONFINED: Record<string, string[]> = {
-    CAJERO: ["/cortes", "/por-pagar"],
+    CAJERO: ["/cortes", "/por-pagar", "/dashboard"],
   };
   const restrictedAreas = Object.values(RESTRICTED);
   const inArea = (base: string) => pathname === base || pathname.startsWith(base + "/");
