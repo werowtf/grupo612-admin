@@ -211,14 +211,7 @@ export function PedidosGrid({
             {!readOnly && (
               <AlertDialog>
                 <AlertDialogTrigger
-                  render={
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={facturando || subtotal === 0}
-                      className="border-brand-600 text-brand-600 hover:bg-brand-600 hover:text-white dark:hover:bg-brand-600 dark:hover:text-white"
-                    />
-                  }
+                  render={<Button type="button" variant="outline" disabled={facturando || subtotal === 0} />}
                 >
                   {facturando ? "Facturando…" : "Marcar facturado"}
                 </AlertDialogTrigger>

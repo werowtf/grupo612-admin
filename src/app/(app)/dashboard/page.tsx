@@ -101,7 +101,10 @@ export default async function DashboardPage({
               <h2 className="text-base font-semibold">% Costo de venta</h2>
               <form method="get" className="flex items-center gap-2">
                 <MonthPicker name="mes" defaultValue={mesValue} />
-                <button type="submit" className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted">
+                <button
+                  type="submit"
+                  className="cursor-pointer rounded-lg border border-brand-600 px-3 py-1.5 text-sm font-semibold text-brand-600 hover:bg-brand-600 hover:text-white"
+                >
                   Ver
                 </button>
               </form>
