@@ -28,6 +28,14 @@ export default async function ConciliacionPage({
     );
   }
 
+  if (selected.slug === "comisariato") {
+    return (
+      <div className="card p-10 text-center text-sm text-muted-foreground">
+        Estados de cuenta no aplica para Comisariato. Cambia de negocio en el menú de arriba.
+      </div>
+    );
+  }
+
   const { year, month } = parseMonth(sp.mes);
   const mesValue = `${year}-${String(month).padStart(2, "0")}`;
 
