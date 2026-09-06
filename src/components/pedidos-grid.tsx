@@ -169,7 +169,7 @@ export function PedidosGrid({
                               e.preventDefault();
                               inputRefs.current[`${productos[nextRow].id}_${day}`]?.focus();
                             }}
-                            className="w-9 rounded border border-border bg-transparent px-0.5 py-1 text-center text-[11px] tabular-nums outline-none placeholder:text-muted-foreground/40 focus:border-brand-600 disabled:opacity-60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            className="w-11 rounded border border-border bg-transparent px-0.5 py-1 text-center text-sm font-medium tabular-nums outline-none placeholder:text-muted-foreground/40 focus:border-brand-600 disabled:opacity-60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           />
                         </td>
                       );

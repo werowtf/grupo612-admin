@@ -120,7 +120,7 @@ export function PedidosResumen({
                         value={folios[day] ?? ""}
                         placeholder="—"
                         onChange={(e) => setFolios((f) => ({ ...f, [day]: e.target.value.slice(0, 6) }))}
-                        className="w-9 rounded border border-border bg-transparent px-0.5 py-1 text-center text-[11px] tabular-nums outline-none placeholder:text-muted-foreground/40 focus:border-brand-600"
+                        className="w-11 rounded border border-border bg-transparent px-0.5 py-1 text-center text-sm font-medium tabular-nums outline-none placeholder:text-muted-foreground/40 focus:border-brand-600"
                       />
                     </td>
                   ))}
