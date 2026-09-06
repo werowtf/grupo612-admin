@@ -18,10 +18,10 @@ export async function proxy(request: NextRequest) {
     CONTADOR_EXTERNO: "/portal",
     COMPRAS: "/compras",
   };
-  // Roles confinados a una sola sección DENTRO del panel principal, sin
-  // volverla exclusiva: los demás roles siguen entrando normalmente.
-  const CONFINED: Record<string, string> = {
-    CAJERO: "/cortes",
+  // Roles confinados a un puñado de secciones DENTRO del panel principal,
+  // sin volverlas exclusivas: los demás roles siguen entrando normalmente.
+  const CONFINED: Record<string, string[]> = {
+    CAJERO: ["/cortes", "/por-pagar"],
   };
   const restrictedAreas = Object.values(RESTRICTED);
   const inArea = (base: string) => pathname === base || pathname.startsWith(base + "/");
@@ -35,7 +35,9 @@ export async function proxy(request: NextRequest) {
   }
 
   if (session) {
-    const home = RESTRICTED[session.role] ?? CONFINED[session.role]; // área del rol, o undefined
+    const restricted = RESTRICTED[session.role]; // área exclusiva del rol, o undefined
+    const confined = CONFINED[session.role]; // secciones permitidas dentro del panel, o undefined
+    const home = restricted ?? confined?.[0]; // a dónde mandarlo si sale de su alcance
     const redirectTo = (path: string) => {
       const url = request.nextUrl.clone();
       url.pathname = path;
@@ -43,9 +45,12 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     };
 
-    if (home) {
-      // Rol restringido: sólo su área (o rutas públicas).
-      if (!inArea(home) && !isPublic) return redirectTo(home);
+    if (restricted) {
+      // Rol restringido: sólo su área exclusiva (o rutas públicas).
+      if (!inArea(restricted) && !isPublic) return redirectTo(restricted);
+    } else if (confined) {
+      // Rol confinado: cualquiera de sus secciones permitidas (o rutas públicas).
+      if (!confined.some(inArea) && !isPublic) return redirectTo(confined[0]);
     } else if (restrictedAreas.some((a) => inArea(a))) {
       // Usuario interno intentando entrar a un área restringida.
       return redirectTo("/dashboard");
