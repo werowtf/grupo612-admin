@@ -16,6 +16,14 @@ export default async function PorPagarPage() {
     );
   }
 
+  if (selected.slug === "comisariato") {
+    return (
+      <div className="card p-10 text-center text-sm text-muted-foreground">
+        Por pagar no aplica para Comisariato. Cambia de negocio en el menú de arriba.
+      </div>
+    );
+  }
+
   const [propinasPendientes, cuentas] = await Promise.all([
     getPropinasPendientes(selected.id),
     getCuentasPorPagar(selected.id),
@@ -32,9 +40,7 @@ export default async function PorPagarPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-xl">Por pagar</h1>
-        <p className="text-sm text-muted-foreground">
-          Propinas y otras deudas pendientes de {selected.name}
-        </p>
+        <p className="text-sm text-muted-foreground">Propinas y otras deudas pendientes.</p>
       </header>
 
       <section className="grid gap-4 sm:grid-cols-2">

@@ -32,7 +32,12 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen">
-      <AppSidebar role={role} mobileOpen={mobileNavOpen} onCloseMobile={() => setMobileNavOpen(false)} />
+      <AppSidebar
+        role={role}
+        venueSlug={selectedVenueSlug}
+        mobileOpen={mobileNavOpen}
+        onCloseMobile={() => setMobileNavOpen(false)}
+      />
       <div className="flex min-w-0 flex-1 flex-col">
         <AppTopbar
           role={role}

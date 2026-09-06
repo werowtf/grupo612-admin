@@ -39,14 +39,25 @@ const NAV: NavItem[] = [
   { href: "/documentos", label: "Documentos", icon: FileText },
 ];
 
-function NavLinks({ role, onNavigate }: { role: UserRole; onNavigate?: () => void }) {
+function NavLinks({
+  role,
+  venueSlug,
+  onNavigate,
+}: {
+  role: UserRole;
+  venueSlug: string | null;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
   // Cajero sólo interactúa con Cortes de caja y Por pagar (ver también
   // proxy.ts, que confina su navegación al mismo alcance a nivel de ruta).
   const CAJERO_HREFS = ["/cortes", "/por-pagar"];
-  const items = NAV.filter((i) => !i.roles || i.roles.includes(role)).filter(
-    (i) => role !== "CAJERO" || CAJERO_HREFS.includes(i.href),
-  );
+  const isComisariato = venueSlug === "comisariato";
+  const items = NAV.filter((i) => !i.roles || i.roles.includes(role))
+    .filter((i) => role !== "CAJERO" || CAJERO_HREFS.includes(i.href))
+    // Pedidos (cafetería) es exclusivo de Comisariato; Por pagar no aplica ahí.
+    .filter((i) => i.href !== "/pedidos" || isComisariato)
+    .filter((i) => i.href !== "/por-pagar" || !isComisariato);
 
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto p-3">
@@ -95,11 +106,12 @@ function NavLinks({ role, onNavigate }: { role: UserRole; onNavigate?: () => voi
 
 interface Props {
   role: UserRole;
+  venueSlug: string | null;
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
 }
 
-export function AppSidebar({ role, mobileOpen = false, onCloseMobile }: Props) {
+export function AppSidebar({ role, venueSlug, mobileOpen = false, onCloseMobile }: Props) {
   return (
     <>
       {/* Escritorio: fija en el layout */}
@@ -107,7 +119,7 @@ export function AppSidebar({ role, mobileOpen = false, onCloseMobile }: Props) {
         <div className="flex h-14 items-center justify-center border-b border-border px-4">
           <Logo className="h-9 w-auto" />
         </div>
-        <NavLinks role={role} />
+        <NavLinks role={role} venueSlug={venueSlug} />
         <div className="border-t border-border p-3 text-[11px] text-muted-foreground">
           Grupo612 Admin v0.1
         </div>
@@ -133,7 +145,7 @@ export function AppSidebar({ role, mobileOpen = false, onCloseMobile }: Props) {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <NavLinks role={role} onNavigate={onCloseMobile} />
+            <NavLinks role={role} venueSlug={venueSlug} onNavigate={onCloseMobile} />
             <div className="border-t border-border p-3 text-[11px] text-muted-foreground">
               Grupo612 Admin v0.1
             </div>
