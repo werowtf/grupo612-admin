@@ -53,6 +53,7 @@ export function PedidosGrid({
   const [quantities, setQuantities] = useState<Record<string, number>>(initialQuantities);
   const [facturando, setFacturando] = useState(false);
   const [facturarError, setFacturarError] = useState<string | null>(null);
+  const [focusedKey, setFocusedKey] = useState<string | null>(null);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
@@ -157,7 +158,9 @@ export function PedidosGrid({
                             name={`qty_${key}`}
                             disabled={readOnly}
                             value={value === 0 ? "" : value}
-                            placeholder="—"
+                            placeholder={focusedKey === key ? "" : "—"}
+                            onFocus={() => setFocusedKey(key)}
+                            onBlur={() => setFocusedKey((k) => (k === key ? null : k))}
                             onChange={(e) => {
                               const digits = e.target.value.slice(0, 4);
                               setQuantities((q) => ({ ...q, [key]: Math.max(0, Math.trunc(Number(digits) || 0)) }));
@@ -169,7 +172,7 @@ export function PedidosGrid({
                               e.preventDefault();
                               inputRefs.current[`${productos[nextRow].id}_${day}`]?.focus();
                             }}
-                            className="w-11 rounded border border-border bg-transparent px-0.5 py-1 text-center text-sm font-medium tabular-nums outline-none placeholder:text-muted-foreground/40 focus:border-brand-600 disabled:opacity-60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            className="w-11 rounded bg-transparent px-0.5 py-1 text-center text-sm font-medium tabular-nums outline-none placeholder:text-muted-foreground/40 focus:ring-2 focus:ring-brand-600 disabled:opacity-60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           />
                         </td>
                       );

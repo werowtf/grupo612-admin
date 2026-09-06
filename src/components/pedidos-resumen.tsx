@@ -39,6 +39,7 @@ export function PedidosResumen({
   const router = useRouter();
   const [state, action, saving] = useActionState(saveFoliosAction, init);
   const [folios, setFolios] = useState<Record<number, string>>(initialFolios);
+  const [focusedDay, setFocusedDay] = useState<number | null>(null);
 
   useEffect(() => {
     if (state.ok) router.refresh();
@@ -118,9 +119,11 @@ export function PedidosResumen({
                         maxLength={6}
                         name={`folio_${day}`}
                         value={folios[day] ?? ""}
-                        placeholder="—"
+                        placeholder={focusedDay === day ? "" : "—"}
+                        onFocus={() => setFocusedDay(day)}
+                        onBlur={() => setFocusedDay((d) => (d === day ? null : d))}
                         onChange={(e) => setFolios((f) => ({ ...f, [day]: e.target.value.slice(0, 6) }))}
-                        className="w-11 rounded border border-border bg-transparent px-0.5 py-1 text-center text-sm font-medium tabular-nums outline-none placeholder:text-muted-foreground/40 focus:border-brand-600"
+                        className="w-11 rounded bg-transparent px-0.5 py-1 text-center text-sm font-medium tabular-nums outline-none placeholder:text-muted-foreground/40 focus:ring-2 focus:ring-brand-600"
                       />
                     </td>
                   ))}
