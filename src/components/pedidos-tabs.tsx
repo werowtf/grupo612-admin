@@ -33,7 +33,7 @@ export function PedidosTabs({ tabs }: { tabs: PedidosTab[] }) {
           href={tab.href}
           onClick={(e) => go(tab, e)}
           className={cn(
-            "rounded-lg px-3 py-1.5 text-sm font-semibold",
+            "rounded-lg px-3 py-1.5 text-sm font-medium",
             tab.active
               ? "bg-brand-600 text-white"
               : "border border-brand-600 text-brand-600 hover:bg-brand-600 hover:text-white",
