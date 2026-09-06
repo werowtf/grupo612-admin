@@ -34,7 +34,9 @@ export function PedidosTabs({ tabs }: { tabs: PedidosTab[] }) {
           onClick={(e) => go(tab, e)}
           className={cn(
             "rounded-lg px-3 py-1.5 text-sm",
-            tab.active ? "bg-brand-600 font-medium text-white" : "border border-border hover:bg-muted",
+            tab.active
+              ? "bg-brand-600 font-medium text-white"
+              : "border border-brand-600 text-brand-600 hover:bg-brand-50",
             navigating === tab.id && !tab.active && "opacity-60",
           )}
         >

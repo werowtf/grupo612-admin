@@ -94,7 +94,7 @@ export default async function PedidosPage({
           </div>
           <Link
             href="/pedidos/productos"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-brand-600 px-3 py-1.5 text-sm text-brand-600 hover:bg-brand-50"
           >
             <Settings className="h-4 w-4" />
             Productos y precios
