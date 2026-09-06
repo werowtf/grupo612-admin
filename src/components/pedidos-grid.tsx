@@ -187,7 +187,7 @@ export function PedidosGrid({
                   </td>
                   <td></td>
                   {dailyTotals.map((t, i) => (
-                    <td key={i} className="px-px py-2 text-center text-[9px] tabular-nums">
+                    <td key={i} className="px-px py-2 text-center text-xs font-semibold tabular-nums">
                       {t > 0 ? formatMXN(t).replace("$", "").split(".")[0] : <span className="text-muted-foreground/40">—</span>}
                     </td>
                   ))}
