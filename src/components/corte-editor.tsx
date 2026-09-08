@@ -242,8 +242,8 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
 
   const methods: { id: Method; label: string; icon: React.ComponentType<{ className?: string }>; hint: string }[] = [
     { id: "PDF", label: "Subir PDF", icon: FileText, hint: "PDF del corte de Soft Restaurant." },
-    { id: "FOTO", label: "Subir foto", icon: Camera, hint: "Foto del ticket impreso." },
     { id: "EXCEL", label: "Subir Excel", icon: FileSpreadsheet, hint: "Export de Soft Restaurant (.xlsx)." },
+    { id: "FOTO", label: "Subir foto", icon: Camera, hint: "Foto del ticket impreso." },
     { id: "MANUAL", label: "Captura manual", icon: PencilLine, hint: "Escribe los datos del corte." },
   ];
 

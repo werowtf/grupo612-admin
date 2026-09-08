@@ -13,6 +13,9 @@ export interface CorteSectionDef {
   fields: CorteField[];
 }
 
+// El orden de las secciones y de los campos dentro de cada una sigue el
+// mismo orden en que aparecen en el ticket impreso del Corte Z, para que
+// capturar a mano sea un dictado directo de arriba hacia abajo del papel.
 export const CORTE_SECTIONS: CorteSectionDef[] = [
   {
     title: "Identificación",
@@ -24,6 +27,17 @@ export const CORTE_SECTIONS: CorteSectionDef[] = [
       { key: "folioCorteZ", label: "Folio Corte Z", type: "text" },
       { key: "folioInicial", label: "Folio inicial", type: "text" },
       { key: "folioFinal", label: "Folio final", type: "text" },
+    ],
+  },
+  {
+    title: "Control de caja",
+    fields: [
+      { key: "efectivoInicial", label: "Efectivo inicial", type: "money" },
+      { key: "depositos", label: "Depósitos", type: "money" },
+      { key: "retiros", label: "Retiros", type: "money" },
+      { key: "propinasPorPagar", label: "Propinas pagadas", type: "money" },
+      { key: "efectivoDeclarado", label: "Efectivo declarado / final", type: "money" },
+      { key: "sobranteFaltante", label: "Sobrante (+) / Faltante (−)", type: "money" },
     ],
   },
   {
@@ -65,10 +79,6 @@ export const CORTE_SECTIONS: CorteSectionDef[] = [
     ],
   },
   {
-    title: "Propinas por pagar",
-    fields: [{ key: "propinasPorPagar", label: "Monto", type: "money" }],
-  },
-  {
     title: "Totales",
     fields: [
       { key: "subtotal", label: "Subtotal", type: "money" },
@@ -79,22 +89,12 @@ export const CORTE_SECTIONS: CorteSectionDef[] = [
     ],
   },
   {
-    title: "Control de caja",
-    fields: [
-      { key: "efectivoInicial", label: "Efectivo inicial", type: "money" },
-      { key: "efectivoDeclarado", label: "Efectivo declarado / final", type: "money" },
-      { key: "retiros", label: "Retiros", type: "money" },
-      { key: "depositos", label: "Depósitos", type: "money" },
-      { key: "sobranteFaltante", label: "Sobrante (+) / Faltante (−)", type: "money" },
-    ],
-  },
-  {
     title: "Operación",
     fields: [
       { key: "cuentasNormales", label: "Cuentas normales", type: "int" },
       { key: "cuentasCanceladas", label: "Cuentas canceladas", type: "int" },
-      { key: "comensales", label: "Comensales", type: "int" },
       { key: "cuentaPromedio", label: "Cuenta promedio", type: "money" },
+      { key: "comensales", label: "Comensales", type: "int" },
     ],
   },
 ];
