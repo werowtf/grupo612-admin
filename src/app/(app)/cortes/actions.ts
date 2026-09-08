@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isReadOnly } from "@/lib/auth";
 import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
 import { parseCorteFile, CorteImportError, type CorteExtraction } from "@/lib/cortes";
@@ -21,6 +21,7 @@ export type ProcessResult =
 export async function processCorteFileAction(formData: FormData): Promise<ProcessResult> {
   const user = await getCurrentUser();
   if (!user) return { ok: false, error: "Sesión expirada." };
+  if (isReadOnly(user)) return { ok: false, error: "Tu usuario es de solo lectura." };
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
@@ -64,6 +65,7 @@ export async function saveCorteAction(
 ): Promise<{ error?: string }> {
   const user = await getCurrentUser();
   if (!user) return { error: "Sesión expirada." };
+  if (isReadOnly(user)) return { error: "Tu usuario es de solo lectura." };
 
   const venueId = String(formData.get("venueId") ?? "");
   const corteId = textOrNull(formData, "corteId");
@@ -195,7 +197,7 @@ export async function saveCorteAction(
 /** Vincula un depósito bancario a un corte (marca el movimiento como conciliado). */
 export async function linkDepositAction(corteId: string, txId: string) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || isReadOnly(user)) return;
 
   const [corte, tx] = await Promise.all([
     prisma.corte.findUnique({ where: { id: corteId } }),
@@ -226,7 +228,7 @@ export async function linkDepositAction(corteId: string, txId: string) {
 /** Quita el vínculo de un depósito (vuelve a pendiente). */
 export async function unlinkDepositAction(txId: string) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || isReadOnly(user)) return;
   const tx = await prisma.bankTransaction.findUnique({
     where: { id: txId },
     include: { bankAccount: true },
@@ -255,6 +257,7 @@ export async function autoMatchCorteAction(
 ): Promise<{ linked: number; message: string }> {
   const user = await getCurrentUser();
   if (!user) return { linked: 0, message: "Sesión expirada." };
+  if (isReadOnly(user)) return { linked: 0, message: "Tu usuario es de solo lectura." };
   const corte = await prisma.corte.findUnique({ where: { id: corteId } });
   if (!corte) return { linked: 0, message: "Corte no encontrado." };
   await assertVenueAccess(user, corte.venueId);
@@ -294,7 +297,7 @@ export async function autoMatchCorteAction(
 
 export async function deleteCorteAction(corteId: string) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || isReadOnly(user)) return;
   const corte = await prisma.corte.findUnique({ where: { id: corteId } });
   if (!corte) return;
   await assertVenueAccess(user, corte.venueId);

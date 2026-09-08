@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const ROLES: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR", "CONTADOR_EXTERNO", "COMPRAS", "CAJERO"];
+const ROLES: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR", "CONTADOR_EXTERNO", "COMPRAS", "CAJERO", "VISOR"];
 
 interface Props {
   venues: { id: string; name: string }[];

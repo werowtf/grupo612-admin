@@ -57,6 +57,17 @@ export async function getCurrentUser() {
 
 export type CurrentUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 
+/**
+ * VISOR es el único rol de sólo lectura: nunca puede escribir, ni siquiera en
+ * módulos que no tienen su propio allowlist de roles. Se revisa al inicio de
+ * toda server action que mute algo — sin este check, VISOR heredaría el
+ * mismo acceso de escritura que cualquier otro rol interno ahí donde no hay
+ * un PUEDEN_EDITAR explícito.
+ */
+export function isReadOnly(user: Pick<CurrentUser, "role">): boolean {
+  return user.role === "VISOR";
+}
+
 /** Negocios accesibles: ADMIN ve todos; el resto sólo los asignados. */
 export async function getAccessibleVenues(user: CurrentUser) {
   if (user.role === "ADMIN") {

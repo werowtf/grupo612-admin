@@ -21,6 +21,7 @@ enum UserRole {
   CONTADOR_EXTERNO // contabilidad externa: sólo sube estados de cuenta
   COMPRAS // sólo registra compras (egresos) diarias
   CAJERO // captura operativa
+  VISOR // acceso de sólo lectura a todo el panel
 }
 
 model User {

@@ -9,7 +9,7 @@ import { getCurrentUser, hashPassword } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import type { UserRole } from "@/generated/prisma/enums";
 
-const ROLES: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR", "CONTADOR_EXTERNO", "COMPRAS", "CAJERO"];
+const ROLES: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR", "CONTADOR_EXTERNO", "COMPRAS", "CAJERO", "VISOR"];
 
 export interface UserFormState {
   error?: string;

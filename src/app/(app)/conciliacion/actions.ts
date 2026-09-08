@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isReadOnly } from "@/lib/auth";
 import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
 import { parseStatement, computeDedupeHash, classifyWithMatch, normalizeConcept, ImportError } from "@/lib/import";
@@ -32,6 +32,7 @@ export async function importStatementAction(
 ): Promise<ImportResult> {
   const user = await getCurrentUser();
   if (!user) return { error: "Sesión expirada. Vuelve a iniciar sesión." };
+  if (isReadOnly(user)) return { error: "Tu usuario es de solo lectura." };
 
   const bankAccountId = String(formData.get("bankAccountId") ?? "");
   const file = formData.get("file");
@@ -245,6 +246,7 @@ const statusSchema = z.enum(["PENDIENTE", "CONCILIADO", "IGNORADO"]);
 async function loadTxForUser(txId: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Sesión expirada");
+  if (isReadOnly(user)) throw new Error("Tu usuario es de solo lectura.");
   const tx = await prisma.bankTransaction.findUnique({
     where: { id: txId },
     include: { bankAccount: true },

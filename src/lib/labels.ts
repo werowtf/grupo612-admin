@@ -14,6 +14,7 @@ export const roleLabels: Record<UserRole, string> = {
   CONTADOR_EXTERNO: "Contabilidad externa",
   COMPRAS: "Compras",
   CAJERO: "Cajero",
+  VISOR: "Visor (solo lectura)",
 };
 
 export const categoryLabels: Record<TxCategory, string> = {

@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import type { EntryType, PaymentMethod } from "@/generated/prisma/enums";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isReadOnly } from "@/lib/auth";
 import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
 
@@ -44,6 +44,7 @@ export async function saveEntryAction(
 ): Promise<EntryFormState> {
   const user = await getCurrentUser();
   if (!user) return { error: "Sesión expirada." };
+  if (isReadOnly(user)) return { error: "Tu usuario es de solo lectura." };
 
   const entryId = textOrNull(formData, "entryId");
   const venueId = String(formData.get("venueId") ?? "");
@@ -135,7 +136,7 @@ export async function saveEntryAction(
 
 export async function deleteEntryAction(entryId: string) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || isReadOnly(user)) return;
   const entry = await prisma.financialEntry.findUnique({ where: { id: entryId } });
   if (!entry) return;
   await assertVenueAccess(user, entry.venueId);

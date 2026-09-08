@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isReadOnly } from "@/lib/auth";
 import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
 import { DOCUMENT_CATEGORIES } from "@/lib/labels";
@@ -27,6 +27,7 @@ export async function uploadDocumentAction(
 ): Promise<DocumentFormState> {
   const user = await getCurrentUser();
   if (!user) return { error: "Sesión expirada." };
+  if (isReadOnly(user)) return { error: "Tu usuario es de solo lectura." };
 
   const venueId = String(formData.get("venueId") ?? "");
   if (!venueId) return { error: "Selecciona el negocio." };
@@ -90,7 +91,7 @@ export async function uploadDocumentAction(
 
 export async function deleteDocumentAction(documentId: string) {
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user || isReadOnly(user)) return;
   const doc = await prisma.document.findUnique({ where: { id: documentId } });
   if (!doc) return;
   await assertVenueAccess(user, doc.venueId);
