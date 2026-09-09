@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope, Prata } from "next/font/google";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { PwaRegister } from "@/components/pwa-register";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -20,6 +21,18 @@ const prata = Prata({
 export const metadata: Metadata = {
   title: "Grupo 612 — Plataforma Administrativa",
   description: "Plataforma administrativa y financiera de Grupo 612",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Grupo 612",
+  },
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#3AAF85",
 };
 
 export default function RootLayout({
@@ -37,6 +50,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>
+        <PwaRegister />
       </body>
     </html>
   );
