@@ -46,12 +46,9 @@ export default async function ReportesPage({
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl">Reportes</h1>
-          <p className="text-sm text-muted-foreground">{report.period.label}</p>
-        </div>
-        <ReportActions exportHref={exportHref} />
+      <header>
+        <h1 className="text-xl">Reportes</h1>
+        <p className="text-sm text-muted-foreground">{report.period.label}</p>
       </header>
 
       <div className="card flex flex-wrap items-end gap-3 p-4 print:hidden">
@@ -59,6 +56,10 @@ export default async function ReportesPage({
           <label className="label">Mes</label>
           <ReportMonthPicker defaultValue={mesValue} />
         </div>
+      </div>
+
+      <div className="flex justify-end">
+        <ReportActions exportHref={exportHref} />
       </div>
 
       {/* KPIs */}

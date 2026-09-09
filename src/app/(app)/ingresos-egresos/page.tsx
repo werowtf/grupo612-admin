@@ -90,14 +90,14 @@ export default async function IngresosEgresosPage({
   return (
     <DailySaleDialogProvider>
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
+      <header className="space-y-3">
         <div>
           <h1 className="text-xl">Ingresos y egresos</h1>
           <p className="text-sm text-muted-foreground">
             Registra y consulta los movimientos internos de caja
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex justify-end gap-2">
           {puedeEditarConceptos && (
             <Link
               href="/ingresos-egresos/conceptos"

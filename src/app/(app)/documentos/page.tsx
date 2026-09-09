@@ -41,17 +41,19 @@ export default async function DocumentosPage({
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
+      <header className="space-y-3">
         <div>
           <h1 className="text-xl">Documentos</h1>
           <p className="text-sm text-muted-foreground">
             Repositorio centralizado de facturas, contratos y otros archivos
           </p>
         </div>
-        <Link href="/documentos/nuevo" className={buttonVariants()}>
-          <Plus className="h-4 w-4" />
-          Subir documento
-        </Link>
+        <div className="flex justify-end">
+          <Link href="/documentos/nuevo" className={buttonVariants()}>
+            <Plus className="h-4 w-4" />
+            Subir documento
+          </Link>
+        </div>
       </header>
 
       <form method="get" className="card flex flex-wrap items-end gap-3 p-4">
