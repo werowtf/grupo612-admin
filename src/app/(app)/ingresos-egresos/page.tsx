@@ -11,7 +11,6 @@ import { getDailySales } from "@/lib/daily-sales/queries";
 import { EntriesTable } from "@/components/entries-table";
 import { DailySalesManager, type DailySaleRow } from "@/components/daily-sales-manager";
 import { DailySaleDialogProvider } from "@/components/daily-sales-context";
-import { RegistrarVentaButton } from "@/components/registrar-venta-button";
 import { MonthPicker } from "@/components/month-picker";
 import { StatCard } from "@/components/stat-card";
 import { formatMXN } from "@/lib/utils";
@@ -107,7 +106,6 @@ export default async function IngresosEgresosPage({
               Conceptos
             </Link>
           )}
-          <RegistrarVentaButton />
           <Link href="/ingresos-egresos/nuevo" className={buttonVariants()}>
             <Plus className="h-4 w-4" />
             Nuevo movimiento
