@@ -34,6 +34,8 @@ export default async function PorPagarPage() {
     date: c.date.toISOString().slice(0, 10),
     concept: c.concept,
     amount: Number(c.amount),
+    supplier: c.supplier,
+    paymentMethod: c.paymentMethod,
   }));
 
   return (

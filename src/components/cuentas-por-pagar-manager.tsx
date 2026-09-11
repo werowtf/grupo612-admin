@@ -9,8 +9,12 @@ import {
   type CuentaPorPagarActionState,
 } from "@/app/(app)/por-pagar/actions";
 import { formatMXN, formatDate } from "@/lib/utils";
+import { PAYMENT_METHODS, paymentLabels } from "@/lib/entries/config";
+import type { PaymentMethod } from "@/generated/prisma/enums";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/date-picker";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -21,11 +25,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+const FIELD_TRIGGER_CLASS = "h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50";
+
 export interface CuentaPorPagarRow {
   id: string;
   date: string; // ISO yyyy-mm-dd
   concept: string;
   amount: number;
+  supplier: string | null;
+  paymentMethod: PaymentMethod | null;
 }
 
 const init: CuentaPorPagarActionState = {};
@@ -33,6 +41,7 @@ const init: CuentaPorPagarActionState = {};
 export function CuentasPorPagarManager({ venueId, rows }: { venueId: string; rows: CuentaPorPagarRow[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [date, setDate] = useState("");
   const [state, action, saving] = useActionState(createCuentaPorPagarAction, init);
   const [payingId, setPayingId] = useState<string | null>(null);
   const [payError, setPayError] = useState<string | null>(null);
@@ -43,6 +52,11 @@ export function CuentasPorPagarManager({ venueId, rows }: { venueId: string; row
       router.refresh();
     }
   }, [state.ok, router]);
+
+  function onOpenChange(o: boolean) {
+    setOpen(o);
+    if (o) setDate("");
+  }
 
   async function onPagar(id: string) {
     setPayingId(id);
@@ -59,7 +73,7 @@ export function CuentasPorPagarManager({ venueId, rows }: { venueId: string; row
     <div className="card min-w-0 space-y-3 p-5">
       <div className="flex items-center justify-between">
         <h2 className="text-base font-semibold">Otros</h2>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={onOpenChange}>
           <DialogTrigger render={<Button type="button" size="sm" />}>
             <Plus className="h-4 w-4" />
             Agregar
@@ -72,7 +86,7 @@ export function CuentasPorPagarManager({ venueId, rows }: { venueId: string; row
               <input type="hidden" name="venueId" value={venueId} />
               <div>
                 <label className="label font-semibold" htmlFor="date">Fecha</label>
-                <Input id="date" name="date" type="date" required />
+                <DatePicker id="date" name="date" value={date} onChange={setDate} required />
               </div>
               <div>
                 <label className="label font-semibold" htmlFor="concept">Concepto</label>
@@ -81,6 +95,25 @@ export function CuentasPorPagarManager({ venueId, rows }: { venueId: string; row
               <div>
                 <label className="label font-semibold" htmlFor="amount">Monto</label>
                 <Input id="amount" name="amount" type="number" step="0.01" min="0.01" required />
+              </div>
+              <div>
+                <label className="label font-semibold" htmlFor="supplier">Proveedor</label>
+                <Input id="supplier" name="supplier" placeholder="Ej. CFE" maxLength={120} />
+              </div>
+              <div>
+                <label className="label font-semibold" htmlFor="paymentMethod">Forma de pago</label>
+                <Select name="paymentMethod" defaultValue="EFECTIVO">
+                  <SelectTrigger id="paymentMethod" className={FIELD_TRIGGER_CLASS}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PAYMENT_METHODS.map((m) => (
+                      <SelectItem key={m} value={m}>
+                        {paymentLabels[m]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               {state.error && (
                 <p className="flex items-start gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
@@ -115,6 +148,8 @@ export function CuentasPorPagarManager({ venueId, rows }: { venueId: string; row
               <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-600">
                 <th className="px-3 py-2 font-semibold">Fecha</th>
                 <th className="px-3 py-2 font-semibold">Concepto</th>
+                <th className="px-3 py-2 font-semibold">Proveedor</th>
+                <th className="px-3 py-2 font-semibold">Forma de pago</th>
                 <th className="px-3 py-2 text-right font-semibold">Monto</th>
                 <th className="px-3 py-2 font-semibold"></th>
               </tr>
@@ -124,6 +159,10 @@ export function CuentasPorPagarManager({ venueId, rows }: { venueId: string; row
                 <tr key={r.id} className="hover:bg-muted/60">
                   <td className="whitespace-nowrap px-3 py-2 font-semibold">{formatDate(r.date)}</td>
                   <td className="px-3 py-2">{r.concept}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{r.supplier ?? "—"}</td>
+                  <td className="px-3 py-2 text-muted-foreground">
+                    {r.paymentMethod ? paymentLabels[r.paymentMethod] : "—"}
+                  </td>
                   <td className="px-3 py-2 text-right tabular-nums font-semibold text-cargo">{formatMXN(r.amount)}</td>
                   <td className="px-3 py-2 text-right">
                     <Button
@@ -142,7 +181,7 @@ export function CuentasPorPagarManager({ venueId, rows }: { venueId: string; row
             </tbody>
             <tfoot>
               <tr className="border-t border-border bg-table-header/60 font-semibold">
-                <td colSpan={2} className="px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground">
+                <td colSpan={4} className="px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground">
                   Total pendiente
                 </td>
                 <td className="px-3 py-2 text-right tabular-nums text-cargo">{formatMXN(total)}</td>

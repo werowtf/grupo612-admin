@@ -220,6 +220,8 @@ model CuentaPorPagar {
   venue       Venue     @relation(fields: [venueId], references: [id], onDelete: Cascade)
   date        DateTime
   concept     String
+  supplier      String?
+  paymentMethod PaymentMethod?
   amount      Decimal   @db.Decimal(14, 2)
   /// null = pendiente; con fecha = pagada (y cuándo).
   paidAt      DateTime?

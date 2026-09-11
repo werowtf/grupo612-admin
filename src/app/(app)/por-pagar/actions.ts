@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import type { UserRole } from "@/generated/prisma/enums";
+import type { PaymentMethod, UserRole } from "@/generated/prisma/enums";
+import { PAYMENT_METHODS } from "@/lib/entries/config";
 import { getCurrentUser } from "@/lib/auth";
 import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
@@ -36,6 +37,11 @@ export async function createCuentaPorPagarAction(
   const date = dateStr ? new Date(`${dateStr}T00:00:00.000Z`) : null;
   const concept = String(formData.get("concept") ?? "").trim();
   const amount = Number(formData.get("amount"));
+  const supplier = String(formData.get("supplier") ?? "").trim() || null;
+  const paymentMethodRaw = String(formData.get("paymentMethod") ?? "");
+  const paymentMethod = PAYMENT_METHODS.includes(paymentMethodRaw as PaymentMethod)
+    ? (paymentMethodRaw as PaymentMethod)
+    : null;
 
   if (!date || Number.isNaN(date.getTime())) return { error: "Fecha inválida." };
   if (!concept) return { error: "Escribe el concepto." };
@@ -44,7 +50,7 @@ export async function createCuentaPorPagarAction(
   try {
     const user = await requireEditor(venueId);
     const created = await prisma.cuentaPorPagar.create({
-      data: { venueId, date, concept, amount, createdById: user.id },
+      data: { venueId, date, concept, amount, supplier, paymentMethod, createdById: user.id },
     });
     await logAudit({
       userId: user.id,

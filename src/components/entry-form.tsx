@@ -202,29 +202,34 @@ export function EntryForm({
 
       {/* Tipo (sólo módulo completo) */}
       {!compra && (
-        <div className="flex gap-2">
-          {(["EGRESO", "INGRESO"] as EntryType[]).map((t) => {
-            const active = type === t;
-            const Icon = t === "EGRESO" ? ArrowUpRight : ArrowDownLeft;
-            return (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setType(t)}
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "flex-1",
-                  active &&
-                    (t === "EGRESO"
-                      ? "border-cargo bg-cargo-bg text-cargo hover:bg-cargo-bg"
-                      : "border-abono bg-abono-bg text-abono hover:bg-abono-bg"),
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {t === "EGRESO" ? "Egreso / Gasto" : "Ingreso"}
-              </button>
-            );
-          })}
+        <div>
+          <h4 className="mb-2 text-lg font-semibold">
+            {type === "EGRESO" ? "Egreso" : "Ingreso"}
+          </h4>
+          <div className="flex gap-2">
+            {(["EGRESO", "INGRESO"] as EntryType[]).map((t) => {
+              const active = type === t;
+              const Icon = t === "EGRESO" ? ArrowUpRight : ArrowDownLeft;
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setType(t)}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "flex-1",
+                    active &&
+                      (t === "EGRESO"
+                        ? "border-blue-500 bg-blue-100 text-blue-700 hover:bg-blue-100 dark:border-blue-400 dark:bg-blue-500/15 dark:text-blue-300"
+                        : "border-abono bg-abono-bg text-abono hover:bg-abono-bg"),
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  {t === "EGRESO" ? "Egreso / Gasto" : "Ingreso"}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
       <input type="hidden" name="type" value={type} />

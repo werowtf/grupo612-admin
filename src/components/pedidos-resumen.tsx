@@ -134,7 +134,7 @@ export function PedidosResumen({
                   </td>
                   <td></td>
                   {days.map((day) => {
-                    const t = dailyTotals[day - 1] ?? 0;
+                    const t = (dailyTotals[day - 1] ?? 0) * (1 + ivaRate);
                     return (
                       <td key={day} className="px-px py-2 text-center text-xs font-semibold tabular-nums">
                         {t > 0 ? formatMXN(t).replace("$", "").split(".")[0] : <span className="text-muted-foreground/40">—</span>}
