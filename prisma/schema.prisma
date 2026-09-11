@@ -339,11 +339,28 @@ model Corte {
   deposits  BankTransaction[] @relation("CorteDeposits")
   documents Document[]        @relation("DocumentCorte")
 
+  /// Desglose de "Otros" (pagoOtros): quién consumió a crédito y cuánto,
+  /// para saber a fin de mes cuánto se gastó en cortesías/DJ/socios, etc.
+  creditos CorteCredito[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([venueId, folioCorteZ])
   @@index([venueId, date])
+}
+
+/// Un renglón del desglose de crédito de un corte: "$200 - Jose", etc. La
+/// suma de estos renglones debería cuadrar con Corte.pagoOtros.
+model CorteCredito {
+  id          String   @id @default(cuid())
+  corteId     String
+  corte       Corte    @relation(fields: [corteId], references: [id], onDelete: Cascade)
+  amount      Decimal  @db.Decimal(14, 2)
+  description String
+  createdAt   DateTime @default(now())
+
+  @@index([corteId])
 }
 
 // ─────────────────────────────────────────────────────────────

@@ -24,6 +24,11 @@ interface EgresoDia {
   amount: string;
 }
 
+interface CreditoRow {
+  amount: string;
+  description: string;
+}
+
 interface Props {
   venueId: string;
   venueName: string;
@@ -32,6 +37,8 @@ interface Props {
   initialSource?: CorteSource;
   /** Conceptos de egreso del negocio; sólo se usan al capturar un corte nuevo. */
   egresoCategories?: string[];
+  /** Desglose de "Otros" (a quién se le fió y cuánto) ya guardado, si se edita un corte existente. */
+  initialCreditos?: CreditoRow[];
 }
 
 function draftToValues(draft: CorteDraft): Values {
@@ -46,7 +53,7 @@ function draftToValues(draft: CorteDraft): Values {
 // cliente nunca espere más que el propio servidor.
 const OCR_TIMEOUT_MS = 55_000;
 
-export function CorteEditor({ venueId, venueName, corteId, initialValues, initialSource, egresoCategories }: Props) {
+export function CorteEditor({ venueId, venueName, corteId, initialValues, initialSource, egresoCategories, initialCreditos }: Props) {
   // Al capturar un corte nuevo se arranca en foto/PDF, que es el flujo diario;
   // al editar uno existente se respeta cómo se capturó.
   const [method, setMethod] = useState<Method>(
@@ -68,6 +75,10 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
   // vuelve a editar el mismo corte más tarde.
   const [egresosDia, setEgresosDia] = useState<EgresoDia[]>([]);
 
+  // Desglose de "Otros" (pagoOtros): quién consumió a crédito y cuánto —
+  // para saber a fin de mes cuánto se gastó en cortesías, DJ, socios, etc.
+  const [creditos, setCreditos] = useState<CreditoRow[]>(initialCreditos ?? []);
+
   const [saveState, saveAction, saving] = useActionState(saveCorteAction, {});
 
   function setField(key: string, value: string) {
@@ -82,6 +93,16 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
   }
   function removeEgresoDia(i: number) {
     setEgresosDia((rows) => rows.filter((_, idx) => idx !== i));
+  }
+
+  function addCredito() {
+    setCreditos((rows) => [...rows, { amount: "", description: "" }]);
+  }
+  function updateCredito(i: number, patch: Partial<CreditoRow>) {
+    setCreditos((rows) => rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
+  }
+  function removeCredito(i: number) {
+    setCreditos((rows) => rows.filter((_, idx) => idx !== i));
   }
 
   function applyExtraction(
@@ -355,6 +376,7 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
         <input type="hidden" name="venueId" value={venueId} />
         <input type="hidden" name="source" value={source} />
         <input type="hidden" name="fileName" value={fileName} />
+        <input type="hidden" name="creditos" value={JSON.stringify(creditos)} />
         {corteId && <input type="hidden" name="corteId" value={corteId} />}
 
         {CORTE_SECTIONS.map((section) => (
@@ -416,6 +438,66 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                           )}
                           className="font-semibold text-muted-foreground"
                         />
+                      </div>
+                    )}
+                    {/* Desglose de "Otros": quién consumió a crédito y cuánto. No es
+                        un campo del corte — se guarda aparte en CorteCredito, ligado
+                        a este corte, para poder saber a fin de mes cuánto se gastó
+                        por persona/concepto (cortesías, DJ, socios, etc.). */}
+                    {f.key === "pagoOtros" && (
+                      <div className="sm:col-span-2 lg:col-span-3 space-y-2 rounded-lg border border-border p-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium">Desglose del crédito (Otros)</p>
+                          <Button type="button" variant="outline" size="sm" onClick={addCredito}>
+                            <Plus className="h-3.5 w-3.5" />
+                            Agregar
+                          </Button>
+                        </div>
+                        {creditos.length === 0 ? (
+                          <p className="text-xs text-muted-foreground">
+                            Sin desglosar. Agrega quién consumió a crédito y cuánto (DJ, cortesías, socios…).
+                          </p>
+                        ) : (
+                          <>
+                            {creditos.map((row, i) => (
+                              <div key={i} className="flex flex-wrap items-end gap-2">
+                                <div className="w-28">
+                                  <label className="label" htmlFor={`credito-monto-${i}`}>Monto</label>
+                                  <Input
+                                    id={`credito-monto-${i}`}
+                                    type="number"
+                                    step="0.01"
+                                    value={row.amount}
+                                    onChange={(e) => updateCredito(i, { amount: e.target.value })}
+                                  />
+                                </div>
+                                <div className="min-w-[160px] flex-1">
+                                  <label className="label" htmlFor={`credito-desc-${i}`}>Persona / concepto</label>
+                                  <Input
+                                    id={`credito-desc-${i}`}
+                                    placeholder="Ej. Jose, DJ, cortesía…"
+                                    value={row.description}
+                                    onChange={(e) => updateCredito(i, { description: e.target.value })}
+                                  />
+                                </div>
+                                <Button type="button" variant="ghost" size="icon-sm" title="Quitar" onClick={() => removeCredito(i)}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            {(() => {
+                              const sum = creditos.reduce((s, r) => s + (Number(r.amount) || 0), 0);
+                              const otros = Number(values.pagoOtros) || 0;
+                              const cuadra = Math.abs(sum - otros) < 0.01;
+                              return (
+                                <p className={cn("text-xs", cuadra ? "text-muted-foreground" : "text-pending")}>
+                                  Suma del desglose: {formatMXN(sum)}
+                                  {!cuadra && ` — no cuadra con Otros (${formatMXN(otros)})`}
+                                </p>
+                              );
+                            })()}
+                          </>
+                        )}
                       </div>
                     )}
                   </div>

@@ -49,7 +49,11 @@ export default async function CorteDetailPage({
 
   const corte = await prisma.corte.findUnique({
     where: { id },
-    include: { venue: true, createdBy: { select: { name: true } } },
+    include: {
+      venue: true,
+      createdBy: { select: { name: true } },
+      creditos: { orderBy: { createdAt: "asc" } },
+    },
   });
   if (!corte) notFound();
 
@@ -127,6 +131,22 @@ export default async function CorteDetailPage({
           );
         })}
       </div>
+
+      {corte.creditos.length > 0 && (
+        <div className="card p-5">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Desglose del crédito (Otros)
+          </h2>
+          <dl className="divide-y divide-border">
+            {corte.creditos.map((c) => (
+              <div key={c.id} className="flex items-center justify-between py-1.5 text-sm">
+                <dt>{c.description}</dt>
+                <dd className="tabular-nums font-medium">{formatMXN(c.amount)}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
 
       {corte.notes && (
         <div className="card p-5">

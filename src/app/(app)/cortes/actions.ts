@@ -186,6 +186,30 @@ export async function saveCorteAction(
     }
   }
 
+  // Desglose de "Otros" (a quién se le fió y cuánto): se reemplaza completo
+  // cada vez que se guarda el corte, tanto al crearlo como al editarlo.
+  {
+    const raw = String(formData.get("creditos") ?? "[]");
+    try {
+      const rows = JSON.parse(raw) as { amount?: string; description?: string }[];
+      const toCreate = rows
+        .map((row) => ({ amount: Number(row.amount), description: (row.description ?? "").trim() }))
+        .filter((row) => Number.isFinite(row.amount) && row.amount > 0 && row.description);
+      await prisma.$transaction([
+        prisma.corteCredito.deleteMany({ where: { corteId: savedId } }),
+        ...(toCreate.length > 0
+          ? [
+              prisma.corteCredito.createMany({
+                data: toCreate.map((row) => ({ corteId: savedId, amount: row.amount, description: row.description })),
+              }),
+            ]
+          : []),
+      ]);
+    } catch (err) {
+      console.error("Error al guardar el desglose de crédito:", err);
+    }
+  }
+
   revalidatePath("/cortes");
   revalidatePath("/dashboard");
   revalidatePath("/ingresos-egresos");

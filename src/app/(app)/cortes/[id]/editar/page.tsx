@@ -18,7 +18,7 @@ export default async function EditarCortePage({
 
   const corte = await prisma.corte.findUnique({
     where: { id },
-    include: { venue: true },
+    include: { venue: true, creditos: { orderBy: { createdAt: "asc" } } },
   });
   if (!corte) notFound();
 
@@ -61,6 +61,7 @@ export default async function EditarCortePage({
         corteId={corte.id}
         initialValues={initialValues}
         initialSource={corte.source}
+        initialCreditos={corte.creditos.map((c) => ({ amount: c.amount.toString(), description: c.description }))}
       />
     </div>
   );
