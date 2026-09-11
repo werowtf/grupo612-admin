@@ -159,6 +159,9 @@ export async function getMonthlyReport(
       pagoVisa: true,
       pagoMastercard: true,
       pagoAmex: true,
+      propinaVisa: true,
+      propinaMastercard: true,
+      propinaAmex: true,
       deposits: { select: { amount: true } },
     },
   });
@@ -167,7 +170,14 @@ export async function getMonthlyReport(
   let tarjetaEsperada = 0;
   let depositado = 0;
   for (const c of cortes) {
-    const card = num(c.pagoVisa) + num(c.pagoMastercard) + num(c.pagoAmex);
+    // Ventas + propinas con tarjeta: la terminal deposita ambas juntas.
+    const card =
+      num(c.pagoVisa) +
+      num(c.pagoMastercard) +
+      num(c.pagoAmex) +
+      num(c.propinaVisa) +
+      num(c.propinaMastercard) +
+      num(c.propinaAmex);
     if (card <= 0) continue;
     cortesConTarjeta++;
     tarjetaEsperada += card;

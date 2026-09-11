@@ -395,8 +395,10 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                       )}
                     </div>
                     {/* No es un campo del corte: es la suma de Visa/Mastercard/Amex
-                        que se acaban de capturar, para verificar de un vistazo sin
-                        tener que sumarlas a mano. No se guarda. */}
+                        (ventas + propinas) que se acaban de capturar, para verificar
+                        de un vistazo sin tener que sumarlas a mano. No se guarda.
+                        Incluye propinas porque así lo reporta el ticket físico (renglón
+                        "TARJETA" de la caja) — la terminal deposita ambas juntas. */}
                     {f.key === "pagoAmex" && (
                       <div>
                         <label className="label" htmlFor="totalTarjetas">Total Tarjetas</label>
@@ -407,7 +409,10 @@ export function CorteEditor({ venueId, venueName, corteId, initialValues, initia
                           value={formatMXN(
                             (Number(values.pagoVisa) || 0) +
                               (Number(values.pagoMastercard) || 0) +
-                              (Number(values.pagoAmex) || 0),
+                              (Number(values.pagoAmex) || 0) +
+                              (Number(values.propinaVisa) || 0) +
+                              (Number(values.propinaMastercard) || 0) +
+                              (Number(values.propinaAmex) || 0),
                           )}
                           className="font-semibold text-muted-foreground"
                         />

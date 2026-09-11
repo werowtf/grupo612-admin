@@ -16,7 +16,7 @@ export interface DepositRow {
 }
 
 export interface CorteMatching {
-  cardTotal: number; // Visa + Mastercard + Amex del corte
+  cardTotal: number; // Visa + Mastercard + Amex del corte, ventas + propinas
   linked: DepositRow[];
   linkedTotal: number;
   suggestions: DepositRow[];
@@ -26,8 +26,22 @@ function num(v: { toString(): string } | null | undefined): number {
   return v ? Number(v.toString()) : 0;
 }
 
+/**
+ * Lo que el banco debería depositar por tarjeta: ventas + propinas con
+ * tarjeta, porque la terminal liquida ambas juntas en un solo abono (la
+ * propina no es venta, pero sí es dinero de tarjeta que llega igual al
+ * banco). Ver feedback de la contadora: el ticket físico también suma
+ * ambas en su renglón "TARJETA".
+ */
 export function cardTotalOf(corte: Corte): number {
-  return num(corte.pagoVisa) + num(corte.pagoMastercard) + num(corte.pagoAmex);
+  return (
+    num(corte.pagoVisa) +
+    num(corte.pagoMastercard) +
+    num(corte.pagoAmex) +
+    num(corte.propinaVisa) +
+    num(corte.propinaMastercard) +
+    num(corte.propinaAmex)
+  );
 }
 
 function toRow(
