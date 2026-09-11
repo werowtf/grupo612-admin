@@ -67,13 +67,39 @@ export async function createCuentaPorPagarAction(
   }
 }
 
+/**
+ * Marca una cuenta como pagada y crea el Egreso correspondiente en Ingresos
+ * y egresos del mismo negocio, para que el pago quede reflejado ahí (antes
+ * sólo se guardaba paidAt y el egreso nunca se registraba).
+ */
 export async function markCuentaPagadaAction(id: string): Promise<CuentaPorPagarActionState> {
   try {
     const cuenta = await prisma.cuentaPorPagar.findUnique({ where: { id } });
     if (!cuenta) return { error: "No encontrado." };
+    if (cuenta.paidAt) return { error: "Esta cuenta ya está pagada." };
     const user = await requireEditor(cuenta.venueId);
 
-    await prisma.cuentaPorPagar.update({ where: { id }, data: { paidAt: new Date() } });
+    await prisma.$transaction(async (tx) => {
+      const entry = await tx.financialEntry.create({
+        data: {
+          venueId: cuenta.venueId,
+          type: "EGRESO",
+          date: new Date(),
+          amount: cuenta.amount,
+          category: "Otros",
+          description: cuenta.concept,
+          supplier: cuenta.supplier,
+          paymentMethod: cuenta.paymentMethod ?? "EFECTIVO",
+          source: "SISTEMA",
+          createdById: user.id,
+        },
+      });
+      await tx.cuentaPorPagar.update({
+        where: { id },
+        data: { paidAt: new Date(), entryId: entry.id },
+      });
+    });
+
     await logAudit({
       userId: user.id,
       action: "cuentaPorPagar.pagar",
@@ -82,6 +108,7 @@ export async function markCuentaPagadaAction(id: string): Promise<CuentaPorPagar
       meta: { venueId: cuenta.venueId, concept: cuenta.concept, amount: cuenta.amount.toString() },
     });
     revalidate();
+    revalidatePath("/ingresos-egresos");
     return { ok: true };
   } catch (err) {
     console.error("Error al marcar como pagado:", err);

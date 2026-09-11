@@ -225,6 +225,8 @@ model CuentaPorPagar {
   amount      Decimal   @db.Decimal(14, 2)
   /// null = pendiente; con fecha = pagada (y cuándo).
   paidAt      DateTime?
+  entryId     String?         @unique
+  entry       FinancialEntry? @relation(fields: [entryId], references: [id], onDelete: SetNull)
   createdById String?
   createdBy   User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
   createdAt   DateTime  @default(now())
@@ -412,6 +414,7 @@ model FinancialEntry {
   createdBy   User?      @relation("EntryCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   documents   Document[] @relation("DocumentEntry")
   facturaCafeteria FacturaCafeteria?
+  cuentaPorPagar CuentaPorPagar?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
