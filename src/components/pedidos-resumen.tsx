@@ -45,6 +45,14 @@ export function PedidosResumen({
     if (state.ok) router.refresh();
   }, [state.ok, router]);
 
+  // El recuadro principal muestra el corte del día de hoy (suma de los 3
+  // cafés), no el acumulado del mes — sólo tiene sentido cuando el mes que
+  // se está viendo es el mes actual. El total del mes se conserva abajo.
+  const today = new Date();
+  const isCurrentMonth = year === today.getFullYear() && month === today.getMonth() + 1;
+  const subtotalDia = isCurrentMonth ? (dailyTotals[today.getDate() - 1] ?? 0) : 0;
+  const totalConIvaDia = subtotalDia * (1 + ivaRate);
+
   const dirty = JSON.stringify(folios) !== JSON.stringify(initialFolios);
   const doAutoSave = useCallback(async () => {
     const fd = new FormData();
@@ -149,15 +157,23 @@ export function PedidosResumen({
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card p-3">
           <div className="text-sm">
-            <p>Subtotal del día: <span className="font-semibold tabular-nums">{formatMXN(subtotal)}</span></p>
+            <p>Subtotal del día: <span className="font-semibold tabular-nums">{formatMXN(subtotalDia)}</span></p>
             <p>
               Total con IVA del día ({Math.round(ivaRate * 100)}%):{" "}
-              <span className="font-semibold tabular-nums">{formatMXN(totalConIva)}</span>
+              <span className="font-semibold tabular-nums">{formatMXN(totalConIvaDia)}</span>
             </p>
           </div>
           <Button type="submit" disabled={saving}>
             {saving ? "Guardando…" : "Guardar folios"}
           </Button>
+        </div>
+
+        <div className="mt-3 rounded-lg border border-border bg-card p-3 text-sm">
+          <p>Subtotal del mes: <span className="font-semibold tabular-nums">{formatMXN(subtotal)}</span></p>
+          <p>
+            Total con IVA del mes ({Math.round(ivaRate * 100)}%):{" "}
+            <span className="font-semibold tabular-nums">{formatMXN(totalConIva)}</span>
+          </p>
         </div>
       </form>
     </div>

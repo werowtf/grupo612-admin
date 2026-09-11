@@ -65,7 +65,16 @@ export function PedidosGrid({
   const dailyTotals = days.map((day) =>
     productos.reduce((sum, p) => sum + (quantities[`${p.id}_${day}`] ?? 0) * p.price, 0),
   );
-  const subtotal = dailyTotals.reduce((a, b) => a + b, 0);
+  const subtotalMes = dailyTotals.reduce((a, b) => a + b, 0);
+  const totalConIvaMes = subtotalMes * (1 + ivaRate);
+
+  // Los recuadros de abajo muestran el corte del día de hoy (no el
+  // acumulado del mes) — sólo tiene sentido cuando el mes que se está
+  // viendo es el mes actual. Facturar, en cambio, sigue siendo por mes.
+  const today = new Date();
+  const isCurrentMonth = year === today.getFullYear() && month === today.getMonth() + 1;
+  const todayIdx = isCurrentMonth ? days.indexOf(today.getDate()) : -1;
+  const subtotal = todayIdx >= 0 ? dailyTotals[todayIdx] : 0;
   const totalConIva = subtotal * (1 + ivaRate);
 
   const dirty = JSON.stringify(quantities) !== JSON.stringify(initialQuantities);
@@ -214,7 +223,7 @@ export function PedidosGrid({
             {!readOnly && (
               <AlertDialog>
                 <AlertDialogTrigger
-                  render={<Button type="button" variant="outline" disabled={facturando || subtotal === 0} />}
+                  render={<Button type="button" variant="outline" disabled={facturando || subtotalMes === 0} />}
                 >
                   {facturando ? "Facturando…" : "Marcar facturado"}
                 </AlertDialogTrigger>
@@ -222,7 +231,7 @@ export function PedidosGrid({
                   <AlertDialogHeader>
                     <AlertDialogTitle>¿Facturar {cafeteriaName}?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Se creará un ingreso de {formatMXN(totalConIva)} en Ingresos y egresos de Comisariato y
+                      Se creará un ingreso de {formatMXN(totalConIvaMes)} en Ingresos y egresos de Comisariato y
                       ya no se podrán editar los pedidos de este mes. Guarda los pedidos antes de continuar si
                       hiciste cambios sin guardar.
                     </AlertDialogDescription>
@@ -237,6 +246,14 @@ export function PedidosGrid({
               </AlertDialog>
             )}
           </div>
+        </div>
+
+        <div className="mt-3 rounded-lg border border-border bg-card p-3 text-sm">
+          <p>Subtotal del mes: <span className="font-semibold tabular-nums">{formatMXN(subtotalMes)}</span></p>
+          <p>
+            Total con IVA del mes ({Math.round(ivaRate * 100)}%):{" "}
+            <span className="font-semibold tabular-nums">{formatMXN(totalConIvaMes)}</span>
+          </p>
         </div>
       </form>
     </div>
