@@ -195,11 +195,14 @@ export function PedidosGrid({
                     Total del día
                   </td>
                   <td></td>
-                  {dailyTotals.map((t, i) => (
-                    <td key={i} className="px-px py-2 text-center text-xs font-semibold tabular-nums">
-                      {t > 0 ? formatMXN(t).replace("$", "").split(".")[0] : <span className="text-muted-foreground/40">—</span>}
-                    </td>
-                  ))}
+                  {dailyTotals.map((t, i) => {
+                    const conIva = t * (1 + ivaRate);
+                    return (
+                      <td key={i} className="px-px py-2 text-center text-xs font-semibold tabular-nums">
+                        {conIva > 0 ? formatMXN(conIva).replace("$", "").split(".")[0] : <span className="text-muted-foreground/40">—</span>}
+                      </td>
+                    );
+                  })}
                 </tr>
               </tfoot>
             </table>
