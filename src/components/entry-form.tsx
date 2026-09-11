@@ -221,7 +221,7 @@ export function EntryForm({
                     active &&
                       (t === "EGRESO"
                         ? "border-blue-500 bg-blue-100 text-blue-700 hover:bg-blue-100 dark:border-blue-400 dark:bg-blue-500/15 dark:text-blue-300"
-                        : "border-abono bg-abono-bg text-abono hover:bg-abono-bg"),
+                        : "border-abono bg-abono-bg text-abono hover:bg-abono-bg dark:border-abono dark:bg-abono-bg dark:text-abono"),
                   )}
                 >
                   <Icon className="h-4 w-4" />
