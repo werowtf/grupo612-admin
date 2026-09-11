@@ -149,9 +149,9 @@ export function PedidosResumen({
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card p-3">
           <div className="text-sm">
-            <p>Subtotal: <span className="font-semibold tabular-nums">{formatMXN(subtotal)}</span></p>
+            <p>Subtotal del día: <span className="font-semibold tabular-nums">{formatMXN(subtotal)}</span></p>
             <p>
-              Total con IVA ({Math.round(ivaRate * 100)}%):{" "}
+              Total con IVA del día ({Math.round(ivaRate * 100)}%):{" "}
               <span className="font-semibold tabular-nums">{formatMXN(totalConIva)}</span>
             </p>
           </div>
