@@ -198,8 +198,8 @@ export function PedidosGrid({
                   {dailyTotals.map((t, i) => {
                     const conIva = t * (1 + ivaRate);
                     return (
-                      <td key={i} className="px-px py-2 text-center text-xs font-semibold tabular-nums">
-                        {conIva > 0 ? formatMXN(conIva).replace("$", "").split(".")[0] : <span className="text-muted-foreground/40">—</span>}
+                      <td key={i} className="px-px py-2 text-center text-xs font-semibold tabular-nums text-abono">
+                        {conIva > 0 ? formatMXN(conIva).replace("$", "").split(".")[0] : null}
                       </td>
                     );
                   })}
