@@ -126,6 +126,25 @@ export async function getFoliosMes(venueId: string, year: number, month: number)
   const lt = new Date(Date.UTC(year, month, 1));
   const folios = await prisma.folioPedidoCafeteria.findMany({ where: { venueId, date: { gte, lt } } });
   const result: Record<number, string> = {};
-  for (const f of folios) result[f.date.getUTCDate()] = f.folio;
+  for (const f of folios) result[f.date.getUTCDate()] = f.folio ?? "";
+  return result;
+}
+
+export interface FacturacionDia {
+  folio: string;
+  status: "PENDIENTE" | "FACTURADO" | "PAGADO";
+}
+
+/** Folio + estado de facturación diarios de un negocio/mes: día (1-31) -> {folio, status}. */
+export async function getFacturacionMes(
+  venueId: string,
+  year: number,
+  month: number,
+): Promise<Record<number, FacturacionDia>> {
+  const gte = new Date(Date.UTC(year, month - 1, 1));
+  const lt = new Date(Date.UTC(year, month, 1));
+  const rows = await prisma.folioPedidoCafeteria.findMany({ where: { venueId, date: { gte, lt } } });
+  const result: Record<number, FacturacionDia> = {};
+  for (const r of rows) result[r.date.getUTCDate()] = { folio: r.folio ?? "", status: r.status };
   return result;
 }

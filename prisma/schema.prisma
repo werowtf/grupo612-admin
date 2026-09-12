@@ -432,6 +432,7 @@ model FinancialEntry {
   documents   Document[] @relation("DocumentEntry")
   facturaCafeteria FacturaCafeteria?
   cuentaPorPagar CuentaPorPagar?
+  folioPedidoCafeteria FolioPedidoCafeteria?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
@@ -617,15 +618,27 @@ model FacturaCafeteria {
   @@unique([cafeteriaId, year, month])
 }
 
+enum FacturaEstado {
+  PENDIENTE
+  FACTURADO
+  PAGADO
+}
+
 /// Folio de factura diario: la contadora emite una sola factura al día que
 /// cubre los pedidos de los 3 cafés juntos (no por café), así que vive a
-/// nivel de negocio, no de café.
+/// nivel de negocio, no de café. También lleva el estado de esa factura
+/// (Comisariato factura todos los días menos domingo, por default Pendiente
+/// hasta que alguien la actualice a mano).
 model FolioPedidoCafeteria {
-  id      String   @id @default(cuid())
+  id      String        @id @default(cuid())
   venueId String
-  venue   Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  venue   Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
   date    DateTime
-  folio   String
+  folio   String?
+  status  FacturaEstado @default(PENDIENTE)
+  /// Ingreso creado en Ingresos y egresos al marcar esta factura como Pagada.
+  entryId String?         @unique
+  entry   FinancialEntry? @relation(fields: [entryId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

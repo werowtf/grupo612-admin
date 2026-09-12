@@ -7,7 +7,7 @@ import {
   getPedidosMes,
   getFacturaMes,
   getPedidosMesTodos,
-  getFoliosMes,
+  getFacturacionMes,
   IVA_RATE,
 } from "@/lib/pedidos/queries";
 import { PedidosGrid } from "@/components/pedidos-grid";
@@ -171,9 +171,9 @@ async function TodosView({
   month: number;
   days: number[];
 }) {
-  const [resumen, folios] = await Promise.all([
+  const [resumen, facturacion] = await Promise.all([
     getPedidosMesTodos(venueId, year, month),
-    getFoliosMes(venueId, year, month),
+    getFacturacionMes(venueId, year, month),
   ]);
   return (
     <PedidosResumen
@@ -187,7 +187,7 @@ async function TodosView({
       subtotal={resumen.subtotal}
       totalConIva={resumen.totalConIva}
       ivaRate={IVA_RATE}
-      initialFolios={folios}
+      initialFacturacion={facturacion}
     />
   );
 }

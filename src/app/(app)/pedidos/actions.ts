@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
 import { IVA_RATE } from "@/lib/pedidos/queries";
+import type { FacturaEstado } from "@/generated/prisma/enums";
 
 export interface PedidosActionState {
   error?: string;
@@ -192,43 +193,108 @@ export async function saveFoliosAction(
   try {
     const user = await requireEditor(venueId);
 
-    const toUpsert: { day: number; folio: string }[] = [];
-    const toDelete: number[] = [];
+    const rows: { day: number; folio: string | null }[] = [];
     for (const [key, raw] of formData.entries()) {
       const m = /^folio_(\d+)$/.exec(key);
       if (!m) continue;
       const day = Number(m[1]);
       const folio = String(raw).trim();
-      if (folio) toUpsert.push({ day, folio });
-      else toDelete.push(day);
+      rows.push({ day, folio: folio || null });
     }
 
-    await prisma.$transaction(async (tx) => {
-      for (const row of toUpsert) {
+    // No se borra el renglón aunque el folio quede vacío: puede llevar un
+    // estado (Facturado/Pagado) y un ingreso ligado que no deben perderse.
+    await prisma.$transaction(
+      rows.map((row) => {
         const date = new Date(Date.UTC(year, month - 1, row.day));
-        await tx.folioPedidoCafeteria.upsert({
+        return prisma.folioPedidoCafeteria.upsert({
           where: { venueId_date: { venueId, date } },
           update: { folio: row.folio },
           create: { venueId, date, folio: row.folio },
         });
-      }
-      for (const day of toDelete) {
-        const date = new Date(Date.UTC(year, month - 1, day));
-        await tx.folioPedidoCafeteria.delete({ where: { venueId_date: { venueId, date } } }).catch(() => {});
-      }
-    });
+      }),
+    );
 
     await logAudit({
       userId: user.id,
       action: "folioPedidoCafeteria.save",
       entity: "Venue",
       entityId: venueId,
-      meta: { year, month, celdas: toUpsert.length },
+      meta: { year, month, celdas: rows.length },
     });
     revalidate();
     return { ok: true };
   } catch (err) {
     console.error("Error al guardar folios:", err);
     return { error: "No se pudieron guardar los folios." };
+  }
+}
+
+/**
+ * Cambia el estado de facturación de un día (Pendiente/Facturado/Pagado).
+ * Al pasar a Pagado se crea el ingreso correspondiente en Ingresos y
+ * egresos de Comisariato (una sola vez: si ya tiene un ingreso ligado no
+ * se vuelve a crear, sólo se actualiza el estado).
+ */
+export async function updateFacturaEstadoAction(
+  venueId: string,
+  dateStr: string,
+  status: FacturaEstado,
+): Promise<PedidosActionState> {
+  try {
+    const user = await requireEditor(venueId);
+    const date = new Date(`${dateStr}T00:00:00.000Z`);
+    if (Number.isNaN(date.getTime())) return { error: "Fecha inválida." };
+
+    const existing = await prisma.folioPedidoCafeteria.findUnique({ where: { venueId_date: { venueId, date } } });
+
+    if (status === "PAGADO" && !existing?.entryId) {
+      const cafeterias = await prisma.cafeteria.findMany({ where: { venueId, active: true }, select: { id: true } });
+      const pedidos = await prisma.pedidoCafeteria.findMany({
+        where: { cafeteriaId: { in: cafeterias.map((c) => c.id) }, date },
+      });
+      const subtotal = pedidos.reduce((sum, p) => sum + p.quantity * Number(p.unitPrice.toString()), 0);
+      const amount = subtotal * (1 + IVA_RATE);
+
+      await prisma.$transaction(async (tx) => {
+        const entry = await tx.financialEntry.create({
+          data: {
+            venueId,
+            type: "INGRESO",
+            date,
+            amount,
+            category: "Cafetería",
+            description: `Facturación diaria — ${dateStr}`,
+            source: "SISTEMA",
+            createdById: user.id,
+          },
+        });
+        await tx.folioPedidoCafeteria.upsert({
+          where: { venueId_date: { venueId, date } },
+          update: { status, entryId: entry.id },
+          create: { venueId, date, status, entryId: entry.id },
+        });
+      });
+    } else {
+      await prisma.folioPedidoCafeteria.upsert({
+        where: { venueId_date: { venueId, date } },
+        update: { status },
+        create: { venueId, date, status },
+      });
+    }
+
+    await logAudit({
+      userId: user.id,
+      action: "folioPedidoCafeteria.estado",
+      entity: "Venue",
+      entityId: venueId,
+      meta: { date: dateStr, status },
+    });
+    revalidate();
+    revalidatePath("/ingresos-egresos");
+    return { ok: true };
+  } catch (err) {
+    console.error("Error al actualizar el estado de facturación:", err);
+    return { error: "No se pudo actualizar el estado." };
   }
 }
