@@ -40,6 +40,7 @@ export async function createUserAction(
   const roleRaw = String(formData.get("role") ?? "");
   const role = ROLES.includes(roleRaw as UserRole) ? (roleRaw as UserRole) : "CAJERO";
   const venueIds = getVenueIds(formData);
+  const canAccessOficina = formData.get("canAccessOficina") === "on";
 
   if (!name) return { error: "El nombre es obligatorio." };
   const emailParsed = emailSchema.safeParse(emailRaw);
@@ -59,6 +60,7 @@ export async function createUserAction(
       email: emailRaw,
       passwordHash,
       role,
+      canAccessOficina,
       venues: { create: venueIds.map((venueId) => ({ venueId })) },
     },
   });
@@ -92,6 +94,7 @@ export async function updateUserAction(
   const role = ROLES.includes(roleRaw as UserRole) ? (roleRaw as UserRole) : target.role;
   const venueIds = getVenueIds(formData);
   const active = formData.get("active") === "on";
+  const canAccessOficina = formData.get("canAccessOficina") === "on";
 
   if (role !== "ADMIN" && venueIds.length === 0) {
     return { error: "Selecciona al menos un negocio para este rol." };
@@ -112,7 +115,7 @@ export async function updateUserAction(
   await prisma.$transaction([
     prisma.user.update({
       where: { id: userId },
-      data: { name, role, active },
+      data: { name, role, active, canAccessOficina },
     }),
     prisma.userVenue.deleteMany({ where: { userId } }),
     ...(venueIds.length > 0

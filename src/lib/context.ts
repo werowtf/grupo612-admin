@@ -5,7 +5,7 @@ import {
   getAccessibleVenues,
   type CurrentUser,
 } from "@/lib/auth";
-import { getSelectedVenue } from "@/lib/venue";
+import { getSelectedVenue, isOficinaSelected } from "@/lib/venue";
 import { prisma } from "@/lib/prisma";
 import type { Venue } from "@/generated/prisma/client";
 
@@ -13,6 +13,8 @@ export interface AppContext {
   user: CurrentUser;
   venues: Venue[];
   selected: Venue | null;
+  /** true si el usuario está viendo el dashboard consolidado "Oficina". */
+  oficina: boolean;
 }
 
 /** Contexto de la app para server components: usuario, negocios y selección. */
@@ -20,8 +22,9 @@ export async function getAppContext(): Promise<AppContext> {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   const venues = await getAccessibleVenues(user);
-  const selected = await getSelectedVenue(venues);
-  return { user, venues, selected };
+  const oficina = user.canAccessOficina && (await isOficinaSelected());
+  const selected = oficina ? null : await getSelectedVenue(venues);
+  return { user, venues, selected, oficina };
 }
 
 /** Verifica que el usuario tenga acceso al negocio indicado. */

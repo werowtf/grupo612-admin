@@ -22,6 +22,7 @@ interface Props {
     role: UserRole;
     active?: boolean;
     venueIds: string[];
+    canAccessOficina?: boolean;
   };
 }
 
@@ -125,6 +126,17 @@ export function UserForm({ venues, mode, userId, initial }: Props) {
           El rol Administrador tiene acceso a todos los negocios automáticamente.
         </p>
       )}
+
+      <div className="card p-5">
+        <label className="flex items-center gap-2 text-sm font-medium">
+          <Checkbox name="canAccessOficina" defaultChecked={initial?.canAccessOficina} />
+          Acceso a Oficina
+        </label>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Dashboard consolidado con los totales de los 4 negocios. Es un permiso aparte del rol y
+          de los negocios asignados.
+        </p>
+      </div>
 
       {state.error && (
         <p className="flex items-center gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">

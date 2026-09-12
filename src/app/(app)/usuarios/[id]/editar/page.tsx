@@ -56,6 +56,7 @@ export default async function EditarUsuarioPage({
           role: target.role,
           active: target.active,
           venueIds: target.venues.map((v) => v.venueId),
+          canAccessOficina: target.canAccessOficina,
         }}
       />
 

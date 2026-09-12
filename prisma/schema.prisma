@@ -31,6 +31,9 @@ model User {
   passwordHash String
   role         UserRole         @default(CONTADOR)
   active       Boolean          @default(true)
+  /// Acceso al dashboard consolidado "Oficina" (totaliza los 4 negocios). Es
+  /// un permiso aparte de los negocios asignados: no depende del rol.
+  canAccessOficina Boolean      @default(false)
   venues       UserVenue[]
   auditLogs    AuditLog[]
   statements   BankStatement[]  @relation("ImportedBy")

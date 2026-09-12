@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser, getAccessibleVenues } from "@/lib/auth";
-import { getSelectedVenue } from "@/lib/venue";
+import { getSelectedVenue, isOficinaSelected } from "@/lib/venue";
 import { roleLabels } from "@/lib/labels";
 import { AppShell } from "@/components/app-shell";
 
@@ -15,7 +15,8 @@ export default async function AppLayout({
   if (user.role === "COMPRAS") redirect("/compras");
 
   const venues = await getAccessibleVenues(user);
-  const selected = await getSelectedVenue(venues);
+  const oficina = user.canAccessOficina && (await isOficinaSelected());
+  const selected = oficina ? null : await getSelectedVenue(venues);
 
   return (
     <AppShell
@@ -23,6 +24,8 @@ export default async function AppLayout({
       venues={venues.map((v) => ({ id: v.id, name: v.name }))}
       selectedVenueId={selected?.id ?? null}
       selectedVenueSlug={selected?.slug ?? null}
+      canAccessOficina={user.canAccessOficina}
+      oficina={oficina}
       userName={user.name}
       roleLabel={roleLabels[user.role]}
     >

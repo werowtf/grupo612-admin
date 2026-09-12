@@ -12,6 +12,8 @@ interface Props {
   venues: { id: string; name: string }[];
   selectedVenueId: string | null;
   selectedVenueSlug: string | null;
+  canAccessOficina: boolean;
+  oficina: boolean;
   userName: string;
   roleLabel: string;
   children: React.ReactNode;
@@ -22,6 +24,8 @@ export function AppShell({
   venues,
   selectedVenueId,
   selectedVenueSlug,
+  canAccessOficina,
+  oficina,
   userName,
   roleLabel,
   children,
@@ -35,6 +39,7 @@ export function AppShell({
       <AppSidebar
         role={role}
         venueSlug={selectedVenueSlug}
+        oficina={oficina}
         mobileOpen={mobileNavOpen}
         onCloseMobile={() => setMobileNavOpen(false)}
       />
@@ -43,6 +48,8 @@ export function AppShell({
           role={role}
           venues={venues}
           selectedVenueId={selectedVenueId}
+          canAccessOficina={canAccessOficina}
+          oficina={oficina}
           userName={userName}
           roleLabel={roleLabel}
           onOpenMobileNav={() => setMobileNavOpen(true)}

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifySession } from "@/lib/session";
 import { sessionCookie } from "@/lib/session";
+import { VENUE_COOKIE, OFICINA_SENTINEL } from "@/lib/venue-constants";
 
 const PUBLIC_PATHS = ["/login"];
 
@@ -45,9 +46,18 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     };
 
+    // Modo "Oficina" (dashboard consolidado de los 4 negocios): confinado a
+    // /dashboard sin importar el rol — es un modo de sesión, no un permiso
+    // de rol. No aplica a roles restringidos a su propia área exclusiva. Si
+    // el usuario no tiene el permiso, getAppContext lo ignora y renderiza el
+    // dashboard normal de todos modos.
+    const isOficina = !restricted && request.cookies.get(VENUE_COOKIE)?.value === OFICINA_SENTINEL;
+
     if (restricted) {
       // Rol restringido: sólo su área exclusiva (o rutas públicas).
       if (!inArea(restricted) && !isPublic) return redirectTo(restricted);
+    } else if (isOficina) {
+      if (!inArea("/dashboard") && !isPublic) return redirectTo("/dashboard");
     } else if (confined) {
       // Rol confinado: cualquiera de sus secciones permitidas (o rutas públicas).
       if (!confined.some(inArea) && !isPublic) return redirectTo(confined[0]);

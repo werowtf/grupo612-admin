@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { ChevronDown, Info, LogOut, Menu, Moon, ScrollText, Sun, Users } from "lucide-react";
-import { logoutAction, selectVenueAction } from "@/app/(app)/actions";
+import { logoutAction, selectVenueAction, selectOficinaAction } from "@/app/(app)/actions";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
@@ -27,12 +27,23 @@ interface Props {
   role: UserRole;
   venues: VenueOption[];
   selectedVenueId: string | null;
+  canAccessOficina: boolean;
+  oficina: boolean;
   userName: string;
   roleLabel: string;
   onOpenMobileNav?: () => void;
 }
 
-export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, onOpenMobileNav }: Props) {
+export function AppTopbar({
+  role,
+  venues,
+  selectedVenueId,
+  canAccessOficina,
+  oficina,
+  userName,
+  roleLabel,
+  onOpenMobileNav,
+}: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const { resolvedTheme, setTheme } = useTheme();
@@ -43,6 +54,13 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
   function onVenueChange(id: string) {
     startTransition(async () => {
       await selectVenueAction(id);
+      router.refresh();
+    });
+  }
+
+  function onOficinaClick() {
+    startTransition(async () => {
+      await selectOficinaAction();
       router.refresh();
     });
   }
@@ -58,7 +76,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
         >
           <Menu className="h-5 w-5" />
         </button>
-        {venues.length > 0 ? (
+        {venues.length > 0 || canAccessOficina ? (
           <>
             <div className="hidden items-center gap-1 overflow-x-auto rounded-full bg-muted/50 p-1 sm:flex">
               {venues.map((v) => (
@@ -69,7 +87,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
                   disabled={pending}
                   className={cn(
                     "shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-wait",
-                    v.id === selectedVenueId
+                    !oficina && v.id === selectedVenueId
                       ? "bg-brand-600 text-white"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
@@ -77,8 +95,27 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
                   {v.name}
                 </button>
               ))}
+              {canAccessOficina && (
+                <button
+                  type="button"
+                  onClick={onOficinaClick}
+                  disabled={pending}
+                  className={cn(
+                    "shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-wait",
+                    oficina
+                      ? "bg-brand-600 text-white"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  Oficina
+                </button>
+              )}
             </div>
-            <Select value={selectedVenueId ?? undefined} onValueChange={onVenueChange} disabled={pending}>
+            <Select
+              value={oficina ? "__oficina__" : selectedVenueId ?? undefined}
+              onValueChange={(v) => (v === "__oficina__" ? onOficinaClick() : onVenueChange(v))}
+              disabled={pending}
+            >
               <SelectTrigger className="max-w-[160px] sm:hidden">
                 <SelectValue />
               </SelectTrigger>
@@ -88,6 +125,7 @@ export function AppTopbar({ role, venues, selectedVenueId, userName, roleLabel, 
                     {v.name}
                   </SelectItem>
                 ))}
+                {canAccessOficina && <SelectItem value="__oficina__">Oficina</SelectItem>}
               </SelectContent>
             </Select>
           </>

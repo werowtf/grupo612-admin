@@ -44,10 +44,12 @@ const NAV: NavItem[] = [
 function NavLinks({
   role,
   venueSlug,
+  oficina,
   onNavigate,
 }: {
   role: UserRole;
   venueSlug: string | null;
+  oficina: boolean;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -55,12 +57,14 @@ function NavLinks({
   // proxy.ts, que confina su navegación al mismo alcance a nivel de ruta).
   const CAJERO_HREFS = ["/dashboard", "/cortes", "/por-pagar"];
   const isComisariato = venueSlug === "comisariato";
-  const items = NAV.filter((i) => !i.roles || i.roles.includes(role))
-    .filter((i) => role !== "CAJERO" || CAJERO_HREFS.includes(i.href))
-    // Pedidos (cafetería) es exclusivo de Comisariato; Estados de cuenta no
-    // aplica ahí (no maneja cuenta bancaria).
-    .filter((i) => i.href !== "/pedidos" || isComisariato)
-    .filter((i) => i.href !== "/conciliacion" || !isComisariato);
+  const items = oficina
+    ? NAV.filter((i) => i.href === "/dashboard")
+    : NAV.filter((i) => !i.roles || i.roles.includes(role))
+        .filter((i) => role !== "CAJERO" || CAJERO_HREFS.includes(i.href))
+        // Pedidos (cafetería) es exclusivo de Comisariato; Estados de cuenta no
+        // aplica ahí (no maneja cuenta bancaria).
+        .filter((i) => i.href !== "/pedidos" || isComisariato)
+        .filter((i) => i.href !== "/conciliacion" || !isComisariato);
 
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto p-3">
@@ -110,11 +114,12 @@ function NavLinks({
 interface Props {
   role: UserRole;
   venueSlug: string | null;
+  oficina: boolean;
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
 }
 
-export function AppSidebar({ role, venueSlug, mobileOpen = false, onCloseMobile }: Props) {
+export function AppSidebar({ role, venueSlug, oficina, mobileOpen = false, onCloseMobile }: Props) {
   return (
     <>
       {/* Escritorio: fija en el layout */}
@@ -122,7 +127,7 @@ export function AppSidebar({ role, venueSlug, mobileOpen = false, onCloseMobile 
         <div className="flex h-14 items-center justify-center border-b border-border px-4">
           <Logo className="h-9 w-auto" />
         </div>
-        <NavLinks role={role} venueSlug={venueSlug} />
+        <NavLinks role={role} venueSlug={venueSlug} oficina={oficina} />
         <div className="border-t border-border p-3 text-[11px] text-muted-foreground">
           Grupo612 Admin v0.1
         </div>
@@ -148,7 +153,7 @@ export function AppSidebar({ role, venueSlug, mobileOpen = false, onCloseMobile 
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <NavLinks role={role} venueSlug={venueSlug} onNavigate={onCloseMobile} />
+            <NavLinks role={role} venueSlug={venueSlug} oficina={oficina} onNavigate={onCloseMobile} />
             <div className="border-t border-border p-3 text-[11px] text-muted-foreground">
               Grupo612 Admin v0.1
             </div>
