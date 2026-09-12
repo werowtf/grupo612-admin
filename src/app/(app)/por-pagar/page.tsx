@@ -16,14 +16,6 @@ export default async function PorPagarPage() {
     );
   }
 
-  if (selected.slug === "comisariato") {
-    return (
-      <div className="card p-10 text-center text-sm text-muted-foreground">
-        Por pagar no aplica para Comisariato. Cambia de negocio en el menú de arriba.
-      </div>
-    );
-  }
-
   const [propinasPendientes, cuentas] = await Promise.all([
     getPropinasPendientes(selected.id),
     getCuentasPorPagar(selected.id),

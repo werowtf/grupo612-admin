@@ -55,10 +55,9 @@ function NavLinks({
   const isComisariato = venueSlug === "comisariato";
   const items = NAV.filter((i) => !i.roles || i.roles.includes(role))
     .filter((i) => role !== "CAJERO" || CAJERO_HREFS.includes(i.href))
-    // Pedidos (cafetería) es exclusivo de Comisariato; Por pagar y Estados de
-    // cuenta no aplican ahí (no maneja cuenta bancaria ni cortes de caja).
+    // Pedidos (cafetería) es exclusivo de Comisariato; Estados de cuenta no
+    // aplica ahí (no maneja cuenta bancaria).
     .filter((i) => i.href !== "/pedidos" || isComisariato)
-    .filter((i) => i.href !== "/por-pagar" || !isComisariato)
     .filter((i) => i.href !== "/conciliacion" || !isComisariato);
 
   return (

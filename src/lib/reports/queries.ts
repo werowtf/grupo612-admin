@@ -54,6 +54,10 @@ export interface MonthlyReport {
     tarjetaEsperada: number;
     depositado: number;
   };
+  credito: {
+    total: number;
+    porPersona: CategoryTotal[];
+  };
 }
 
 export async function getMonthlyReport(
@@ -146,6 +150,17 @@ export async function getMonthlyReport(
       _sum: { amount: true },
     }),
   ]);
+  // ── Crédito ("Otros" desglosado por persona/concepto) ────────
+  const creditoRows = await prisma.corteCredito.groupBy({
+    by: ["description"],
+    where: { corte: { venueId: { in: venueIds }, date: inPeriod } },
+    _sum: { amount: true },
+  });
+  const creditoPorPersona = creditoRows
+    .map((g) => ({ category: g.description, total: num(g._sum.amount) }))
+    .sort((a, b) => b.total - a.total);
+  const creditoTotal = creditoPorPersona.reduce((s, c) => s + c.total, 0);
+
   const ingresos = num(entryIng._sum.amount);
   const egresos = num(entryEgr._sum.amount);
   const egresosByCategory = egrByCat
@@ -221,6 +236,10 @@ export async function getMonthlyReport(
       cortesConciliados,
       tarjetaEsperada: r2(tarjetaEsperada),
       depositado: r2(depositado),
+    },
+    credito: {
+      total: r2(creditoTotal),
+      porPersona: creditoPorPersona,
     },
   };
 }

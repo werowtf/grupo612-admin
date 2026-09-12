@@ -132,6 +132,19 @@ export default async function ReportesPage({
         </div>
       </section>
 
+      {/* Crédito ("Otros" de los cortes) desglosado por persona/concepto */}
+      {report.credito.porPersona.length > 0 && (
+        <section className="card min-w-0 p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-base font-semibold">Crédito por persona / concepto</h2>
+            <span className="text-sm font-semibold tabular-nums text-muted-foreground">
+              Total: {formatMXN(report.credito.total)}
+            </span>
+          </div>
+          <BarList items={report.credito.porPersona.map((c) => ({ label: c.category, value: c.total }))} />
+        </section>
+      )}
+
       {/* Conciliación */}
       <section className="card min-w-0 p-5">
         <h2 className="mb-4 text-base font-semibold">Conciliación de ventas con tarjeta</h2>
