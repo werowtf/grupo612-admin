@@ -18,7 +18,7 @@ export default async function EditarMovimientoPage({
 
   const entry = await prisma.financialEntry.findUnique({
     where: { id },
-    include: { venue: true },
+    include: { venue: true, createdBy: { select: { name: true } } },
   });
   if (!entry) notFound();
   const hasAccess = user.role === "ADMIN" || user.venues.some((uv) => uv.venueId === entry.venueId);
@@ -49,7 +49,10 @@ export default async function EditarMovimientoPage({
           Volver al movimiento
         </Link>
         <h1 className="mt-1 text-xl">Editar movimiento · {formatDate(entry.date)}</h1>
-        <p className="text-sm text-muted-foreground">{entry.venue.name}</p>
+        <p className="text-sm text-muted-foreground">
+          {entry.venue.name}
+          {entry.createdBy?.name ? ` · registró ${entry.createdBy.name}` : ""}
+        </p>
       </div>
 
       <EntryForm

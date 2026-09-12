@@ -104,11 +104,12 @@ export async function saveEntryAction(
     if (entryId) {
       const existing = await prisma.financialEntry.findUnique({ where: { id: entryId } });
       if (!existing || existing.venueId !== venueId) return { error: "Movimiento no encontrado." };
-      // Al editar sin nueva foto, conservamos la existente.
-      const { photo: _p, photoMime: _m, ...rest } = data;
+      // Al editar: conservamos quién lo creó originalmente (no el editor
+      // actual), y sin nueva foto conservamos la existente.
+      const { photo: _p, photoMime: _m, createdById: _c, ...rest } = data;
       const updated = await prisma.financialEntry.update({
         where: { id: entryId },
-        data: photo ? data : rest,
+        data: photo ? { ...rest, photo: data.photo, photoMime: data.photoMime } : rest,
       });
       savedId = updated.id;
       await logAudit({ userId: user.id, action: "entry.update", entity: "FinancialEntry", entityId: savedId });
