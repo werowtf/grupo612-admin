@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Wallet, Receipt, CalendarDays, Calculator } from "lucide-react";
 import { useActionState } from "react";
 import {
   saveFoliosAction,
@@ -13,6 +13,7 @@ import { usePedidosSaveRegistration } from "@/components/pedidos-save-context";
 import { formatMXN, formatDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { StatCard } from "@/components/stat-card";
 import type { ProductoResumen, FacturacionDia } from "@/lib/pedidos/queries";
 import type { FacturaEstado } from "@/generated/prisma/enums";
 
@@ -169,23 +170,23 @@ export function PedidosResumen({
           </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card p-3 text-sm">
-          <div>
-            <p>Subtotal del día: <span className="font-semibold tabular-nums">{formatMXN(subtotalDia)}</span></p>
-            <p>
-              Total con IVA del día ({Math.round(ivaRate * 100)}%):{" "}
-              <span className="font-semibold tabular-nums">{formatMXN(totalConIvaDia)}</span>
-            </p>
-          </div>
-          {saving && <p className="text-xs text-muted-foreground">Guardando folios…</p>}
-        </div>
+        {saving && <p className="mt-2 text-xs text-muted-foreground">Guardando folios…</p>}
 
-        <div className="mt-3 rounded-lg border border-border bg-card p-3 text-sm">
-          <p>Subtotal del mes: <span className="font-semibold tabular-nums">{formatMXN(subtotal)}</span></p>
-          <p>
-            Total con IVA del mes ({Math.round(ivaRate * 100)}%):{" "}
-            <span className="font-semibold tabular-nums">{formatMXN(totalConIva)}</span>
-          </p>
+        <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard label="Subtotal del día" value={formatMXN(subtotalDia)} icon={<Wallet className="h-4 w-4" />} />
+          <StatCard
+            label={`Total con IVA del día (${Math.round(ivaRate * 100)}%)`}
+            value={formatMXN(totalConIvaDia)}
+            icon={<Receipt className="h-4 w-4" />}
+            tone="positive"
+          />
+          <StatCard label="Subtotal del mes" value={formatMXN(subtotal)} icon={<CalendarDays className="h-4 w-4" />} />
+          <StatCard
+            label={`Total con IVA del mes (${Math.round(ivaRate * 100)}%)`}
+            value={formatMXN(totalConIva)}
+            icon={<Calculator className="h-4 w-4" />}
+            tone="positive"
+          />
         </div>
       </form>
 

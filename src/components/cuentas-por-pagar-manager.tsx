@@ -38,7 +38,15 @@ export interface CuentaPorPagarRow {
 
 const init: CuentaPorPagarActionState = {};
 
-export function CuentasPorPagarManager({ venueId, rows }: { venueId: string; rows: CuentaPorPagarRow[] }) {
+export function CuentasPorPagarManager({
+  venueId,
+  rows,
+  categories,
+}: {
+  venueId: string;
+  rows: CuentaPorPagarRow[];
+  categories: string[];
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState("");
@@ -90,7 +98,18 @@ export function CuentasPorPagarManager({ venueId, rows }: { venueId: string; row
               </div>
               <div>
                 <label className="label font-semibold" htmlFor="concept">Concepto</label>
-                <Input id="concept" name="concept" placeholder="Ej. Renta agosto" maxLength={120} required />
+                <Select name="concept" defaultValue={categories[0]}>
+                  <SelectTrigger id="concept" className={FIELD_TRIGGER_CLASS}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="label font-semibold" htmlFor="amount">Monto</label>

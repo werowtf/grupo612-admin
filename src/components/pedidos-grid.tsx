@@ -2,11 +2,12 @@
 
 import { useActionState, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Wallet, Receipt, CalendarDays, Calculator } from "lucide-react";
 import { savePedidosAction, marcarFacturadoAction, type PedidosActionState } from "@/app/(app)/pedidos/actions";
 import { usePedidosSaveRegistration } from "@/components/pedidos-save-context";
 import { formatMXN } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { StatCard } from "@/components/stat-card";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -209,14 +210,17 @@ export function PedidosGrid({
           </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card p-3">
-          <div className="text-sm">
-            <p>Subtotal del día: <span className="font-semibold tabular-nums">{formatMXN(subtotal)}</span></p>
-            <p>
-              Total con IVA del día ({Math.round(ivaRate * 100)}%):{" "}
-              <span className="font-semibold tabular-nums">{formatMXN(totalConIva)}</span>
-            </p>
-          </div>
+        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          <StatCard label="Subtotal del día" value={formatMXN(subtotal)} icon={<Wallet className="h-4 w-4" />} />
+          <StatCard
+            label={`Total con IVA del día (${Math.round(ivaRate * 100)}%)`}
+            value={formatMXN(totalConIva)}
+            icon={<Receipt className="h-4 w-4" />}
+            tone="positive"
+          />
+        </div>
+
+        <div className="mt-3 flex items-center justify-end gap-3 rounded-lg border border-border bg-card p-3">
           <div className="flex items-center gap-2">
             {!readOnly && (
               <Button type="submit" disabled={saving}>
@@ -251,12 +255,14 @@ export function PedidosGrid({
           </div>
         </div>
 
-        <div className="mt-3 rounded-lg border border-border bg-card p-3 text-sm">
-          <p>Subtotal del mes: <span className="font-semibold tabular-nums">{formatMXN(subtotalMes)}</span></p>
-          <p>
-            Total con IVA del mes ({Math.round(ivaRate * 100)}%):{" "}
-            <span className="font-semibold tabular-nums">{formatMXN(totalConIvaMes)}</span>
-          </p>
+        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          <StatCard label="Subtotal del mes" value={formatMXN(subtotalMes)} icon={<CalendarDays className="h-4 w-4" />} />
+          <StatCard
+            label={`Total con IVA del mes (${Math.round(ivaRate * 100)}%)`}
+            value={formatMXN(totalConIvaMes)}
+            icon={<Calculator className="h-4 w-4" />}
+            tone="positive"
+          />
         </div>
       </form>
     </div>

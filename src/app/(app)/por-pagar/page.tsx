@@ -1,6 +1,7 @@
 import { HandCoins } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { getPropinasPendientes, getCuentasPorPagar } from "@/lib/por-pagar/queries";
+import { getVenueCategories } from "@/lib/entries/queries";
 import { CuentasPorPagarManager, type CuentaPorPagarRow } from "@/components/cuentas-por-pagar-manager";
 import { StatCard } from "@/components/stat-card";
 import { formatMXN } from "@/lib/utils";
@@ -16,9 +17,10 @@ export default async function PorPagarPage() {
     );
   }
 
-  const [propinasPendientes, cuentas] = await Promise.all([
+  const [propinasPendientes, cuentas, categories] = await Promise.all([
     getPropinasPendientes(selected.id),
     getCuentasPorPagar(selected.id),
+    getVenueCategories(selected.id),
   ]);
 
   const rows: CuentaPorPagarRow[] = cuentas.map((c) => ({
@@ -54,7 +56,7 @@ export default async function PorPagarPage() {
         </div>
       </section>
 
-      <CuentasPorPagarManager venueId={selected.id} rows={rows} />
+      <CuentasPorPagarManager venueId={selected.id} rows={rows} categories={categories.EGRESO} />
     </div>
   );
 }
