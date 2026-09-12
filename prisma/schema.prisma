@@ -39,6 +39,8 @@ model User {
   dailySales   DailySale[]      @relation("DailySaleCreatedBy")
   conceptRules ConceptRule[]
   cuentasPorPagar CuentaPorPagar[]
+  cajaChicaFondos CajaChicaFondo[] @relation("CajaChicaFondoCreatedBy")
+  cajaChicaGastos CajaChicaGasto[] @relation("CajaChicaGastoCreatedBy")
   facturasCafeteria FacturaCafeteria[] @relation("FacturaCafeteriaCreatedBy")
   documents    Document[]       @relation("DocumentUploadedBy")
   createdAt    DateTime         @default(now())
@@ -58,6 +60,8 @@ model Venue {
   entryCategories EntryCategory[]
   dailySales      DailySale[]
   cuentasPorPagar CuentaPorPagar[]
+  cajaChicaFondos CajaChicaFondo[]
+  cajaChicaGastos CajaChicaGasto[]
   cafeterias      Cafeteria[]
   foliosPedidoCafeteria FolioPedidoCafeteria[]
   documents       Document[]
@@ -233,6 +237,46 @@ model CuentaPorPagar {
   updatedAt   DateTime  @updatedAt
 
   @@index([venueId, paidAt])
+}
+
+/// Caja chica: el administrador aprueba un monto (fondo) para gastos
+/// menores del negocio; cada fondo aprobado se refleja como un Egreso en
+/// Ingresos y egresos (es dinero que sale de la caja/banco principal). Los
+/// gastos individuales (CajaChicaGasto) son sólo el desglose de en qué se
+/// gastó ese fondo — no generan un Egreso adicional, porque ya se contó al
+/// aprobar el fondo.
+model CajaChicaFondo {
+  id          String          @id @default(cuid())
+  venueId     String
+  venue       Venue           @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  date        DateTime
+  amount      Decimal         @db.Decimal(14, 2)
+  notes       String?
+  entryId     String?         @unique
+  entry       FinancialEntry? @relation(fields: [entryId], references: [id], onDelete: SetNull)
+  createdById String?
+  createdBy   User?           @relation("CajaChicaFondoCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime        @default(now())
+
+  @@index([venueId, date])
+}
+
+/// Un gasto tomado de la caja chica: quién lo tomó, en qué categoría y
+/// cuánto. Usa el mismo catálogo de categorías que Egresos.
+model CajaChicaGasto {
+  id          String   @id @default(cuid())
+  venueId     String
+  venue       Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  date        DateTime
+  amount      Decimal  @db.Decimal(14, 2)
+  category    String
+  employee    String
+  description String?
+  createdById String?
+  createdBy   User?    @relation("CajaChicaGastoCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([venueId, date])
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -432,6 +476,7 @@ model FinancialEntry {
   documents   Document[] @relation("DocumentEntry")
   facturaCafeteria FacturaCafeteria?
   cuentaPorPagar CuentaPorPagar?
+  cajaChicaFondo CajaChicaFondo?
   folioPedidoCafeteria FolioPedidoCafeteria?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
