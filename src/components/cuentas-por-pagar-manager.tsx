@@ -2,10 +2,11 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Check, AlertCircle } from "lucide-react";
+import { Plus, Check, AlertCircle, Pencil, Trash2 } from "lucide-react";
 import {
   createCuentaPorPagarAction,
   markCuentaPagadaAction,
+  deleteCuentaPorPagarAction,
   type CuentaPorPagarActionState,
 } from "@/app/(app)/por-pagar/actions";
 import { formatMXN, formatDate } from "@/lib/utils";
@@ -24,6 +25,17 @@ import {
   DialogClose,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const FIELD_TRIGGER_CLASS = "h-8 w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50";
 
@@ -49,10 +61,12 @@ export function CuentasPorPagarManager({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<CuentaPorPagarRow | null>(null);
   const [date, setDate] = useState("");
   const [state, action, saving] = useActionState(createCuentaPorPagarAction, init);
   const [payingId, setPayingId] = useState<string | null>(null);
-  const [payError, setPayError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [rowError, setRowError] = useState<string | null>(null);
 
   useEffect(() => {
     if (state.ok) {
@@ -63,15 +77,33 @@ export function CuentasPorPagarManager({
 
   function onOpenChange(o: boolean) {
     setOpen(o);
-    if (o) setDate("");
+    if (o) {
+      setEditing(null);
+      setDate("");
+    }
+  }
+
+  function onEdit(row: CuentaPorPagarRow) {
+    setEditing(row);
+    setDate(row.date);
+    setOpen(true);
   }
 
   async function onPagar(id: string) {
     setPayingId(id);
-    setPayError(null);
+    setRowError(null);
     const res = await markCuentaPagadaAction(id);
-    if (res.error) setPayError(res.error);
+    if (res.error) setRowError(res.error);
     setPayingId(null);
+    router.refresh();
+  }
+
+  async function onDelete(id: string) {
+    setDeletingId(id);
+    setRowError(null);
+    const res = await deleteCuentaPorPagarAction(id);
+    if (res.error) setRowError(res.error);
+    setDeletingId(null);
     router.refresh();
   }
 
@@ -88,17 +120,18 @@ export function CuentasPorPagarManager({
           </DialogTrigger>
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
-              <DialogTitle>Nueva cuenta por pagar</DialogTitle>
+              <DialogTitle>{editing ? "Editar cuenta por pagar" : "Nueva cuenta por pagar"}</DialogTitle>
             </DialogHeader>
-            <form action={action} className="space-y-3">
+            <form key={editing?.id ?? "new"} action={action} className="space-y-3">
               <input type="hidden" name="venueId" value={venueId} />
+              {editing && <input type="hidden" name="id" value={editing.id} />}
               <div>
                 <label className="label font-semibold" htmlFor="date">Fecha</label>
                 <DatePicker id="date" name="date" value={date} onChange={setDate} required />
               </div>
               <div>
                 <label className="label font-semibold" htmlFor="concept">Concepto</label>
-                <Select name="concept" defaultValue={categories[0]}>
+                <Select name="concept" defaultValue={editing?.concept ?? categories[0]}>
                   <SelectTrigger id="concept" className={FIELD_TRIGGER_CLASS}>
                     <SelectValue />
                   </SelectTrigger>
@@ -113,15 +146,29 @@ export function CuentasPorPagarManager({
               </div>
               <div>
                 <label className="label font-semibold" htmlFor="amount">Monto</label>
-                <Input id="amount" name="amount" type="number" step="0.01" min="0.01" required />
+                <Input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  defaultValue={editing?.amount ?? ""}
+                  required
+                />
               </div>
               <div>
                 <label className="label font-semibold" htmlFor="supplier">Proveedor</label>
-                <Input id="supplier" name="supplier" placeholder="Ej. CFE" maxLength={120} />
+                <Input
+                  id="supplier"
+                  name="supplier"
+                  placeholder="Ej. CFE"
+                  maxLength={120}
+                  defaultValue={editing?.supplier ?? ""}
+                />
               </div>
               <div>
                 <label className="label font-semibold" htmlFor="paymentMethod">Forma de pago</label>
-                <Select name="paymentMethod" defaultValue="EFECTIVO">
+                <Select name="paymentMethod" defaultValue={editing?.paymentMethod ?? "EFECTIVO"}>
                   <SelectTrigger id="paymentMethod" className={FIELD_TRIGGER_CLASS}>
                     <SelectValue />
                   </SelectTrigger>
@@ -149,10 +196,10 @@ export function CuentasPorPagarManager({
         </Dialog>
       </div>
 
-      {payError && (
+      {rowError && (
         <p className="flex items-start gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-          {payError}
+          {rowError}
         </p>
       )}
 
@@ -184,16 +231,56 @@ export function CuentasPorPagarManager({
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums font-semibold text-cargo">{formatMXN(r.amount)}</td>
                   <td className="px-3 py-2 text-right">
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      disabled={payingId === r.id}
-                      onClick={() => onPagar(r.id)}
-                    >
-                      <Check className="h-3.5 w-3.5" />
-                      Pagado
-                    </Button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={payingId === r.id}
+                        onClick={() => onPagar(r.id)}
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        Pagado
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        title="Editar"
+                        onClick={() => onEdit(r)}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger
+                          render={
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon-sm"
+                              title="Eliminar"
+                              disabled={deletingId === r.id}
+                            />
+                          }
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-danger" />
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>¿Eliminar esta cuenta por pagar?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {r.concept} — {formatMXN(r.amount)}. Esta acción no se puede deshacer.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction variant="destructive" onClick={() => onDelete(r.id)}>
+                              Eliminar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </td>
                 </tr>
               ))}

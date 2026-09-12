@@ -58,7 +58,7 @@ export default async function EntryDetailPage({
           <Link href={`/ingresos-egresos/${entry.id}/editar`} className={buttonVariants({ variant: "outline" })}>
             <Pencil className="h-4 w-4" /> Editar
           </Link>
-          <DeleteEntryButton entryId={entry.id} />
+          <DeleteEntryButton entryId={entry.id} redirectTo="/ingresos-egresos" />
         </div>
       </div>
 

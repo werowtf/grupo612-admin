@@ -28,10 +28,12 @@ function revalidate() {
   revalidatePath("/por-pagar");
 }
 
+/** Crea o edita una cuenta por pagar (según venga o no un `id` en el form). */
 export async function createCuentaPorPagarAction(
   _prev: CuentaPorPagarActionState,
   formData: FormData,
 ): Promise<CuentaPorPagarActionState> {
+  const id = String(formData.get("id") ?? "").trim() || null;
   const venueId = String(formData.get("venueId") ?? "");
   const dateStr = String(formData.get("date") ?? "");
   const date = dateStr ? new Date(`${dateStr}T00:00:00.000Z`) : null;
@@ -49,21 +51,63 @@ export async function createCuentaPorPagarAction(
 
   try {
     const user = await requireEditor(venueId);
-    const created = await prisma.cuentaPorPagar.create({
-      data: { venueId, date, concept, amount, supplier, paymentMethod, createdById: user.id },
-    });
+
+    if (id) {
+      const existing = await prisma.cuentaPorPagar.findUnique({ where: { id } });
+      if (!existing || existing.venueId !== venueId) return { error: "No encontrado." };
+      if (existing.paidAt) return { error: "Esta cuenta ya está pagada; no se puede editar." };
+      await prisma.cuentaPorPagar.update({
+        where: { id },
+        data: { date, concept, amount, supplier, paymentMethod },
+      });
+      await logAudit({
+        userId: user.id,
+        action: "cuentaPorPagar.editar",
+        entity: "CuentaPorPagar",
+        entityId: id,
+        meta: { venueId, concept, amount },
+      });
+    } else {
+      const created = await prisma.cuentaPorPagar.create({
+        data: { venueId, date, concept, amount, supplier, paymentMethod, createdById: user.id },
+      });
+      await logAudit({
+        userId: user.id,
+        action: "cuentaPorPagar.create",
+        entity: "CuentaPorPagar",
+        entityId: created.id,
+        meta: { venueId, concept, amount },
+      });
+    }
+    revalidate();
+    return { ok: true };
+  } catch (err) {
+    console.error("Error al guardar cuenta por pagar:", err);
+    return { error: "No se pudo guardar." };
+  }
+}
+
+/** Elimina una cuenta por pagar pendiente (las pagadas no se listan aquí). */
+export async function deleteCuentaPorPagarAction(id: string): Promise<CuentaPorPagarActionState> {
+  try {
+    const cuenta = await prisma.cuentaPorPagar.findUnique({ where: { id } });
+    if (!cuenta) return { error: "No encontrado." };
+    if (cuenta.paidAt) return { error: "Esta cuenta ya está pagada; no se puede eliminar." };
+    const user = await requireEditor(cuenta.venueId);
+
+    await prisma.cuentaPorPagar.delete({ where: { id } });
     await logAudit({
       userId: user.id,
-      action: "cuentaPorPagar.create",
+      action: "cuentaPorPagar.eliminar",
       entity: "CuentaPorPagar",
-      entityId: created.id,
-      meta: { venueId, concept, amount },
+      entityId: id,
+      meta: { venueId: cuenta.venueId, concept: cuenta.concept, amount: cuenta.amount.toString() },
     });
     revalidate();
     return { ok: true };
   } catch (err) {
-    console.error("Error al agregar cuenta por pagar:", err);
-    return { error: "No se pudo agregar." };
+    console.error("Error al eliminar cuenta por pagar:", err);
+    return { error: "No se pudo eliminar." };
   }
 }
 

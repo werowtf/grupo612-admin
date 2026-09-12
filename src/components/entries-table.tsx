@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, Pencil } from "lucide-react";
 import type { FinancialEntry, EntryType, PaymentMethod } from "@/generated/prisma/client";
 import { paymentLabels, categoryBadgeClass } from "@/lib/entries/config";
 import { formatMXN, formatDate, diaSemana, cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { DeleteEntryButton } from "@/components/delete-entry-button";
 
 interface Props {
   type: EntryType;
@@ -92,7 +93,23 @@ export function EntriesTable({ type, rows, hrefBase, emptyText }: Props) {
                     )}
                   </td>
                 ))}
-                <td className="px-3 py-2 text-muted-foreground">{e.photoMime && <ImageIcon className="h-4 w-4" />}</td>
+                <td className="px-3 py-2">
+                  <div className="flex items-center justify-end gap-1.5 text-muted-foreground">
+                    {e.photoMime && <ImageIcon className="h-4 w-4" />}
+                    {e.source === "MANUAL" && hrefBase && (
+                      <>
+                        <Link
+                          href={`${hrefBase}/${e.id}/editar`}
+                          title="Editar"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-muted"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Link>
+                        <DeleteEntryButton entryId={e.id} iconOnly />
+                      </>
+                    )}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
