@@ -57,7 +57,7 @@ export async function proxy(request: NextRequest) {
       // Rol restringido: sólo su área exclusiva (o rutas públicas).
       if (!inArea(restricted) && !isPublic) return redirectTo(restricted);
     } else if (isOficina) {
-      if (!inArea("/dashboard") && !isPublic) return redirectTo("/dashboard");
+      if (!inArea("/dashboard") && !inArea("/oficina") && !isPublic) return redirectTo("/dashboard");
     } else if (confined) {
       // Rol confinado: cualquiera de sus secciones permitidas (o rutas públicas).
       if (!confined.some(inArea) && !isPublic) return redirectTo(confined[0]);

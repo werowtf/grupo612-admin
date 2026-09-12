@@ -45,6 +45,7 @@ model User {
   cajaChicaFondos CajaChicaFondo[] @relation("CajaChicaFondoCreatedBy")
   cajaChicaGastos CajaChicaGasto[] @relation("CajaChicaGastoCreatedBy")
   facturasCafeteria FacturaCafeteria[] @relation("FacturaCafeteriaCreatedBy")
+  oficinaNotas OficinaNota[]    @relation("OficinaNotaCreatedBy")
   documents    Document[]       @relation("DocumentUploadedBy")
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
@@ -280,6 +281,19 @@ model CajaChicaGasto {
   createdAt   DateTime @default(now())
 
   @@index([venueId, date])
+}
+
+/// Notas compartidas de la sección "Oficina" (dashboard consolidado): un
+/// bloc de notas de los 4 negocios, sin ligar a un negocio en particular.
+/// Cualquier usuario con acceso a Oficina puede crear, editar o borrar
+/// cualquier nota (bloc compartido, no uno por usuario).
+model OficinaNota {
+  id          String   @id @default(cuid())
+  content     String
+  createdById String?
+  createdBy   User?    @relation("OficinaNotaCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // ─────────────────────────────────────────────────────────────
