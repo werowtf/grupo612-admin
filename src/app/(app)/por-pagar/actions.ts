@@ -13,13 +13,24 @@ export interface CuentaPorPagarActionState {
   ok?: boolean;
 }
 
-/** Quién puede agregar/marcar pagadas las cuentas por pagar. */
+/** Quién puede agregar/editar/eliminar las cuentas por pagar ("Otros"). */
 const PUEDEN_EDITAR: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR"];
+/** Quién puede marcar Pendiente/Pagado el estado de las propinas de un corte.
+ *  Cajero también: es quien de hecho le paga la propina al personal. */
+const PUEDEN_MARCAR_PROPINA: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR", "CAJERO"];
 
 async function requireEditor(venueId: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Sesión expirada");
   if (!PUEDEN_EDITAR.includes(user.role)) throw new Error("No autorizado");
+  await assertVenueAccess(user, venueId);
+  return user;
+}
+
+async function requirePropinaEditor(venueId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Sesión expirada");
+  if (!PUEDEN_MARCAR_PROPINA.includes(user.role)) throw new Error("No autorizado");
   await assertVenueAccess(user, venueId);
   return user;
 }
@@ -174,7 +185,7 @@ export async function updatePropinaCorteAction(
   try {
     const corte = await prisma.corte.findUnique({ where: { id: corteId } });
     if (!corte) return { error: "Corte no encontrado." };
-    const user = await requireEditor(corte.venueId);
+    const user = await requirePropinaEditor(corte.venueId);
 
     await prisma.corte.update({
       where: { id: corteId },
