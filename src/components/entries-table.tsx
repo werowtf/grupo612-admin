@@ -41,13 +41,14 @@ export function EntriesTable({ type, rows, hrefBase, emptyText }: Props) {
   return (
     <div className="card overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[980px] text-sm">
+        <table className="w-full min-w-[1080px] text-sm">
           <thead>
             <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-600">
               <th className="px-3 py-2 font-semibold">Fecha</th>
               <th className="px-3 py-2 font-semibold">Día</th>
               <th className="px-3 py-2 font-semibold">Concepto</th>
               <th className="px-3 py-2 font-semibold">Descripción</th>
+              <th className="px-3 py-2 font-semibold">Proveedor</th>
               {cols.map((m) => (
                 <th key={m} className="px-3 py-2 text-right font-semibold">{paymentLabels[m]}</th>
               ))}
@@ -84,6 +85,9 @@ export function EntriesTable({ type, rows, hrefBase, emptyText }: Props) {
                     "—"
                   )}
                 </td>
+                <td className="max-w-[160px] truncate px-3 py-2 text-muted-foreground">
+                  {e.supplier ?? "—"}
+                </td>
                 {cols.map((m) => (
                   <td key={m} className="px-3 py-2 text-right tabular-nums">
                     {e.paymentMethod === m ? (
@@ -115,7 +119,7 @@ export function EntriesTable({ type, rows, hrefBase, emptyText }: Props) {
           </tbody>
           <tfoot>
             <tr className="border-t border-border bg-table-header/60 font-semibold">
-              <td colSpan={4} className="px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground">
+              <td colSpan={5} className="px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground">
                 Total
               </td>
               {cols.map((m) => (
@@ -124,7 +128,7 @@ export function EntriesTable({ type, rows, hrefBase, emptyText }: Props) {
               <td></td>
             </tr>
             <tr className="bg-success-bg">
-              <td colSpan={3 + cols.length} className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wide text-foreground">
+              <td colSpan={4 + cols.length} className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wide text-foreground">
                 Total general
               </td>
               <td className="px-3 py-2 text-right tabular-nums font-semibold text-foreground">{formatMXN(total)}</td>
