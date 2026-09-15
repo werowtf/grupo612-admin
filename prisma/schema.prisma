@@ -366,6 +366,10 @@ model Corte {
 
   /// Propinas ya cobradas pero que todavía no se le han pagado al personal.
   propinasPorPagar Decimal @default(0) @db.Decimal(14, 2)
+  /// Si ya se le pagaron en efectivo al personal (se marca a mano en Por
+  /// pagar; el corte por sí solo no lo sabe).
+  propinasPagadas   Boolean   @default(false)
+  propinasPagadasAt DateTime?
 
   // Totales
   subtotal   Decimal @default(0) @db.Decimal(14, 2)

@@ -159,3 +159,39 @@ export async function markCuentaPagadaAction(id: string): Promise<CuentaPorPagar
     return { error: "No se pudo marcar como pagado." };
   }
 }
+
+/**
+ * Marca la propina de un corte como Pendiente/Pagada. No crea un Egreso en
+ * Ingresos y egresos: el efectivo que sale ya está reflejado en el propio
+ * corte (Efectivo declarado / Sobrante-Faltante) — esto sólo evita que la
+ * propina siga sumando en el total pendiente una vez que ya se le pagó al
+ * personal.
+ */
+export async function updatePropinaCorteAction(
+  corteId: string,
+  paid: boolean,
+): Promise<CuentaPorPagarActionState> {
+  try {
+    const corte = await prisma.corte.findUnique({ where: { id: corteId } });
+    if (!corte) return { error: "Corte no encontrado." };
+    const user = await requireEditor(corte.venueId);
+
+    await prisma.corte.update({
+      where: { id: corteId },
+      data: { propinasPagadas: paid, propinasPagadasAt: paid ? new Date() : null },
+    });
+
+    await logAudit({
+      userId: user.id,
+      action: paid ? "corte.propinasPagadas" : "corte.propinasPendientes",
+      entity: "Corte",
+      entityId: corteId,
+      meta: { venueId: corte.venueId, amount: corte.propinasPorPagar.toString() },
+    });
+    revalidate();
+    return { ok: true };
+  } catch (err) {
+    console.error("Error al actualizar el estado de la propina:", err);
+    return { error: "No se pudo actualizar." };
+  }
+}
