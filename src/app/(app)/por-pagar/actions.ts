@@ -14,7 +14,7 @@ export interface CuentaPorPagarActionState {
 }
 
 /** Quién puede agregar/editar/eliminar las cuentas por pagar ("Otros"). */
-const PUEDEN_EDITAR: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR"];
+const PUEDEN_EDITAR: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR", "CAJERO"];
 /** Quién puede marcar Pendiente/Pagado el estado de las propinas de un corte.
  *  Cajero también: es quien de hecho le paga la propina al personal. */
 const PUEDEN_MARCAR_PROPINA: UserRole[] = ["ADMIN", "GERENTE", "CONTADOR", "CAJERO"];

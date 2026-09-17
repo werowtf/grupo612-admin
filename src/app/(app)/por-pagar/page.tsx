@@ -8,7 +8,7 @@ import { StatCard } from "@/components/stat-card";
 import { formatMXN } from "@/lib/utils";
 
 export default async function PorPagarPage() {
-  const { selected, user } = await getAppContext();
+  const { selected } = await getAppContext();
 
   if (!selected) {
     return (
@@ -68,11 +68,7 @@ export default async function PorPagarPage() {
 
       <PropinasPorCorteManager rows={propinaRows} />
 
-      {/* "Otros" (deudas puntuales) es sólo para quien administra el negocio;
-          Cajero puede marcar propinas pero no crear/editar/borrar estas cuentas. */}
-      {user.role !== "CAJERO" && (
-        <CuentasPorPagarManager venueId={selected.id} rows={rows} categories={categories.EGRESO} />
-      )}
+      <CuentasPorPagarManager venueId={selected.id} rows={rows} categories={categories.EGRESO} />
     </div>
   );
 }
