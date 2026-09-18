@@ -22,6 +22,14 @@ export default async function CortesPage() {
     );
   }
 
+  if (selected.slug === "comisariato") {
+    return (
+      <div className="card p-10 text-center text-sm text-muted-foreground">
+        Cortes de caja no aplica para Comisariato. Cambia de negocio en el menú de arriba.
+      </div>
+    );
+  }
+
   const cortes = await prisma.corte.findMany({
     where: { venueId: selected.id },
     orderBy: { date: "desc" },

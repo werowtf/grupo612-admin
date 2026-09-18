@@ -63,8 +63,10 @@ function NavLinks({
     ? NAV.filter((i) => i.href === "/dashboard" || i.href === "/oficina/notas")
     : NAV.filter((i) => !i.roles || i.roles.includes(role))
         .filter((i) => role !== "CAJERO" || CAJERO_HREFS.includes(i.href))
-        // Pedidos (cafetería) es exclusivo de Comisariato.
+        // Pedidos (cafetería) es exclusivo de Comisariato; Cortes de caja no
+        // aplica ahí (no maneja caja registradora).
         .filter((i) => i.href !== "/pedidos" || isComisariato)
+        .filter((i) => i.href !== "/cortes" || !isComisariato)
         // Notas es exclusivo del modo Oficina.
         .filter((i) => i.href !== "/oficina/notas");
 
