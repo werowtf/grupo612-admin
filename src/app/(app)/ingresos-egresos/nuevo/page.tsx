@@ -32,7 +32,11 @@ export default async function NuevoMovimientoPage() {
         categories={categories}
         mode="full"
         redirectTo="/ingresos-egresos"
-        initialValues={{ date: today }}
+        initialValues={
+          selected.slug === "comisariato"
+            ? { date: today, paymentMethod: "TRANSFERENCIA" }
+            : { date: today }
+        }
       />
     </div>
   );

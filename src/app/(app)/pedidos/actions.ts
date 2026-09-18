@@ -265,6 +265,7 @@ export async function updateFacturaEstadoAction(
             amount,
             category: "Cafetería",
             description: `Facturación diaria — ${dateStr}`,
+            paymentMethod: "TRANSFERENCIA",
             source: "SISTEMA",
             createdById: user.id,
           },
