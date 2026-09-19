@@ -131,7 +131,7 @@ export function CuentasPorPagarManager({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL}>Todos los proveedores</SelectItem>
+              <SelectItem value={ALL}>Todos</SelectItem>
               {suppliers.map((s) => (
                 <SelectItem key={s} value={s}>{s}</SelectItem>
               ))}
