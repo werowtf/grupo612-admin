@@ -79,6 +79,12 @@ export default async function IngresosEgresosPage({
     bebida: Number(r.bebida),
   }));
 
+  // Ingresos = otros ingresos + lo cobrado en venta diaria (efectivo + tarjeta;
+  // el crédito no cuenta hasta que se cobra).
+  const ventaCobrada = saleRows.reduce((sum, r) => sum + r.efectivo + r.tarjeta, 0);
+  const ingresosTotal = summary.ingresos + ventaCobrada;
+  const netoTotal = ingresosTotal - summary.egresos;
+
   // El filtro ofrece los conceptos del negocio, sin repetir los que existen en
   // ingresos y egresos a la vez.
   const allCategories = [...new Set([...categories.EGRESO, ...categories.INGRESO])];
@@ -114,9 +120,9 @@ export default async function IngresosEgresosPage({
       </header>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <StatCard label="Ingresos" value={formatMXN(summary.ingresos)} tone="positive" icon={<TrendingUp className="h-4 w-4" />} />
+        <StatCard label="Ingresos" value={formatMXN(ingresosTotal)} hint="Otros ingresos + venta cobrada" tone="positive" icon={<TrendingUp className="h-4 w-4" />} />
         <StatCard label="Egresos" value={formatMXN(summary.egresos)} tone="negative" icon={<TrendingDown className="h-4 w-4" />} />
-        <StatCard label="Neto" value={formatMXN(summary.neto)} tone={summary.neto >= 0 ? "positive" : "negative"} icon={<Wallet className="h-4 w-4" />} />
+        <StatCard label="Neto" value={formatMXN(netoTotal)} tone={netoTotal >= 0 ? "positive" : "negative"} icon={<Wallet className="h-4 w-4" />} />
       </section>
 
       <form method="get" className="space-y-3">
