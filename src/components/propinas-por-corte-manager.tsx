@@ -64,7 +64,7 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
               <th className="px-3 py-2 font-semibold">Fecha</th>
               <th className="px-3 py-2 font-semibold">Concepto</th>
               <th className="px-3 py-2 text-right font-semibold">Monto</th>
-              <th className="px-3 py-2 font-semibold">Estado</th>
+              <th className="px-3 py-2 text-right font-semibold">Estado</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -79,7 +79,7 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
                 <td className="px-3 py-2 text-right tabular-nums font-semibold text-cargo">{formatMXN(r.amount)}</td>
                 <td className="px-3 py-2">
                   {estados[r.id] === "PAGADO" ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-end gap-2">
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-abono">
                         <Check className="h-3.5 w-3.5" />
                         Pagada
@@ -95,16 +95,18 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
                       </Button>
                     </div>
                   ) : (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      disabled={savingId === r.id}
-                      onClick={() => onChange(r.id, "PAGADO")}
-                    >
-                      <Check className="h-3.5 w-3.5" />
-                      Pagado
-                    </Button>
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={savingId === r.id}
+                        onClick={() => onChange(r.id, "PAGADO")}
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        Pagado
+                      </Button>
+                    </div>
                   )}
                 </td>
               </tr>
