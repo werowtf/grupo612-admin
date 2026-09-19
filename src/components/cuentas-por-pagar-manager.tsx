@@ -49,6 +49,8 @@ export interface CuentaPorPagarRow {
 }
 
 const init: CuentaPorPagarActionState = {};
+const ALL = "__all__";
+const NONE = "__none__";
 
 export function CuentasPorPagarManager({
   venueId,
@@ -67,6 +69,7 @@ export function CuentasPorPagarManager({
   const [payingId, setPayingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
+  const [supplierFilter, setSupplierFilter] = useState(ALL);
 
   useEffect(() => {
     if (state.ok) {
@@ -107,12 +110,35 @@ export function CuentasPorPagarManager({
     router.refresh();
   }
 
-  const total = rows.reduce((sum, r) => sum + r.amount, 0);
+  const suppliers = [...new Set(rows.map((r) => r.supplier).filter((s): s is string => !!s))].sort((a, b) =>
+    a.localeCompare(b, "es"),
+  );
+  const hasNoSupplier = rows.some((r) => !r.supplier);
+  const filterValue = supplierFilter === NONE ? (hasNoSupplier ? NONE : ALL) : suppliers.includes(supplierFilter) || supplierFilter === ALL ? supplierFilter : ALL;
+  const visible = rows.filter((r) =>
+    filterValue === ALL ? true : filterValue === NONE ? !r.supplier : r.supplier === filterValue,
+  );
+  const total = visible.reduce((sum, r) => sum + r.amount, 0);
 
   return (
     <div className="card min-w-0 space-y-3 p-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-semibold">Otros</h2>
+        <div className="flex flex-wrap items-center gap-2">
+        {rows.length > 0 && (
+          <Select value={filterValue} onValueChange={(v) => setSupplierFilter(v ?? ALL)}>
+            <SelectTrigger className="h-8 w-48 max-w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50" aria-label="Filtrar por proveedor">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>Todos los proveedores</SelectItem>
+              {suppliers.map((s) => (
+                <SelectItem key={s} value={s}>{s}</SelectItem>
+              ))}
+              {hasNoSupplier && <SelectItem value={NONE}>Sin proveedor</SelectItem>}
+            </SelectContent>
+          </Select>
+        )}
         <Dialog open={open} onOpenChange={onOpenChange}>
           <DialogTrigger render={<Button type="button" size="sm" />}>
             <Plus className="h-4 w-4" />
@@ -194,6 +220,7 @@ export function CuentasPorPagarManager({
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {rowError && (
@@ -221,7 +248,7 @@ export function CuentasPorPagarManager({
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {rows.map((r) => (
+              {visible.map((r) => (
                 <tr key={r.id} className="hover:bg-muted/60">
                   <td className="whitespace-nowrap px-3 py-2 font-semibold">{formatDate(r.date)}</td>
                   <td className="px-3 py-2">{r.concept}</td>
@@ -288,7 +315,7 @@ export function CuentasPorPagarManager({
             <tfoot>
               <tr className="border-t border-border bg-table-header/60 font-semibold">
                 <td colSpan={4} className="px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground">
-                  Total pendiente
+                  {filterValue === ALL ? "Total pendiente" : "Total pendiente (filtrado)"}
                 </td>
                 <td className="px-3 py-2 text-right tabular-nums text-cargo">{formatMXN(total)}</td>
                 <td></td>

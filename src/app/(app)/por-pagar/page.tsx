@@ -34,6 +34,8 @@ export default async function PorPagarPage() {
     paymentMethod: c.paymentMethod,
   }));
 
+  const otrosTotal = rows.reduce((sum, r) => sum + r.amount, 0);
+
   const propinaRows: PropinaRow[] = propinasPorCorte.map((p) => ({
     id: p.id,
     date: p.date.toISOString().slice(0, 10),
@@ -49,7 +51,7 @@ export default async function PorPagarPage() {
         <p className="text-sm text-muted-foreground">Propinas y otras deudas pendientes.</p>
       </header>
 
-      <section className="grid gap-4 sm:grid-cols-2">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           label="Propinas pendientes"
           value={formatMXN(propinasPendientes)}
@@ -57,7 +59,21 @@ export default async function PorPagarPage() {
           tone="negative"
           icon={<HandCoins className="h-4 w-4" />}
         />
-        <div className="card flex flex-col justify-center p-5">
+        <StatCard
+          label="Otros por pagar"
+          value={formatMXN(otrosTotal)}
+          hint={`${rows.length} cuenta${rows.length === 1 ? "" : "s"} pendiente${rows.length === 1 ? "" : "s"}`}
+          tone="negative"
+          icon={<HandCoins className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Total a pagar"
+          value={formatMXN(propinasPendientes + otrosTotal)}
+          hint="Propinas pendientes + otros"
+          tone="negative"
+          icon={<HandCoins className="h-4 w-4" />}
+        />
+        <div className="card flex flex-col justify-center p-5 sm:col-span-2 lg:col-span-3">
           <p className="text-xs text-muted-foreground">
             Cada corte con propina aparece abajo como un renglón — márcalo &ldquo;Pagado&rdquo; en
             cuanto se le entregue en efectivo al personal, aunque sea de un corte de días
