@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Check } from "lucide-react";
 import { updatePropinaCorteAction } from "@/app/(app)/por-pagar/actions";
 import { formatMXN, formatDate } from "@/lib/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 export interface PropinaRow {
   id: string;
@@ -16,8 +16,7 @@ export interface PropinaRow {
   folioCorteZ: string | null;
 }
 
-const ESTADO_LABELS = { PENDIENTE: "Pendiente", PAGADO: "Pagado" } as const;
-type Estado = keyof typeof ESTADO_LABELS;
+type Estado = "PENDIENTE" | "PAGADO";
 
 export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
   const router = useRouter();
@@ -79,24 +78,34 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
                 </td>
                 <td className="px-3 py-2 text-right tabular-nums font-semibold text-cargo">{formatMXN(r.amount)}</td>
                 <td className="px-3 py-2">
-                  <Select
-                    value={estados[r.id]}
-                    onValueChange={(v) => onChange(r.id, v as Estado)}
-                  >
-                    <SelectTrigger
-                      className="h-8 w-36 border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50"
+                  {estados[r.id] === "PAGADO" ? (
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-abono">
+                        <Check className="h-3.5 w-3.5" />
+                        Pagada
+                      </span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        disabled={savingId === r.id}
+                        onClick={() => onChange(r.id, "PENDIENTE")}
+                      >
+                        Deshacer
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
                       disabled={savingId === r.id}
+                      onClick={() => onChange(r.id, "PAGADO")}
                     >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(Object.keys(ESTADO_LABELS) as Estado[]).map((e) => (
-                        <SelectItem key={e} value={e}>
-                          {ESTADO_LABELS[e]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                      <Check className="h-3.5 w-3.5" />
+                      Pagado
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}
