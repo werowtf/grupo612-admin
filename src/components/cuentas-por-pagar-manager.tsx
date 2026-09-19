@@ -121,7 +121,7 @@ export function CuentasPorPagarManager({
   const total = visible.reduce((sum, r) => sum + r.amount, 0);
 
   return (
-    <div className="card min-w-0 space-y-3 p-5">
+    <div className="card min-w-0 space-y-3 p-3 sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-semibold">Otros</h2>
         <div className="flex flex-wrap items-center gap-2">
@@ -235,14 +235,14 @@ export function CuentasPorPagarManager({
           No hay cuentas pendientes.
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-600">
                 <th className="px-3 py-2 font-semibold">Fecha</th>
-                <th className="px-3 py-2 font-semibold">Concepto</th>
+                <th className="hidden px-3 py-2 font-semibold sm:table-cell">Concepto</th>
                 <th className="px-3 py-2 font-semibold">Proveedor</th>
-                <th className="px-3 py-2 font-semibold">Forma de pago</th>
+                <th className="hidden px-3 py-2 font-semibold sm:table-cell">Forma de pago</th>
                 <th className="px-3 py-2 text-right font-semibold">Monto</th>
                 <th className="px-3 py-2 font-semibold"></th>
               </tr>
@@ -250,15 +250,15 @@ export function CuentasPorPagarManager({
             <tbody className="divide-y divide-border">
               {visible.map((r) => (
                 <tr key={r.id} className="hover:bg-muted/60">
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold">{formatDate(r.date)}</td>
-                  <td className="px-3 py-2">{r.concept}</td>
-                  <td className="px-3 py-2 text-muted-foreground">{r.supplier ?? "—"}</td>
-                  <td className="px-3 py-2 text-muted-foreground">
+                  <td className="w-16 px-2 py-2 font-semibold sm:w-auto sm:whitespace-nowrap sm:px-3">{formatDate(r.date)}</td>
+                  <td className="hidden px-3 py-2 sm:table-cell">{r.concept}</td>
+                  <td className="px-2 py-2 text-muted-foreground sm:px-3">{r.supplier ?? "—"}</td>
+                  <td className="hidden px-3 py-2 text-muted-foreground sm:table-cell">
                     {r.paymentMethod ? paymentLabels[r.paymentMethod] : "—"}
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums font-semibold text-cargo">{formatMXN(r.amount)}</td>
-                  <td className="px-3 py-2 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
+                  <td className="px-2 py-2 text-right tabular-nums font-semibold text-cargo sm:px-3">{formatMXN(r.amount)}</td>
+                  <td className="px-2 py-2 text-right sm:px-3">
+                    <div className="ml-auto flex w-[5.5rem] flex-wrap items-center justify-end gap-1 sm:w-auto sm:flex-nowrap sm:gap-1.5">
                       <Button
                         type="button"
                         size="sm"
@@ -314,7 +314,10 @@ export function CuentasPorPagarManager({
             </tbody>
             <tfoot>
               <tr className="border-t border-border bg-table-header/60 font-semibold">
-                <td colSpan={4} className="px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground">
+                <td colSpan={2} className="px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground sm:hidden">
+                  {filterValue === ALL ? "Total pendiente" : "Total pendiente (filtrado)"}
+                </td>
+                <td colSpan={4} className="hidden px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground sm:table-cell">
                   {filterValue === ALL ? "Total pendiente" : "Total pendiente (filtrado)"}
                 </td>
                 <td className="px-3 py-2 text-right tabular-nums text-cargo">{formatMXN(total)}</td>

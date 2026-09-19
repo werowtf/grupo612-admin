@@ -62,7 +62,7 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
           <thead>
             <tr className="border-b border-border bg-table-header text-left text-[10px] uppercase tracking-wide text-brand-600">
               <th className="px-3 py-2 font-semibold">Fecha</th>
-              <th className="px-3 py-2 font-semibold">Concepto</th>
+              <th className="hidden px-3 py-2 font-semibold sm:table-cell">Concepto</th>
               <th className="px-3 py-2 text-right font-semibold">Monto</th>
               <th className="px-3 py-2 text-right font-semibold">Estado</th>
             </tr>
@@ -71,7 +71,7 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
             {rows.map((r) => (
               <tr key={r.id} className="hover:bg-muted/60">
                 <td className="whitespace-nowrap px-3 py-2 font-semibold">{formatDate(r.date)}</td>
-                <td className="px-3 py-2">
+                <td className="hidden px-3 py-2 sm:table-cell">
                   <Link href={`/cortes/${r.id}`} className="text-brand-600 hover:underline">
                     Propina corte{r.folioCorteZ ? ` #${r.folioCorteZ}` : ""}
                   </Link>
@@ -114,7 +114,10 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
           </tbody>
           <tfoot>
             <tr className="border-t border-border bg-table-header/60 font-semibold">
-              <td colSpan={2} className="px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground">
+              <td className="px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground sm:hidden">
+                Total pendiente
+              </td>
+              <td colSpan={2} className="hidden px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground sm:table-cell">
                 Total pendiente
               </td>
               <td className="px-3 py-2 text-right tabular-nums text-cargo">{formatMXN(total)}</td>
