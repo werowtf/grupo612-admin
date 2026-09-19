@@ -127,11 +127,11 @@ export function CuentasPorPagarManager({
         <div className="flex flex-wrap items-center gap-2">
         {rows.length > 0 && (
           <Select value={filterValue} onValueChange={(v) => setSupplierFilter(v ?? ALL)}>
-            <SelectTrigger className="h-8 w-48 max-w-full border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50" aria-label="Filtrar por proveedor">
+            <SelectTrigger className="h-8 w-auto min-w-52 max-w-full whitespace-nowrap border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50" aria-label="Filtrar por proveedor">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL}>Todos</SelectItem>
+              <SelectItem value={ALL}>Todos los proveedores</SelectItem>
               {suppliers.map((s) => (
                 <SelectItem key={s} value={s}>{s}</SelectItem>
               ))}
