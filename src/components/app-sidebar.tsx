@@ -40,6 +40,7 @@ const NAV: NavItem[] = [
   { href: "/pedidos", label: "Pedidos", icon: UtensilsCrossed },
   { href: "/reportes", label: "Reportes", icon: BarChart3 },
   { href: "/documentos", label: "Documentos", icon: FileText },
+  { href: "/oficina/caja-chica", label: "Caja chica", icon: PiggyBank },
   { href: "/oficina/notas", label: "Notas", icon: StickyNote },
 ];
 
@@ -60,15 +61,15 @@ function NavLinks({
   const CAJERO_HREFS = ["/dashboard", "/cortes", "/por-pagar"];
   const isComisariato = venueSlug === "comisariato";
   const items = oficina
-    ? NAV.filter((i) => i.href === "/dashboard" || i.href === "/oficina/notas")
+    ? NAV.filter((i) => i.href === "/dashboard" || i.href.startsWith("/oficina/"))
     : NAV.filter((i) => !i.roles || i.roles.includes(role))
         .filter((i) => role !== "CAJERO" || CAJERO_HREFS.includes(i.href))
         // Pedidos (cafetería) es exclusivo de Comisariato; Cortes de caja no
         // aplica ahí (no maneja caja registradora).
         .filter((i) => i.href !== "/pedidos" || isComisariato)
         .filter((i) => i.href !== "/cortes" || !isComisariato)
-        // Notas es exclusivo del modo Oficina.
-        .filter((i) => i.href !== "/oficina/notas");
+        // Las secciones /oficina/* son exclusivas del modo Oficina.
+        .filter((i) => !i.href.startsWith("/oficina/"));
 
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto p-3">
