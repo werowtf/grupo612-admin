@@ -1,11 +1,13 @@
 import { getCurrentUser } from "@/lib/auth";
-import { parseTicketImage } from "@/lib/entries/ticket";
+import { parseTicketImage, type TicketExtraction } from "@/lib/entries/ticket";
+import { parseTicketVision } from "@/lib/entries/vision";
+import { resolveMediaType, visionAvailable } from "@/lib/cortes/vision";
 
 // El OCR (descarga del idioma + reconocimiento) puede tardar más que el límite
 // por defecto de una función serverless; ampliamos el máximo permitido.
 export const maxDuration = 60;
 
-// Si Tesseract se cuelga (ticket dañado, red lenta) cortamos antes de que
+// Si el OCR se cuelga (ticket dañado, red lenta) cortamos antes de que
 // expire la función, para siempre devolver una respuesta al cliente.
 const HARD_TIMEOUT_MS = 50_000;
 
@@ -71,9 +73,24 @@ export async function POST(req: Request) {
       }, HARD_TIMEOUT_MS);
 
       try {
-        const result = await parseTicketImage(buffer, (p) => {
-          safeEnqueue({ type: "progress", status: p.status, progress: p.progress });
-        });
+        let result: TicketExtraction | null = null;
+        // Primero el modelo de visión; si falla (sin credencial, archivo muy
+        // pesado, error de red, resultado vacío) se usa Tesseract como respaldo.
+        if (visionAvailable()) {
+          try {
+            safeEnqueue({ type: "progress", status: "leyendo el ticket", progress: 0.3 });
+            const mediaType = resolveMediaType(file.name, file.type);
+            const vision = await parseTicketVision(buffer, mediaType);
+            if (vision.detected.length > 0) result = vision;
+          } catch (err) {
+            console.error("Visión falló en ticket; se usa Tesseract:", err);
+          }
+        }
+        if (!result) {
+          result = await parseTicketImage(buffer, (p) => {
+            safeEnqueue({ type: "progress", status: p.status, progress: p.progress });
+          });
+        }
         clearTimeout(timeout);
         safeEnqueue({ type: "done", ok: true, result });
       } catch (err) {
