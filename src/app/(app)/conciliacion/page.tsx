@@ -39,7 +39,7 @@ export default async function ConciliacionPage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl">Estados de cuenta</h1>
+        <h1 className="text-xl">Estados de Cuenta</h1>
         <p className="text-sm text-muted-foreground">
           Sube y administra los estados de cuenta bancarios
         </p>

@@ -31,16 +31,16 @@ interface NavItem {
 // Logs y Usuarios viven en el menú del usuario (arriba a la derecha), no aquí.
 const NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/conciliacion", label: "Estados de cuenta", icon: Landmark },
-  { href: "/cortes", label: "Cortes de caja", icon: Receipt },
+  { href: "/conciliacion", label: "Estados de Cuenta", icon: Landmark },
+  { href: "/cortes", label: "Cortes de Caja", icon: Receipt },
   { href: "/movimientos", label: "Movimientos", icon: ListOrdered },
-  { href: "/ingresos-egresos", label: "Ingresos y egresos", icon: Wallet },
-  { href: "/por-pagar", label: "Por pagar", icon: HandCoins },
-  { href: "/caja-chica", label: "Caja chica", icon: PiggyBank },
+  { href: "/ingresos-egresos", label: "Ingresos y Egresos", icon: Wallet },
+  { href: "/por-pagar", label: "Por Pagar", icon: HandCoins },
+  { href: "/caja-chica", label: "Caja Chica", icon: PiggyBank },
   { href: "/pedidos", label: "Pedidos", icon: UtensilsCrossed },
   { href: "/reportes", label: "Reportes", icon: BarChart3 },
   { href: "/documentos", label: "Documentos", icon: FileText },
-  { href: "/oficina/caja-chica", label: "Caja chica", icon: PiggyBank },
+  { href: "/oficina/caja-chica", label: "Caja Chica", icon: PiggyBank },
   { href: "/oficina/notas", label: "Notas", icon: StickyNote },
 ];
 

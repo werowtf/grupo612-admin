@@ -97,7 +97,7 @@ export default async function IngresosEgresosPage({
     <div className="space-y-6">
       <header className="space-y-3">
         <div>
-          <h1 className="text-xl">Ingresos y egresos</h1>
+          <h1 className="text-xl">Ingresos y Egresos</h1>
           <p className="text-sm text-muted-foreground">
             Registra y consulta los movimientos internos de caja
           </p>

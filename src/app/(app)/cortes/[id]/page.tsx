@@ -80,7 +80,7 @@ export default async function CorteDetailPage({
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
-            Cortes de caja
+            Cortes de Caja
           </Link>
           <h2 className="mt-1 text-xl">
             Corte {corte.folioCorteZ ? `#${corte.folioCorteZ}` : ""} · {formatDate(corte.date)}

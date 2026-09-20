@@ -47,7 +47,7 @@ export default async function PorPagarPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl">Por pagar</h1>
+        <h1 className="text-xl">Por Pagar</h1>
         <p className="text-sm text-muted-foreground">Propinas y otras deudas pendientes.</p>
       </header>
 

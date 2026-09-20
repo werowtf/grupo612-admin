@@ -53,7 +53,7 @@ export default async function ConceptosPage() {
           className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Ingresos y egresos
+          Ingresos y Egresos
         </Link>
         <h1 className="mt-1 text-xl">Conceptos de {selected.name}</h1>
         <p className="text-sm text-muted-foreground">

@@ -17,7 +17,7 @@ export default async function OficinaCajaChicaPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl">Caja chica</h1>
+        <h1 className="text-xl">Caja Chica</h1>
         <p className="text-sm text-muted-foreground">
           Fondo aprobado, gastado y disponible de los 4 negocios. Para aprobar fondos o registrar gastos, entra al negocio.
         </p>

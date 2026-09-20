@@ -39,7 +39,7 @@ export default async function CajaChicaPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl">Caja chica</h1>
+        <h1 className="text-xl">Caja Chica</h1>
         <p className="text-sm text-muted-foreground">
           Fondo para gastos menores: el administrador aprueba el monto y aquí se registra en qué se va gastando.
         </p>
