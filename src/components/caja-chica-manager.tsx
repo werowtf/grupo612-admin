@@ -10,6 +10,12 @@ import {
   deleteGastoAction,
   type CajaChicaActionState,
 } from "@/app/(app)/caja-chica/actions";
+import {
+  saveOficinaFondoAction,
+  deleteOficinaFondoAction,
+  saveOficinaGastoAction,
+  deleteOficinaGastoAction,
+} from "@/app/(app)/oficina/caja-chica/actions";
 import { formatMXN, formatDate } from "@/lib/utils";
 import { StatCard } from "@/components/stat-card";
 import { Button } from "@/components/ui/button";
@@ -59,12 +65,15 @@ export interface GastoRow {
 const init: CajaChicaActionState = {};
 
 export function CajaChicaManager({
+  scope = "venue",
   venueId,
   resumen,
   fondos,
   gastos,
   categories,
 }: {
+  /** "oficina": caja chica propia de Oficina (sin negocio ni Egreso asociado). */
+  scope?: "venue" | "oficina";
   venueId: string;
   resumen: { fondoTotal: number; gastadoTotal: number; disponible: number };
   fondos: FondoRow[];
@@ -72,12 +81,17 @@ export function CajaChicaManager({
   categories: string[];
 }) {
   const router = useRouter();
+  const oficina = scope === "oficina";
+  const saveFondo = oficina ? saveOficinaFondoAction : saveFondoAction;
+  const removeFondo = oficina ? deleteOficinaFondoAction : deleteFondoAction;
+  const saveGasto = oficina ? saveOficinaGastoAction : saveGastoAction;
+  const removeGasto = oficina ? deleteOficinaGastoAction : deleteGastoAction;
 
   // ── Fondos ──────────────────────────────────────────────────
   const [fondoOpen, setFondoOpen] = useState(false);
   const [editingFondo, setEditingFondo] = useState<FondoRow | null>(null);
   const [fondoDate, setFondoDate] = useState("");
-  const [fondoState, fondoAction, fondoSaving] = useActionState(saveFondoAction, init);
+  const [fondoState, fondoAction, fondoSaving] = useActionState(saveFondo, init);
   const [deletingFondoId, setDeletingFondoId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -101,7 +115,7 @@ export function CajaChicaManager({
   }
   async function onDeleteFondo(id: string) {
     setDeletingFondoId(id);
-    await deleteFondoAction(id);
+    await removeFondo(id);
     setDeletingFondoId(null);
     router.refresh();
   }
@@ -110,7 +124,7 @@ export function CajaChicaManager({
   const [gastoOpen, setGastoOpen] = useState(false);
   const [editingGasto, setEditingGasto] = useState<GastoRow | null>(null);
   const [gastoDate, setGastoDate] = useState("");
-  const [gastoState, gastoAction, gastoSaving] = useActionState(saveGastoAction, init);
+  const [gastoState, gastoAction, gastoSaving] = useActionState(saveGasto, init);
   const [deletingGastoId, setDeletingGastoId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -134,7 +148,7 @@ export function CajaChicaManager({
   }
   async function onDeleteGasto(id: string) {
     setDeletingGastoId(id);
-    await deleteGastoAction(id);
+    await removeGasto(id);
     setDeletingGastoId(null);
     router.refresh();
   }
@@ -194,7 +208,7 @@ export function CajaChicaManager({
                     defaultValue={editingFondo?.notes ?? ""}
                   />
                 </div>
-                {!editingFondo && (
+                {!editingFondo && !oficina && (
                   <p className="text-xs text-muted-foreground">
                     Se creará un Egreso por este monto en Ingresos y egresos (categoría &ldquo;Caja chica&rdquo;).
                   </p>
@@ -252,8 +266,8 @@ export function CajaChicaManager({
                             <AlertDialogHeader>
                               <AlertDialogTitle>¿Eliminar este fondo?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                {formatMXN(f.amount)} del {formatDate(f.date)}. También se eliminará el egreso
-                                relacionado en Ingresos y egresos. Esta acción no se puede deshacer.
+                                {formatMXN(f.amount)} del {formatDate(f.date)}.
+                                {oficina ? "" : " También se eliminará el egreso relacionado en Ingresos y egresos."} Esta acción no se puede deshacer.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

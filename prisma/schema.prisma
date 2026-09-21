@@ -46,6 +46,8 @@ model User {
   cajaChicaGastos CajaChicaGasto[] @relation("CajaChicaGastoCreatedBy")
   facturasCafeteria FacturaCafeteria[] @relation("FacturaCafeteriaCreatedBy")
   oficinaNotas OficinaNota[]    @relation("OficinaNotaCreatedBy")
+  oficinaCajaChicaFondos OficinaCajaChicaFondo[] @relation("OficinaCajaChicaFondoCreatedBy")
+  oficinaCajaChicaGastos OficinaCajaChicaGasto[] @relation("OficinaCajaChicaGastoCreatedBy")
   documents    Document[]       @relation("DocumentUploadedBy")
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
@@ -710,4 +712,32 @@ model FolioPedidoCafeteria {
   updatedAt DateTime @updatedAt
 
   @@unique([venueId, date])
+}
+
+/// Caja chica propia de Oficina: independiente de la de los negocios (no
+/// pertenece a ningún Venue ni genera Egresos en Ingresos y egresos).
+model OficinaCajaChicaFondo {
+  id          String   @id @default(cuid())
+  date        DateTime
+  amount      Decimal  @db.Decimal(14, 2)
+  notes       String?
+  createdById String?
+  createdBy   User?    @relation("OficinaCajaChicaFondoCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([date])
+}
+
+model OficinaCajaChicaGasto {
+  id          String   @id @default(cuid())
+  date        DateTime
+  amount      Decimal  @db.Decimal(14, 2)
+  category    String
+  employee    String
+  description String?
+  createdById String?
+  createdBy   User?    @relation("OficinaCajaChicaGastoCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([date])
 }
