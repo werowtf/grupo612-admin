@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, noAccesoCortes } from "@/lib/auth";
 import { parseCorteImage } from "@/lib/cortes/ocr";
 import {
   parseCorteVision,
@@ -26,6 +26,13 @@ export async function POST(req: Request) {
   if (!user) {
     return new Response(JSON.stringify({ type: "done", ok: false, error: "Sesión expirada." }) + "\n", {
       status: 401,
+      headers: NDJSON_HEADERS,
+    });
+  }
+
+  if (noAccesoCortes(user)) {
+    return new Response(JSON.stringify({ type: "done", ok: false, error: "No autorizado." }) + "\n", {
+      status: 403,
       headers: NDJSON_HEADERS,
     });
   }

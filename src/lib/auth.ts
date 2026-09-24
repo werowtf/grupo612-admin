@@ -1,5 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import {
@@ -52,6 +53,9 @@ export async function getCurrentUser() {
     include: { venues: { include: { venue: true } } },
   });
   if (!user || !user.active) return null;
+  // El rol del JWT quedó desactualizado (alguien lo cambió): se reemite la
+  // sesión en vez de dejar que el proxy y las páginas se contradigan.
+  if (session.role !== user.role) redirect("/api/session/refresh");
   return user;
 }
 
@@ -66,6 +70,15 @@ export type CurrentUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>
  */
 export function isReadOnly(user: Pick<CurrentUser, "role">): boolean {
   return user.role === "VISOR";
+}
+
+/**
+ * Compras y Contador externo viven en su propia área (proxy.ts) y no usan los
+ * cortes de caja. Las server actions y el OCR se llaman por HTTP directo, sin
+ * pasar por el confinamiento de rutas, así que se bloquean aquí también.
+ */
+export function noAccesoCortes(user: Pick<CurrentUser, "role">): boolean {
+  return user.role === "COMPRAS" || user.role === "CONTADOR_EXTERNO";
 }
 
 /** Negocios accesibles: ADMIN ve todos; el resto sólo los asignados. */
