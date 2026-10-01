@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Imagen Docker mínima para el VPS (ver Dockerfile).
+  output: "standalone",
   // tesseract.js resuelve su worker script con rutas basadas en __dirname
   // (node_modules/tesseract.js/src/worker-script/node/index.js); lo excluimos
   // del bundling de Server Components para que esas rutas no se rompan en
