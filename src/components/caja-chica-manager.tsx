@@ -2,12 +2,13 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, AlertCircle, Wallet, HandCoins, PiggyBank } from "lucide-react";
+import { Plus, Pencil, Trash2, AlertCircle, Check, Wallet, HandCoins, PiggyBank, Undo2 } from "lucide-react";
 import {
   saveFondoAction,
   deleteFondoAction,
   saveGastoAction,
   deleteGastoAction,
+  setGastoReembolsadoAction,
   type CajaChicaActionState,
 } from "@/app/(app)/caja-chica/actions";
 import {
@@ -15,6 +16,7 @@ import {
   deleteOficinaFondoAction,
   saveOficinaGastoAction,
   deleteOficinaGastoAction,
+  setOficinaGastoReembolsadoAction,
 } from "@/app/(app)/oficina/caja-chica/actions";
 import { formatMXN, formatDate } from "@/lib/utils";
 import { StatCard } from "@/components/stat-card";
@@ -60,6 +62,7 @@ export interface GastoRow {
   category: string;
   employee: string;
   description: string | null;
+  reimbursed: boolean;
 }
 
 const init: CajaChicaActionState = {};
@@ -75,7 +78,7 @@ export function CajaChicaManager({
   /** "oficina": caja chica propia de Oficina (sin negocio ni Egreso asociado). */
   scope?: "venue" | "oficina";
   venueId: string;
-  resumen: { fondoTotal: number; gastadoTotal: number; disponible: number };
+  resumen: { fondoTotal: number; gastadoTotal: number; reembolsadoTotal: number; disponible: number };
   fondos: FondoRow[];
   gastos: GastoRow[];
   categories: string[];
@@ -86,6 +89,7 @@ export function CajaChicaManager({
   const removeFondo = oficina ? deleteOficinaFondoAction : deleteFondoAction;
   const saveGasto = oficina ? saveOficinaGastoAction : saveGastoAction;
   const removeGasto = oficina ? deleteOficinaGastoAction : deleteGastoAction;
+  const setReembolsado = oficina ? setOficinaGastoReembolsadoAction : setGastoReembolsadoAction;
 
   // ── Fondos ──────────────────────────────────────────────────
   const [fondoOpen, setFondoOpen] = useState(false);
@@ -153,11 +157,34 @@ export function CajaChicaManager({
     router.refresh();
   }
 
+  const [reembolsando, setReembolsando] = useState<Record<string, boolean>>({});
+  const [reembolsoError, setReembolsoError] = useState<string | null>(null);
+  async function onToggleReembolso(id: string, reimbursed: boolean) {
+    setReembolsando((r) => ({ ...r, [id]: true }));
+    setReembolsoError(null);
+    const res = await setReembolsado(id, reimbursed);
+    setReembolsando((r) => ({ ...r, [id]: false }));
+    if (res.error) setReembolsoError(res.error);
+    else router.refresh();
+  }
+
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 sm:grid-cols-3">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Fondo aprobado" value={formatMXN(resumen.fondoTotal)} icon={<PiggyBank className="h-4 w-4" />} />
-        <StatCard label="Gastado" value={formatMXN(resumen.gastadoTotal)} tone="negative" icon={<HandCoins className="h-4 w-4" />} />
+        <StatCard
+          label="Gastado"
+          value={formatMXN(resumen.gastadoTotal)}
+          hint="Pendiente de reponer"
+          tone="negative"
+          icon={<HandCoins className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Repuesto"
+          value={formatMXN(resumen.reembolsadoTotal)}
+          hint="Ya no cuenta contra el disponible"
+          icon={<Undo2 className="h-4 w-4" />}
+        />
         <StatCard
           label="Disponible"
           value={formatMXN(resumen.disponible)}
@@ -370,6 +397,13 @@ export function CajaChicaManager({
           </Dialog>
         </div>
 
+        {reembolsoError && (
+          <p className="flex items-start gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            {reembolsoError}
+          </p>
+        )}
+
         {gastos.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
             No hay gastos registrados todavía.
@@ -384,6 +418,7 @@ export function CajaChicaManager({
                   <th className="px-3 py-2 font-semibold">Categoría</th>
                   <th className="px-3 py-2 font-semibold">Descripción</th>
                   <th className="px-3 py-2 text-right font-semibold">Monto</th>
+                  <th className="px-3 py-2 font-semibold">Repuesto</th>
                   <th className="px-3 py-2 font-semibold"></th>
                 </tr>
               </thead>
@@ -394,7 +429,39 @@ export function CajaChicaManager({
                     <td className="px-3 py-2">{g.employee}</td>
                     <td className="px-3 py-2 text-muted-foreground">{g.category}</td>
                     <td className="px-3 py-2 text-muted-foreground">{g.description ?? "—"}</td>
-                    <td className="px-3 py-2 text-right tabular-nums font-semibold text-cargo">{formatMXN(g.amount)}</td>
+                    <td className={`px-3 py-2 text-right tabular-nums font-semibold ${g.reimbursed ? "text-muted-foreground line-through" : "text-cargo"}`}>
+                      {formatMXN(g.amount)}
+                    </td>
+                    <td className="px-3 py-2">
+                      {g.reimbursed ? (
+                        <div className="flex items-center gap-1.5">
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-abono">
+                            <Check className="h-3.5 w-3.5" />
+                            Repuesto
+                          </span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            disabled={reembolsando[g.id]}
+                            onClick={() => onToggleReembolso(g.id, false)}
+                          >
+                            Deshacer
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          disabled={reembolsando[g.id]}
+                          onClick={() => onToggleReembolso(g.id, true)}
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                          Marcar repuesto
+                        </Button>
+                      )}
+                    </td>
                     <td className="px-3 py-2 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <Button type="button" variant="ghost" size="icon-sm" title="Editar" onClick={() => onEditGasto(g)}>

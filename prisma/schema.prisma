@@ -278,6 +278,9 @@ model CajaChicaGasto {
   category    String
   employee    String
   description String?
+  /// El empleado repuso este dinero: ya no cuenta contra el disponible de caja chica.
+  reimbursed   Boolean   @default(false)
+  reimbursedAt DateTime?
   createdById String?
   createdBy   User?    @relation("CajaChicaGastoCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
@@ -735,6 +738,9 @@ model OficinaCajaChicaGasto {
   category    String
   employee    String
   description String?
+  /// El empleado repuso este dinero: ya no cuenta contra el disponible de caja chica.
+  reimbursed   Boolean   @default(false)
+  reimbursedAt DateTime?
   createdById String?
   createdBy   User?    @relation("OficinaCajaChicaGastoCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())

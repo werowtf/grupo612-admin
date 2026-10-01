@@ -12,9 +12,10 @@ export async function getOficinaCajaChica() {
     prisma.oficinaCajaChicaGasto.findMany({ orderBy: { date: "desc" } }),
   ]);
   const fondoTotal = fondos.reduce((s, f) => s + num(f.amount), 0);
-  const gastadoTotal = gastos.reduce((s, g) => s + num(g.amount), 0);
+  const gastadoTotal = gastos.reduce((s, g) => (g.reimbursed ? s : s + num(g.amount)), 0);
+  const reembolsadoTotal = gastos.reduce((s, g) => (g.reimbursed ? s + num(g.amount) : s), 0);
   return {
-    resumen: { fondoTotal, gastadoTotal, disponible: fondoTotal - gastadoTotal },
+    resumen: { fondoTotal, gastadoTotal, reembolsadoTotal, disponible: fondoTotal - gastadoTotal },
     fondos,
     gastos,
   };

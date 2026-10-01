@@ -121,6 +121,32 @@ export async function saveOficinaGastoAction(
   }
 }
 
+/** Marca (o desmarca) un gasto de caja chica de Oficina como repuesto. */
+export async function setOficinaGastoReembolsadoAction(
+  id: string,
+  reimbursed: boolean,
+): Promise<CajaChicaActionState> {
+  try {
+    const user = await requireOficina();
+    const gasto = await prisma.oficinaCajaChicaGasto.update({
+      where: { id },
+      data: { reimbursed, reimbursedAt: reimbursed ? new Date() : null },
+    });
+    await logAudit({
+      userId: user.id,
+      action: reimbursed ? "oficinaCajaChicaGasto.reembolsar" : "oficinaCajaChicaGasto.pendiente",
+      entity: "OficinaCajaChicaGasto",
+      entityId: id,
+      meta: { amount: gasto.amount.toString() },
+    });
+    revalidate();
+    return { ok: true };
+  } catch (err) {
+    console.error("Error al actualizar el reembolso del gasto de Oficina:", err);
+    return { error: "No se pudo actualizar." };
+  }
+}
+
 export async function deleteOficinaGastoAction(id: string): Promise<CajaChicaActionState> {
   try {
     const user = await requireOficina();

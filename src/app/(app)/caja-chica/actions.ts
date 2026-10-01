@@ -188,6 +188,35 @@ export async function saveGastoAction(
   }
 }
 
+/** Marca (o desmarca) un gasto de caja chica como repuesto por el empleado. */
+export async function setGastoReembolsadoAction(
+  id: string,
+  reimbursed: boolean,
+): Promise<CajaChicaActionState> {
+  try {
+    const gasto = await prisma.cajaChicaGasto.findUnique({ where: { id } });
+    if (!gasto) return { error: "No encontrado." };
+    const user = await requireEditor(gasto.venueId);
+
+    await prisma.cajaChicaGasto.update({
+      where: { id },
+      data: { reimbursed, reimbursedAt: reimbursed ? new Date() : null },
+    });
+    await logAudit({
+      userId: user.id,
+      action: reimbursed ? "cajaChicaGasto.reembolsar" : "cajaChicaGasto.pendiente",
+      entity: "CajaChicaGasto",
+      entityId: id,
+      meta: { venueId: gasto.venueId, amount: gasto.amount.toString() },
+    });
+    revalidate();
+    return { ok: true };
+  } catch (err) {
+    console.error("Error al actualizar el reembolso del gasto:", err);
+    return { error: "No se pudo actualizar." };
+  }
+}
+
 /** Elimina un gasto de caja chica. */
 export async function deleteGastoAction(id: string): Promise<CajaChicaActionState> {
   try {

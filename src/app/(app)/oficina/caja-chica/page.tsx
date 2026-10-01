@@ -23,6 +23,7 @@ export default async function OficinaCajaChicaPage() {
     category: g.category,
     employee: g.employee,
     description: g.description,
+    reimbursed: g.reimbursed,
   }));
 
   return (
