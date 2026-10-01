@@ -16,10 +16,7 @@ jobs:
       - uses: actions/setup-node@v5
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      # El repo tiene deuda de lint previa (no introducida por este workflow);
-      # se reporta pero no bloquea el deploy hasta que se limpie.
       - run: npm run lint
-        continue-on-error: true
       - run: npm run typecheck
 
   # VPS compartido (Grupo 612 / MIIND): cada app vive en /srv/apps/<app> y se construye en el
