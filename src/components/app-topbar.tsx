@@ -49,7 +49,9 @@ export function AppTopbar({
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  // En una transición: evita el parpadeo del ícono de tema entre servidor y
+  // cliente sin encadenar un renderizado síncrono.
+  useEffect(() => startTransition(() => setMounted(true)), []);
 
   function onVenueChange(id: string) {
     startTransition(async () => {

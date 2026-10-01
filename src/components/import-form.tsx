@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UploadCloud, CheckCircle2, AlertCircle } from "lucide-react";
 import {
@@ -52,8 +52,12 @@ export function ImportForm({
   useEffect(() => {
     if (state.ok && (state.imported ?? 0) > 0) {
       formRef.current?.reset();
-      setFileName(null);
-      router.refresh();
+      // En una transición: responde al resultado de la acción del servidor sin
+      // encadenar un renderizado síncrono.
+      startTransition(() => {
+        setFileName(null);
+        router.refresh();
+      });
     }
   }, [state, router]);
 

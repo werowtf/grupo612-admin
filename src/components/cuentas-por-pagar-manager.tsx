@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Check, AlertCircle, Pencil, Trash2 } from "lucide-react";
 import {
@@ -73,8 +73,12 @@ export function CuentasPorPagarManager({
 
   useEffect(() => {
     if (state.ok) {
-      setOpen(false);
-      router.refresh();
+      // En una transición: responde al resultado de la acción del servidor sin
+      // encadenar un renderizado síncrono.
+      startTransition(() => {
+        setOpen(false);
+        router.refresh();
+      });
     }
   }, [state.ok, router]);
 

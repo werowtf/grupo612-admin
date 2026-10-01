@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, AlertCircle, Check, Wallet, HandCoins, PiggyBank, Undo2 } from "lucide-react";
 import {
@@ -100,8 +100,12 @@ export function CajaChicaManager({
 
   useEffect(() => {
     if (fondoState.ok) {
-      setFondoOpen(false);
-      router.refresh();
+      // En una transición: responde al resultado de la acción del servidor sin
+      // encadenar un renderizado síncrono.
+      startTransition(() => {
+        setFondoOpen(false);
+        router.refresh();
+      });
     }
   }, [fondoState.ok, router]);
 
@@ -133,8 +137,12 @@ export function CajaChicaManager({
 
   useEffect(() => {
     if (gastoState.ok) {
-      setGastoOpen(false);
-      router.refresh();
+      // En una transición: responde al resultado de la acción del servidor sin
+      // encadenar un renderizado síncrono.
+      startTransition(() => {
+        setGastoOpen(false);
+        router.refresh();
+      });
     }
   }, [gastoState.ok, router]);
 

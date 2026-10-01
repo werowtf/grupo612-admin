@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, AlertCircle, StickyNote } from "lucide-react";
 import { saveNotaAction, deleteNotaAction, type NotaActionState } from "@/app/(app)/oficina/notas/actions";
@@ -46,8 +46,12 @@ export function OficinaNotasManager({ notas }: { notas: NotaRow[] }) {
 
   useEffect(() => {
     if (state.ok) {
-      setOpen(false);
-      router.refresh();
+      // En una transición: responde al resultado de la acción del servidor sin
+      // encadenar un renderizado síncrono.
+      startTransition(() => {
+        setOpen(false);
+        router.refresh();
+      });
     }
   }, [state.ok, router]);
 
