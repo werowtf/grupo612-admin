@@ -13,7 +13,8 @@
     "db:generate": "prisma generate",
     "db:server": "tsx scripts/pg-server.ts",
     "db:migrate": "prisma migrate deploy",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.122.0",

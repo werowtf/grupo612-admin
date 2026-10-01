@@ -14,6 +14,7 @@ RUN npm ci
 
 # Herramientas: `docker compose run --rm admin-migrate` aplica migraciones.
 FROM deps AS migrator
+LABEL org.opencontainers.image.source=https://github.com/werowtf/grupo612-admin
 COPY . .
 CMD ["npx", "prisma", "migrate", "deploy"]
 
@@ -25,6 +26,7 @@ ENV DATABASE_URL=postgresql://build:build@localhost:5432/build
 RUN npm run build
 
 FROM base AS runner
+LABEL org.opencontainers.image.source=https://github.com/werowtf/grupo612-admin
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
 RUN useradd -m -u 1001 app
 COPY --from=builder --chown=app /app/.next/standalone ./

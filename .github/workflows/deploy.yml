@@ -1,0 +1,90 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # El repo tiene deuda de lint previa (no introducida por este workflow);
+      # se reporta pero no bloquea el deploy hasta que se limpie.
+      - run: npm run lint
+        continue-on-error: true
+      - run: npm run typecheck
+
+  # VPS compartido (Grupo 612 / MIIND): cada app vive en /srv/apps/<app> y se construye en el
+  # servidor desde /srv/vps/docker-compose.yml. Aquí solo se sube el código y se reconstruye admin.
+  # Se activa con la variable del repo AUTODEPLOY=true.
+  deploy:
+    needs: check
+    if: vars.AUTODEPLOY == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency: production
+    env:
+      TARGET: ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.VPS_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+
+      - name: Subir código a /srv/apps/admin.new
+        run: |
+          git archive --format=tar.gz HEAD | ssh "$TARGET" \
+            'set -e; rm -rf /srv/apps/admin.new; mkdir /srv/apps/admin.new; tar -xz -C /srv/apps/admin.new'
+
+      - name: Build, migrar y reiniciar
+        run: |
+          ssh "$TARGET" 'bash -s' <<'EOF'
+          set -euo pipefail
+          cd /srv/apps
+          rm -rf admin.prev
+          mv admin admin.prev
+          mv admin.new admin
+
+          cd /srv/vps
+          rollback() {
+            echo "::error::Falló el deploy; restaurando código anterior en /srv/apps/admin"
+            cd /srv/apps && rm -rf admin && mv admin.prev admin
+          }
+          trap rollback ERR
+
+          # El contenedor actual sigue corriendo mientras se construye.
+          docker compose build admin admin-migrate
+          # -T y </dev/null: sin esto `run` se come el stdin de este script y lo demás no se ejecuta.
+          docker compose --profile tools run --rm -T admin-migrate </dev/null
+          docker compose up -d --no-deps admin </dev/null
+          trap - ERR
+
+          # Verificar que el contenedor corre la imagen recién construida.
+          running=$(docker inspect -f '{{.Image}}' "$(docker compose ps -q admin)")
+          built=$(docker image inspect -f '{{.Id}}' "vps-admin:latest")
+          [ "$running" = "$built" ] || { echo "::error::admin no usa la imagen nueva"; exit 1; }
+          echo "admin OK ${built:7:12}"
+
+          # Solo imágenes huérfanas de esta app; no toca las de otros proyectos.
+          docker image prune -f --filter "label=org.opencontainers.image.source=https://github.com/werowtf/grupo612-admin"
+          EOF
+
+      - name: Health check
+        run: |
+          for i in $(seq 1 12); do
+            curl -fsS https://admin.grupo612.com.mx/api/health && exit 0
+            sleep 5
+          done
+          echo "::error::/api/health no respondió" && exit 1
