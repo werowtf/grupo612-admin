@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { ChevronDown, Info, LogOut, Menu, Moon, ScrollText, Sun, Users } from "lucide-react";
-import { logoutAction, selectVenueAction, selectOficinaAction } from "@/app/(app)/actions";
+import { logoutAction } from "@/app/(app)/actions";
+import { VENUE_COOKIE, OFICINA_SENTINEL } from "@/lib/venue-constants";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
@@ -34,6 +34,12 @@ interface Props {
   onOpenMobileNav?: () => void;
 }
 
+/** Fija la cookie del negocio seleccionado (ver selectValue en AppTopbar). */
+function writeVenueCookie(value: string) {
+  const secure = window.location.protocol === "https:" ? "; secure" : "";
+  document.cookie = `${VENUE_COOKIE}=${value}; path=/; max-age=${60 * 60 * 24 * 30}; samesite=lax${secure}`;
+}
+
 export function AppTopbar({
   role,
   venues,
@@ -44,8 +50,10 @@ export function AppTopbar({
   roleLabel,
   onOpenMobileNav,
 }: Props) {
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
+  // Mientras recarga la página, el selector queda deshabilitado.
+  const [requested, setRequested] = useState<string | null>(null);
+  const pending = requested !== null;
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -53,18 +61,24 @@ export function AppTopbar({
   // cliente sin encadenar un renderizado síncrono.
   useEffect(() => startTransition(() => setMounted(true)), []);
 
+  // El negocio seleccionado vive en una cookie legible por el navegador. Se
+  // fija aquí y se recarga la página: el servidor valida el valor
+  // (getSelectedVenue sólo acepta negocios accesibles y getAppContext ignora
+  // Oficina sin el permiso). Se recarga en vez de router.refresh() porque éste
+  // dejaba la pantalla sin actualizar durante segundos (hasta ~1 min) hasta
+  // que algo forzaba otro render.
+  function selectValue(value: string) {
+    writeVenueCookie(value);
+    setRequested(value);
+    window.location.reload();
+  }
+
   function onVenueChange(id: string) {
-    startTransition(async () => {
-      await selectVenueAction(id);
-      router.refresh();
-    });
+    selectValue(id);
   }
 
   function onOficinaClick() {
-    startTransition(async () => {
-      await selectOficinaAction();
-      router.refresh();
-    });
+    selectValue(OFICINA_SENTINEL);
   }
 
   return (
