@@ -2,7 +2,6 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { destroySession, getSession, getCurrentUser } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { VENUE_COOKIE, OFICINA_SENTINEL } from "@/lib/venue-constants";
@@ -22,7 +21,9 @@ export async function selectVenueAction(venueId: string) {
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
   });
-  revalidatePath("/", "layout");
+  // Sin revalidatePath: el cliente hace router.refresh() justo después. Con
+  // revalidatePath la respuesta de la acción traía la página completa
+  // re-renderizada y la transición del selector tardaba o no terminaba.
 }
 
 /** Activa el modo "Oficina" (dashboard consolidado); ignora silenciosamente sin el permiso. */
@@ -37,5 +38,7 @@ export async function selectOficinaAction() {
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
   });
-  revalidatePath("/", "layout");
+  // Sin revalidatePath: el cliente hace router.refresh() justo después. Con
+  // revalidatePath la respuesta de la acción traía la página completa
+  // re-renderizada y la transición del selector tardaba o no terminaba.
 }

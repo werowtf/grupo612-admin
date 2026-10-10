@@ -72,7 +72,7 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
               <tr key={r.id} className="hover:bg-muted/60">
                 <td className="whitespace-nowrap px-3 py-2 font-semibold">{formatDate(r.date)}</td>
                 <td className="hidden px-3 py-2 sm:table-cell">
-                  <Link href={`/cortes/${r.id}`} className="text-brand-600 hover:underline">
+                  <Link href={`/cortes/${r.id}`} prefetch={false} className="text-brand-600 hover:underline">
                     Propina corte{r.folioCorteZ ? ` #${r.folioCorteZ}` : ""}
                   </Link>
                 </td>

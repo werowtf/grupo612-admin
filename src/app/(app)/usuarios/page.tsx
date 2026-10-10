@@ -49,7 +49,7 @@ export default async function UsuariosPage() {
               {users.map((u) => (
                 <tr key={u.id} className="hover:bg-muted/60">
                   <td className="px-3 py-2 font-medium">
-                    <Link href={`/usuarios/${u.id}/editar`} className="hover:text-brand-600 hover:underline">
+                    <Link href={`/usuarios/${u.id}/editar`} prefetch={false} className="hover:text-brand-600 hover:underline">
                       {u.name}
                     </Link>
                     {u.id === user.id && (
@@ -75,7 +75,7 @@ export default async function UsuariosPage() {
                     <ToggleActiveButton userId={u.id} active={u.active} />
                   </td>
                   <td className="px-3 py-2 text-right">
-                    <Link href={`/usuarios/${u.id}/editar`} className="text-xs text-brand-600 hover:underline">
+                    <Link href={`/usuarios/${u.id}/editar`} prefetch={false} className="text-xs text-brand-600 hover:underline">
                       Editar
                     </Link>
                   </td>

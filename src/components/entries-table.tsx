@@ -60,7 +60,7 @@ export function EntriesTable({ type, rows, hrefBase, emptyText }: Props) {
               <tr key={e.id} className="hover:bg-muted/60">
                 <td className="whitespace-nowrap px-3 py-2">
                   {hrefBase ? (
-                    <Link href={`${hrefBase}/${e.id}`} className="font-semibold text-brand-600 hover:underline">
+                    <Link href={`${hrefBase}/${e.id}`} prefetch={false} className="font-semibold text-brand-600 hover:underline">
                       {formatDate(e.date)}
                     </Link>
                   ) : (
@@ -104,6 +104,7 @@ export function EntriesTable({ type, rows, hrefBase, emptyText }: Props) {
                       <>
                         <Link
                           href={`${hrefBase}/${e.id}/editar`}
+                          prefetch={false}
                           title="Editar"
                           className="inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-muted"
                         >

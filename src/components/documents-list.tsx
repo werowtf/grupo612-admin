@@ -29,7 +29,7 @@ export function DocumentsList({ rows, emptyText }: { rows: DocRow[]; emptyText?:
     <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {rows.map((d) => (
         <li key={d.id} className="card min-w-0 p-4">
-          <Link href={`/documentos/${d.id}`} className="flex items-start gap-3">
+          <Link href={`/documentos/${d.id}`} prefetch={false} className="flex items-start gap-3">
             <DocumentIcon mime={d.mime} className="mt-0.5 h-6 w-6 shrink-0" />
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-medium">{d.title}</div>

@@ -27,6 +27,7 @@ export async function LinkedDocuments({ venues, venueId, redirectTo, corteId, en
             <li key={d.id}>
               <Link
                 href={`/documentos/${d.id}`}
+                prefetch={false}
                 className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm hover:bg-muted/50"
               >
                 <DocumentIcon mime={d.mime} className="h-4 w-4 shrink-0" />

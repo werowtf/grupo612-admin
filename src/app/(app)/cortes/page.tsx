@@ -84,7 +84,7 @@ export default async function CortesPage() {
                   return (
                     <tr key={c.id} className="hover:bg-muted/60">
                       <td className="whitespace-nowrap px-3 py-2">
-                        <Link href={`/cortes/${c.id}`} className="font-semibold text-brand-600 hover:underline">
+                        <Link href={`/cortes/${c.id}`} prefetch={false} className="font-semibold text-brand-600 hover:underline">
                           {formatDate(c.date)}
                         </Link>
                       </td>

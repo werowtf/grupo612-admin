@@ -99,6 +99,11 @@ function NavLinks({
           <Link
             key={item.href}
             href={item.href}
+            // Sin prefetch: cada sección es dinámica y autenticada, así que cada
+            // prefetch ejecuta el layout completo (usuario, negocios) en el
+            // servidor. Al cambiar de negocio se invalidaba la caché y se
+            // disparaban ~10 a la vez, haciendo esperar a la acción real.
+            prefetch={false}
             onClick={onNavigate}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
