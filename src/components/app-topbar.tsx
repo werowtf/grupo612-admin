@@ -102,7 +102,7 @@ export function AppTopbar({
                   onClick={() => onVenueChange(v.id)}
                   disabled={pending}
                   className={cn(
-                    "shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-wait",
+                    "shrink-0 cursor-pointer rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-wait",
                     !oficina && v.id === selectedVenueId
                       ? "bg-brand-600 text-white"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -117,7 +117,7 @@ export function AppTopbar({
                   onClick={onOficinaClick}
                   disabled={pending}
                   className={cn(
-                    "shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-wait",
+                    "shrink-0 cursor-pointer rounded-full px-3 py-1 text-sm font-medium transition-colors disabled:cursor-wait",
                     oficina
                       ? "bg-brand-600 text-white"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",

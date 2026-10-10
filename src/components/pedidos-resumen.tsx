@@ -12,6 +12,9 @@ import {
 import { usePedidosSaveRegistration } from "@/components/pedidos-save-context";
 import { formatMXN, formatDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/date-picker";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatCard } from "@/components/stat-card";
 import type { ProductoResumen, FacturacionDia } from "@/lib/pedidos/queries";
@@ -92,15 +95,27 @@ export function PedidosResumen({
   // Guarda automáticamente los folios al cambiar de café o sección.
   usePedidosSaveRegistration(dirty ? doAutoSave : null);
 
-  async function onEstadoChange(day: number, status: FacturaEstado) {
+  // Al marcar "Pagado" se pide la fecha de cobro: el ingreso se registra en
+  // esa fecha (puede caer en el mes siguiente al de la facturación).
+  const [cobro, setCobro] = useState<{ day: number; date: string } | null>(null);
+
+  async function applyEstado(day: number, status: FacturaEstado, paidDate?: string) {
     setEstados((e) => ({ ...e, [day]: status }));
     setSavingDay(day);
     setEstadoError(null);
     const dateStr = `${year}-${pad2(month)}-${pad2(day)}`;
-    const res = await updateFacturaEstadoAction(venueId, dateStr, status);
+    const res = await updateFacturaEstadoAction(venueId, dateStr, status, paidDate);
     setSavingDay(null);
     if (res.error) setEstadoError(res.error);
     else router.refresh();
+  }
+
+  function onEstadoChange(day: number, status: FacturaEstado) {
+    if (status === "PAGADO" && estados[day] !== "PAGADO") {
+      setCobro({ day, date: new Date().toISOString().slice(0, 10) });
+      return;
+    }
+    void applyEstado(day, status);
   }
 
   return (
@@ -264,6 +279,39 @@ export function PedidosResumen({
           </table>
         </div>
       </div>
+
+      <Dialog open={cobro !== null} onOpenChange={(o) => !o && setCobro(null)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Fecha de cobro</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            El ingreso se registrará en la fecha en que se cobró, aunque la facturación sea de otro mes.
+          </p>
+          <DatePicker
+            id="fecha-cobro"
+            name="fechaCobro"
+            value={cobro?.date ?? ""}
+            onChange={(v) => setCobro((c) => (c ? { ...c, date: v } : c))}
+            required
+          />
+          <DialogFooter>
+            <DialogClose render={<Button type="button" variant="outline" />}>Cancelar</DialogClose>
+            <Button
+              type="button"
+              disabled={!cobro?.date}
+              onClick={() => {
+                if (!cobro) return;
+                const { day, date } = cobro;
+                setCobro(null);
+                void applyEstado(day, "PAGADO", date);
+              }}
+            >
+              Marcar pagado
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

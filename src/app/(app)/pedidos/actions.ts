@@ -240,11 +240,16 @@ export async function updateFacturaEstadoAction(
   venueId: string,
   dateStr: string,
   status: FacturaEstado,
+  paidDateStr?: string,
 ): Promise<PedidosActionState> {
   try {
     const user = await requireEditor(venueId);
     const date = new Date(`${dateStr}T00:00:00.000Z`);
     if (Number.isNaN(date.getTime())) return { error: "Fecha inválida." };
+    // Fecha de cobro: el ingreso cuenta en el mes en que se cobra, no en el
+    // de la facturación. Sin fecha explícita se usa la del día facturado.
+    const paidDate = paidDateStr ? new Date(`${paidDateStr}T00:00:00.000Z`) : date;
+    if (Number.isNaN(paidDate.getTime())) return { error: "Fecha de cobro inválida." };
 
     const existing = await prisma.folioPedidoCafeteria.findUnique({ where: { venueId_date: { venueId, date } } });
 
@@ -261,7 +266,7 @@ export async function updateFacturaEstadoAction(
           data: {
             venueId,
             type: "INGRESO",
-            date,
+            date: paidDate,
             amount,
             category: "Cafetería",
             description: `Facturación diaria — ${dateStr}`,
