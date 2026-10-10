@@ -51,6 +51,11 @@ export interface CuentaPorPagarRow {
 const init: CuentaPorPagarActionState = {};
 const ALL = "__all__";
 const NONE = "__none__";
+const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+function monthLabel(ym: string) {
+  const [y, m] = ym.split("-");
+  return `${MESES[Number(m) - 1]} ${y}`;
+}
 
 export function CuentasPorPagarManager({
   venueId,
@@ -70,6 +75,7 @@ export function CuentasPorPagarManager({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
   const [supplierFilter, setSupplierFilter] = useState(ALL);
+  const [monthFilter, setMonthFilter] = useState(ALL);
 
   useEffect(() => {
     if (state.ok) {
@@ -119,9 +125,14 @@ export function CuentasPorPagarManager({
   );
   const hasNoSupplier = rows.some((r) => !r.supplier);
   const filterValue = supplierFilter === NONE ? (hasNoSupplier ? NONE : ALL) : suppliers.includes(supplierFilter) || supplierFilter === ALL ? supplierFilter : ALL;
-  const visible = rows.filter((r) =>
-    filterValue === ALL ? true : filterValue === NONE ? !r.supplier : r.supplier === filterValue,
+  const months = [...new Set(rows.map((r) => r.date.slice(0, 7)))].sort().reverse();
+  const monthValue = months.includes(monthFilter) ? monthFilter : ALL;
+  const visible = rows.filter(
+    (r) =>
+      (filterValue === ALL ? true : filterValue === NONE ? !r.supplier : r.supplier === filterValue) &&
+      (monthValue === ALL || r.date.startsWith(monthValue)),
   );
+  const filtering = filterValue !== ALL || monthValue !== ALL;
   const total = visible.reduce((sum, r) => sum + r.amount, 0);
 
   return (
@@ -129,6 +140,19 @@ export function CuentasPorPagarManager({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-semibold">Otros</h2>
         <div className="flex flex-wrap items-center gap-2">
+        {rows.length > 0 && (
+          <Select value={monthValue} onValueChange={(v) => setMonthFilter(v ?? ALL)}>
+            <SelectTrigger className="h-8 w-auto min-w-36 max-w-full whitespace-nowrap border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50" aria-label="Filtrar por mes">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>Todos los meses</SelectItem>
+              {months.map((m) => (
+                <SelectItem key={m} value={m}>{monthLabel(m)}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         {rows.length > 0 && (
           <Select value={filterValue} onValueChange={(v) => setSupplierFilter(v ?? ALL)}>
             <SelectTrigger className="h-8 w-auto min-w-52 max-w-full whitespace-nowrap border-transparent bg-field-bg font-normal text-foreground hover:bg-muted/50" aria-label="Filtrar por proveedor">
@@ -319,10 +343,10 @@ export function CuentasPorPagarManager({
             <tfoot>
               <tr className="border-t border-border bg-table-header/60 font-semibold">
                 <td colSpan={2} className="px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground sm:hidden">
-                  {filterValue === ALL ? "Total pendiente" : "Total pendiente (filtrado)"}
+                  {filtering ? "Total pendiente (filtrado)" : "Total pendiente"}
                 </td>
                 <td colSpan={4} className="hidden px-3 py-2 text-right text-xs uppercase tracking-wide text-muted-foreground sm:table-cell">
-                  {filterValue === ALL ? "Total pendiente" : "Total pendiente (filtrado)"}
+                  {filtering ? "Total pendiente (filtrado)" : "Total pendiente"}
                 </td>
                 <td className="px-3 py-2 text-right tabular-nums text-cargo">{formatMXN(total)}</td>
                 <td></td>
