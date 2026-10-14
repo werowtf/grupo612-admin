@@ -94,6 +94,11 @@ export default async function MovimientosPage({
     dateFrom: filters.dateFrom,
     dateTo: filters.dateTo,
   });
+  // Pie de la tabla: mismos filtros que la tabla (incluida la categoría). Con una
+  // categoría elegida solo cuenta esa; las demás quedan en cero.
+  const footerTotals: Record<TxCategory, number> = filters.category
+    ? { TRANSFERENCIA: 0, CHEQUE: 0, DEPOSITO: 0, COMISION: 0, GASTO_TARJETA: 0, [filters.category]: categoryTotals[filters.category] }
+    : categoryTotals;
   const hasFilters = Boolean(
     filters.category || filters.direction || filters.status || filters.search,
   );
@@ -207,7 +212,7 @@ export default async function MovimientosPage({
         </div>
       </form>
 
-      <TransactionsTable rows={rows.map(toTxRow)} />
+      <TransactionsTable rows={rows.map(toTxRow)} showTotals totals={{ count: total, byCategory: footerTotals }} />
     </div>
   );
 }

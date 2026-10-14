@@ -43,16 +43,26 @@ export function TransactionsTable({
   categoryOrder = DEFAULT_CATEGORIES,
   showTotals = false,
   showStatus = true,
+  totals,
 }: {
   rows: TxRow[];
   categoryOrder?: TxCategory[];
   showTotals?: boolean;
   showStatus?: boolean;
+  /**
+   * Totales ya calculados por el servidor con los mismos filtros que la tabla.
+   * Si no se pasan, se suman de las filas que se muestran.
+   */
+  totals?: { count: number; byCategory: Record<TxCategory, number> };
 }) {
   const CATEGORIES = categoryOrder;
   const categoryTotals = CATEGORIES.map((c) =>
-    rows.filter((r) => r.category === c).reduce((sum, r) => sum + r.amount, 0),
+    totals
+      ? totals.byCategory[c]
+      : rows.filter((r) => r.category === c).reduce((sum, r) => sum + r.amount, 0),
   );
+  const movCount = totals?.count ?? rows.length;
+  const grandTotal = categoryTotals.reduce((sum, t) => sum + t, 0);
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -186,7 +196,7 @@ export function TransactionsTable({
                 <td className="px-2 py-2 sm:px-3">Total</td>
                 <td className="hidden px-3 py-2 sm:table-cell" />
                 <td className="px-2 py-2 text-xs font-normal text-muted-foreground sm:px-3">
-                  {rows.length} mov.
+                  {movCount} mov.
                 </td>
                 {CATEGORIES.map((c, i) => (
                   <td
@@ -200,7 +210,7 @@ export function TransactionsTable({
                   </td>
                 ))}
                 <td className="px-2 py-2 text-right tabular-nums sm:hidden">
-                  {formatMXN(rows.reduce((sum, r) => sum + r.amount, 0))}
+                  {formatMXN(grandTotal)}
                 </td>
                 {showStatus && <td className="hidden px-3 py-2 sm:table-cell" />}
               </tr>
