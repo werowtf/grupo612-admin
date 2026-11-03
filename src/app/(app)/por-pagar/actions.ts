@@ -126,6 +126,10 @@ export async function deleteCuentaPorPagarAction(id: string): Promise<CuentaPorP
  * Marca una cuenta como pagada y crea el Egreso correspondiente en Ingresos
  * y egresos del mismo negocio, para que el pago quede reflejado ahí (antes
  * sólo se guardaba paidAt y el egreso nunca se registraba).
+ *
+ * El Egreso lleva la fecha con que se registró la cuenta (no el día en que se
+ * marcó como pagada): el gasto pertenece al mes del movimiento. Lo que sí
+ * guarda el día del pago es `paidAt` de la cuenta.
  */
 export async function markCuentaPagadaAction(id: string): Promise<CuentaPorPagarActionState> {
   try {
@@ -134,12 +138,16 @@ export async function markCuentaPagadaAction(id: string): Promise<CuentaPorPagar
     if (cuenta.paidAt) return { error: "Esta cuenta ya está pagada." };
     const user = await requireEditor(cuenta.venueId);
 
+    // Día calendario de la cuenta (se guarda como medianoche UTC) a las 12:00,
+    // igual que Ingresos y egresos, para que ningún huso lo mueva de mes.
+    const entryDate = new Date(`${cuenta.date.toISOString().slice(0, 10)}T12:00:00`);
+
     await prisma.$transaction(async (tx) => {
       const entry = await tx.financialEntry.create({
         data: {
           venueId: cuenta.venueId,
           type: "EGRESO",
-          date: new Date(),
+          date: entryDate,
           amount: cuenta.amount,
           category: "Otros",
           description: cuenta.concept,
