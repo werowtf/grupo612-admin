@@ -139,8 +139,8 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(r.tarjeta)}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(r.credito)}</td>
                       <td className="px-3 py-2 text-right tabular-nums font-semibold">{formatMXN(total)}</td>
-                      <td className="max-w-[160px] truncate px-3 py-2 text-muted-foreground" title={r.statusCredito ?? ""}>
-                        {r.statusCredito || "—"}
+                      <td className="px-3 py-2 text-muted-foreground" title={r.statusCredito ?? ""}>
+                        <div className="line-clamp-2 max-w-[240px] text-xs">{r.statusCredito || "—"}</div>
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(r.comida)}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(r.bebida)}</td>
