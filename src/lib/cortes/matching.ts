@@ -22,6 +22,49 @@ export interface CorteMatching {
   suggestions: DepositRow[];
 }
 
+/**
+ * Descripciones de las liquidaciones de la terminal: Santander "DEPOSITO VENTAS
+ * DEL DIA" y BanBajío "Deposito Negocios Afiliados". Los SPEI, "Entrega de
+ * recursos", bonificaciones, etc. no son liquidaciones de tarjeta, así que el
+ * auto-conciliar los ignora (aunque sí se muestran como sugerencias manuales).
+ */
+const CARD_SETTLEMENT = /VENTAS DEL DIA|NEGOCIOS AFILIADOS/i;
+export function isCardSettlement(description: string): boolean {
+  return CARD_SETTLEMENT.test(description);
+}
+
+/**
+ * Banda aceptada para el auto-conciliar: el depósito es el total de tarjeta
+ * menos la comisión (tasa de descuento + IVA, normalmente 0 a 4%), por eso
+ * puede quedar hasta 6% abajo y, por redondeos, no más de 0.5% arriba. Con la
+ * tolerancia anterior (20%) se vinculaban depósitos que no correspondían.
+ */
+export const AUTO_MATCH_BAND = { min: -0.06, max: 0.005 } as const;
+
+export type AutoMatchDecision =
+  | { kind: "link"; deposit: DepositRow }
+  | { kind: "no-candidates" }
+  | { kind: "out-of-band"; closest: DepositRow }
+  | { kind: "ambiguous"; count: number };
+
+/**
+ * Decide si el auto-conciliar puede vincular un depósito: solo liquidaciones
+ * de tarjeta, dentro de la banda de comisión y siendo la única que cuadra.
+ * Con varias que cuadran, o ninguna, no vincula y lo deja a la revisión manual.
+ */
+export function pickAutoMatch(remaining: number, suggestions: DepositRow[]): AutoMatchDecision {
+  const settlements = suggestions.filter((s) => isCardSettlement(s.description));
+  if (settlements.length === 0) return { kind: "no-candidates" };
+  const inBand = settlements.filter((s) => {
+    const ratio = (s.amount - remaining) / remaining;
+    return ratio >= AUTO_MATCH_BAND.min && ratio <= AUTO_MATCH_BAND.max;
+  });
+  if (inBand.length === 1) return { kind: "link", deposit: inBand[0] };
+  if (inBand.length > 1) return { kind: "ambiguous", count: inBand.length };
+  const closest = [...settlements].sort((a, b) => Math.abs(a.amount - remaining) - Math.abs(b.amount - remaining))[0];
+  return { kind: "out-of-band", closest };
+}
+
 function num(v: { toString(): string } | null | undefined): number {
   return v ? Number(v.toString()) : 0;
 }

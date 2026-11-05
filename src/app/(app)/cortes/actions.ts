@@ -9,7 +9,7 @@ import { assertVenueAccess } from "@/lib/context";
 import { logAudit } from "@/lib/audit";
 import { parseCorteFile, CorteImportError, type CorteExtraction } from "@/lib/cortes";
 import { MONEY_KEYS, INT_KEYS } from "@/lib/cortes/fields";
-import { getCorteMatching } from "@/lib/cortes/matching";
+import { getCorteMatching, pickAutoMatch } from "@/lib/cortes/matching";
 import { syncDailySaleFromCortes } from "@/lib/daily-sales/sync";
 import type { CorteSource } from "@/generated/prisma/enums";
 
@@ -277,7 +277,11 @@ export async function unlinkDepositAction(txId: string) {
   revalidatePath("/movimientos");
 }
 
-/** Auto-concilia: vincula la mejor sugerencia si su monto está dentro de tolerancia. */
+/**
+ * Auto-concilia: vincula un depósito solo si es una liquidación de tarjeta,
+ * queda en la banda de comisión (-6% a +0.5% del total) y es la única que
+ * cuadra. En cualquier otro caso no vincula y explica por qué.
+ */
 export async function autoMatchCorteAction(
   corteId: string,
 ): Promise<{ linked: number; message: string }> {
@@ -294,17 +298,30 @@ export async function autoMatchCorteAction(
     return { linked: 0, message: "El corte no tiene ventas con tarjeta para conciliar." };
   }
   const remaining = cardTotal - linkedTotal;
-  const best = suggestions[0];
-  if (!best) return { linked: 0, message: "No hay depósitos candidatos en el rango de fechas." };
+  if (remaining <= 0.5) return { linked: 0, message: "Este corte ya está conciliado." };
 
-  const tolerance = Math.max(remaining * 0.2, 50); // 20% o $50
-  if (Math.abs(best.amount - remaining) > tolerance) {
+  const decision = pickAutoMatch(remaining, suggestions);
+  if (decision.kind === "no-candidates") {
+    return {
+      linked: 0,
+      message: "No hay depósitos de liquidación de tarjeta sin conciliar en el rango de fechas del corte.",
+    };
+  }
+  if (decision.kind === "ambiguous") {
+    return {
+      linked: 0,
+      message: `Hay ${decision.count} depósitos que podrían corresponder; vincula manualmente el correcto.`,
+    };
+  }
+  if (decision.kind === "out-of-band") {
     return {
       linked: 0,
       message:
-        "Ninguna sugerencia coincide con suficiente certeza. Vincula manualmente el depósito correcto.",
+        "Ningún depósito de liquidación coincide con el total de tarjeta (se espera entre 6% menos y 0.5% más por la comisión). " +
+        "Puede faltar el estado de cuenta o el depósito incluir varios cortes: vincula manualmente.",
     };
   }
+  const best = decision.deposit;
 
   await prisma.bankTransaction.update({
     where: { id: best.id },

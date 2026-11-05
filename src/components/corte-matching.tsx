@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Link2, Unlink, Sparkles, ArrowRight, Info } from "lucide-react";
 import {
@@ -25,6 +25,7 @@ interface Props {
 export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggestions, role }: Props) {
   const router = useRouter();
   const [pending, start] = useTransition();
+  const [autoMessage, setAutoMessage] = useState<{ linked: boolean; text: string } | null>(null);
 
   const diff = Math.round((cardTotal - linkedTotal) * 100) / 100;
   const conciliado = cardTotal > 0 && Math.abs(diff) < 0.5;
@@ -60,7 +61,13 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
         {role !== "CAJERO" && (
           <Button
             type="button"
-            onClick={() => run(() => autoMatchCorteAction(corteId))}
+            onClick={() =>
+              run(async () => {
+                setAutoMessage(null);
+                const res = await autoMatchCorteAction(corteId);
+                setAutoMessage({ linked: res.linked > 0, text: res.message });
+              })
+            }
             disabled={pending}
           >
             <Sparkles className="h-4 w-4" />
@@ -68,6 +75,19 @@ export function CorteMatching({ corteId, cardTotal, linked, linkedTotal, suggest
           </Button>
         )}
       </div>
+
+      {autoMessage && (
+        <p
+          role="status"
+          className={cn(
+            "flex items-start gap-2 rounded-lg px-3 py-2 text-sm",
+            autoMessage.linked ? "bg-success-bg text-success" : "bg-muted text-muted-foreground",
+          )}
+        >
+          <Info className="mt-0.5 h-4 w-4 shrink-0" />
+          {autoMessage.text}
+        </p>
+      )}
 
       {/* Resumen */}
       <div className="grid gap-3 sm:grid-cols-3">
