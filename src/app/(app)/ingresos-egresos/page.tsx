@@ -134,7 +134,7 @@ export default async function IngresosEgresosPage({
         <div className="card flex flex-wrap items-end gap-3 p-4">
           <div className="min-w-[160px] flex-1">
             <label className="label" htmlFor="search">Buscar</label>
-            <Input id="search" name="search" defaultValue={filters.search ?? ""} placeholder="Proveedor, folio…" />
+            <Input id="search" name="search" defaultValue={filters.search ?? ""} placeholder="Proveedor, concepto, folio…" />
           </div>
           <div>
             <label className="label" htmlFor="type">Tipo</label>

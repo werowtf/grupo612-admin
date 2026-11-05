@@ -4,6 +4,7 @@ import { getAppContext } from "@/lib/context";
 import { prisma } from "@/lib/prisma";
 import { formatMXN, formatDate } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { CortesMonthNav } from "@/components/cortes-month-nav";
 
 const sourceLabels: Record<string, string> = {
   MANUAL: "Manual",
@@ -11,8 +12,16 @@ const sourceLabels: Record<string, string> = {
   OCR: "Foto",
 };
 
-export default async function CortesPage() {
+const MONTH_NAMES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const ymd = (year: number, month: number) => `${year}-${String(month).padStart(2, "0")}`;
+
+export default async function CortesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
   const { selected } = await getAppContext();
+  const sp = await searchParams;
 
   if (!selected) {
     return (
@@ -30,10 +39,32 @@ export default async function CortesPage() {
     );
   }
 
-  const cortes = await prisma.corte.findMany({
+  // Se pagina por mes. Sin `mes`, el del corte más reciente (si no hay cortes este mes, no abre vacío).
+  const latest = await prisma.corte.findFirst({
     where: { venueId: selected.id },
     orderBy: { date: "desc" },
-    take: 100,
+    select: { date: true },
+  });
+  const m = /^(\d{4})-(0[1-9]|1[0-2])$/.exec(sp.mes ?? "");
+  const base = m ? { year: Number(m[1]), month: Number(m[2]) } : latest
+    ? { year: latest.date.getUTCFullYear(), month: latest.date.getUTCMonth() + 1 }
+    : { year: new Date().getUTCFullYear(), month: new Date().getUTCMonth() + 1 };
+  const { year, month } = base;
+  const prev = month === 1 ? ymd(year - 1, 12) : ymd(year, month - 1);
+  const nextYm = month === 12 ? ymd(year + 1, 1) : ymd(year, month + 1);
+  const now = new Date();
+  const currentYm = ymd(now.getUTCFullYear(), now.getUTCMonth() + 1);
+  const lastYm = latest && ymd(latest.date.getUTCFullYear(), latest.date.getUTCMonth() + 1) > currentYm
+    ? ymd(latest.date.getUTCFullYear(), latest.date.getUTCMonth() + 1)
+    : currentYm;
+  const next = nextYm <= lastYm ? nextYm : null;
+
+  const cortes = await prisma.corte.findMany({
+    where: {
+      venueId: selected.id,
+      date: { gte: new Date(Date.UTC(year, month - 1, 1)), lt: new Date(Date.UTC(year, month, 1)) },
+    },
+    orderBy: { date: "desc" },
   });
 
   return (
@@ -42,16 +73,19 @@ export default async function CortesPage() {
         <div>
           <h1 className="text-xl">Cortes de Caja</h1>
           <p className="text-sm text-muted-foreground">
-            {cortes.length} corte{cortes.length === 1 ? "" : "s"}
+            <span className="capitalize">{MONTH_NAMES[month - 1]}</span> {year} · {cortes.length} corte{cortes.length === 1 ? "" : "s"}
           </p>
         </div>
-        <Link href="/cortes/nuevo" className={buttonVariants()}>
-          <Plus className="h-4 w-4" />
-          Nuevo corte
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <CortesMonthNav value={ymd(year, month)} prev={prev} next={next} />
+          <Link href="/cortes/nuevo" className={buttonVariants()}>
+            <Plus className="h-4 w-4" />
+            Nuevo corte
+          </Link>
+        </div>
       </header>
 
-      {cortes.length === 0 ? (
+      {!latest ? (
         <div className="card flex flex-col items-center gap-3 p-10 text-center">
           <Receipt className="h-8 w-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
@@ -62,6 +96,10 @@ export default async function CortesPage() {
             <Plus className="h-4 w-4" />
             Nuevo corte
           </Link>
+        </div>
+      ) : cortes.length === 0 ? (
+        <div className="card p-10 text-center text-sm text-muted-foreground">
+          No hay cortes en <span>{MONTH_NAMES[month - 1]}</span> {year}.
         </div>
       ) : (
         <div className="card overflow-hidden">

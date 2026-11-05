@@ -82,7 +82,7 @@ export function AppTopbar({
   }
 
   return (
-    <header className="flex h-14 items-center justify-between gap-4 border-b border-border bg-card px-4 print:hidden">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-border bg-card px-4 print:hidden">
       <div className="flex items-center gap-2">
         <button
           type="button"

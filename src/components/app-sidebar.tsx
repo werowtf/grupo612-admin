@@ -133,7 +133,7 @@ export function AppSidebar({ role, venueSlug, oficina, mobileOpen = false, onClo
   return (
     <>
       {/* Escritorio: fija en el layout */}
-      <aside className="hidden w-60 shrink-0 border-r border-border bg-card md:flex md:flex-col print:hidden">
+      <aside className="hidden w-60 shrink-0 self-start border-r border-border bg-card md:sticky md:top-0 md:flex md:h-screen md:flex-col print:hidden">
         <div className="flex h-14 items-center justify-center border-b border-border px-4">
           <Logo className="h-9 w-auto" />
         </div>

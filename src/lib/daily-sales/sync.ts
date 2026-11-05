@@ -15,11 +15,13 @@ function calendarDay(date: Date): Date {
  * cortes de caja de ese día. El corte es la fuente de la verdad: efectivo,
  * tarjeta y el desglose comida/bebida salen de ahí, no se capturan dos veces.
  *
- * - "Tarjeta" agrupa todo lo cobrado que no fue efectivo (visa/mastercard/
- *   amex/vales/otros), porque el libro del contador sólo distingue tres
+ * - "Tarjeta" agrupa lo cobrado que no fue efectivo ni crédito (visa/
+ *   mastercard/amex/vales), porque el libro del contador sólo distingue tres
  *   formas de pago.
- * - "Crédito" es lo vendido pero no cobrado ese día (venta total menos lo
- *   efectivamente cobrado), cuando aplica.
+ * - "Crédito" es lo que el corte registra como "Otros" (crédito, cortesías,
+ *   consumos de socios, etc.: ver el desglose CorteCredito) más lo vendido
+ *   pero no cobrado ese día (venta total menos formas de pago), si lo hubiera.
+ *   Antes "Otros" se sumaba a Tarjeta y el crédito siempre salía en $0.
  * - `statusCredito` (las notas de a quién se le dio crédito) no vive en el
  *   corte, así que se conserva tal cual si ya existía.
  *
@@ -41,12 +43,14 @@ export async function syncDailySaleFromCortes(venueId: string, date: Date): Prom
   }
 
   let pagoEfectivo = 0;
+  let pagoOtros = 0;
   let totalFormasPago = 0;
   let totalVenta = 0;
   let ventaAlimentos = 0;
   let ventaBebidas = 0;
   for (const c of cortes) {
     pagoEfectivo += num(c.pagoEfectivo);
+    pagoOtros += num(c.pagoOtros);
     totalFormasPago += num(c.totalFormasPago);
     totalVenta += num(c.totalVenta);
     ventaAlimentos += num(c.ventaAlimentos);
@@ -54,8 +58,8 @@ export async function syncDailySaleFromCortes(venueId: string, date: Date): Prom
   }
 
   const efectivo = pagoEfectivo;
-  const tarjeta = Math.max(0, totalFormasPago - pagoEfectivo);
-  const credito = Math.max(0, totalVenta - totalFormasPago);
+  const tarjeta = Math.max(0, totalFormasPago - pagoEfectivo - pagoOtros);
+  const credito = pagoOtros + Math.max(0, totalVenta - totalFormasPago);
 
   await prisma.dailySale.upsert({
     where: { venueId_date: { venueId, date: day } },

@@ -1,8 +1,8 @@
 "use client";
 
-import { startTransition, useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Check, AlertCircle, Pencil, Trash2 } from "lucide-react";
+import { Plus, Check, AlertCircle, Loader2, Pencil, Trash2 } from "lucide-react";
 import {
   createCuentaPorPagarAction,
   markCuentaPagadaAction,
@@ -72,6 +72,8 @@ export function CuentasPorPagarManager({
   const [date, setDate] = useState("");
   const [state, action, saving] = useActionState(createCuentaPorPagarAction, init);
   const [payingId, setPayingId] = useState<string | null>(null);
+  // Cierra la puerta al instante (el estado de React tarda un render en deshabilitar el botón).
+  const payingRef = useRef(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
   const [supplierFilter, setSupplierFilter] = useState(ALL);
@@ -103,12 +105,26 @@ export function CuentasPorPagarManager({
   }
 
   async function onPagar(id: string) {
+    if (payingRef.current) return;
+    payingRef.current = true;
     setPayingId(id);
     setRowError(null);
-    const res = await markCuentaPagadaAction(id);
-    if (res.error) setRowError(res.error);
-    setPayingId(null);
-    router.refresh();
+    try {
+      const res = await markCuentaPagadaAction(id);
+      if (res.error) {
+        setRowError(res.error);
+        setPayingId(null);
+      }
+      // Con éxito el botón sigue en "cargando" hasta que la lista se refresca y
+      // la fila desaparece; si se habilitara antes, un segundo clic daría
+      // "ya está pagada".
+      startTransition(() => router.refresh());
+    } catch {
+      setRowError("No se pudo marcar como pagado. Intenta de nuevo.");
+      setPayingId(null);
+    } finally {
+      payingRef.current = false;
+    }
   }
 
   async function onDelete(id: string) {
@@ -291,11 +307,16 @@ export function CuentasPorPagarManager({
                         type="button"
                         size="sm"
                         variant="outline"
-                        disabled={payingId === r.id}
+                        disabled={payingId !== null}
+                        aria-busy={payingId === r.id}
                         onClick={() => onPagar(r.id)}
                       >
-                        <Check className="h-3.5 w-3.5" />
-                        Pagado
+                        {payingId === r.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Check className="h-3.5 w-3.5" />
+                        )}
+                        {payingId === r.id ? "Pagando…" : "Pagado"}
                       </Button>
                       <Button
                         type="button"

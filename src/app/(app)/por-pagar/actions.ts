@@ -142,7 +142,14 @@ export async function markCuentaPagadaAction(id: string): Promise<CuentaPorPagar
     // igual que Ingresos y egresos, para que ningún huso lo mueva de mes.
     const entryDate = new Date(`${cuenta.date.toISOString().slice(0, 10)}T12:00:00`);
 
-    await prisma.$transaction(async (tx) => {
+    const yaPagada = await prisma.$transaction(async (tx) => {
+      // Reclama la cuenta de forma atómica: si dos envíos llegan a la vez (doble
+      // clic, dos pestañas) solo uno la marca y crea el Egreso; el otro ve 0 filas.
+      const claimed = await tx.cuentaPorPagar.updateMany({
+        where: { id, paidAt: null },
+        data: { paidAt: new Date() },
+      });
+      if (claimed.count === 0) return true;
       const entry = await tx.financialEntry.create({
         data: {
           venueId: cuenta.venueId,
@@ -159,9 +166,11 @@ export async function markCuentaPagadaAction(id: string): Promise<CuentaPorPagar
       });
       await tx.cuentaPorPagar.update({
         where: { id },
-        data: { paidAt: new Date(), entryId: entry.id },
+        data: { entryId: entry.id },
       });
+      return false;
     });
+    if (yaPagada) return { error: "Esta cuenta ya está pagada." };
 
     await logAudit({
       userId: user.id,

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { AlertCircle, Check } from "lucide-react";
+import { AlertCircle, Check, Loader2 } from "lucide-react";
 import { updatePropinaCorteAction } from "@/app/(app)/por-pagar/actions";
 import { formatMXN, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
   const [error, setError] = useState<string | null>(null);
 
   async function onChange(corteId: string, estado: Estado) {
+    if (savingId) return;
     setEstados((e) => ({ ...e, [corteId]: estado }));
     setSavingId(corteId);
     setError(null);
@@ -88,9 +89,11 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
                         type="button"
                         size="sm"
                         variant="ghost"
-                        disabled={savingId === r.id}
+                        disabled={savingId !== null}
+                        aria-busy={savingId === r.id}
                         onClick={() => onChange(r.id, "PENDIENTE")}
                       >
+                        {savingId === r.id && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                         Deshacer
                       </Button>
                     </div>
@@ -100,10 +103,15 @@ export function PropinasPorCorteManager({ rows }: { rows: PropinaRow[] }) {
                         type="button"
                         size="sm"
                         variant="outline"
-                        disabled={savingId === r.id}
+                        disabled={savingId !== null}
+                        aria-busy={savingId === r.id}
                         onClick={() => onChange(r.id, "PAGADO")}
                       >
-                        <Check className="h-3.5 w-3.5" />
+                        {savingId === r.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Check className="h-3.5 w-3.5" />
+                        )}
                         Pagado
                       </Button>
                     </div>

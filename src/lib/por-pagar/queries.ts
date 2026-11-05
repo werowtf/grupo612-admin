@@ -23,11 +23,11 @@ export interface PropinaCorteRow {
   folioCorteZ: string | null;
 }
 
-/** Un renglón por corte con propina > 0, para la tabla de "Por pagar". */
+/** Un renglón por corte con propina > 0, para la tabla de "Por pagar" (del más antiguo al más reciente). */
 export async function getPropinasPorCorte(venueId: string): Promise<PropinaCorteRow[]> {
   const cortes = await prisma.corte.findMany({
     where: { venueId, propinasPorPagar: { gt: 0 } },
-    orderBy: { date: "desc" },
+    orderBy: [{ date: "asc" }, { createdAt: "asc" }],
     select: { id: true, date: true, propinasPorPagar: true, propinasPagadas: true, propinasPagadasAt: true, folioCorteZ: true },
   });
   return cortes.map((c) => ({
