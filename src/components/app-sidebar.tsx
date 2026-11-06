@@ -9,12 +9,14 @@ import {
   Receipt,
   TrendingUp,
   TrendingDown,
+  Scale,
   HandCoins,
   PiggyBank,
   UtensilsCrossed,
   BarChart3,
   StickyNote,
   ArrowLeftRight,
+  Percent,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,12 +39,14 @@ const NAV: NavItem[] = [
   { href: "/movimientos", label: "Movimientos", icon: ListOrdered },
   { href: "/ingresos", label: "Ingresos", icon: TrendingUp },
   { href: "/egresos", label: "Egresos", icon: TrendingDown },
+  { href: "/resultados", label: "Resultados", icon: Scale, roles: ["ADMIN", "GERENTE", "CONTADOR"] },
   { href: "/por-pagar", label: "Por Pagar", icon: HandCoins },
   { href: "/caja-chica", label: "Caja Chica", icon: PiggyBank },
   { href: "/pedidos", label: "Pedidos", icon: UtensilsCrossed },
   { href: "/reportes", label: "Reportes", icon: BarChart3 },
   { href: "/oficina/caja-chica", label: "Caja Chica", icon: PiggyBank },
   { href: "/oficina/prestamos", label: "Préstamos", icon: ArrowLeftRight },
+  { href: "/oficina/comisiones", label: "Comisiones", icon: Percent },
   { href: "/oficina/notas", label: "Notas", icon: StickyNote },
 ];
 
