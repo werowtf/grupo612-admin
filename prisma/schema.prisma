@@ -71,6 +71,9 @@ model Venue {
   cafeterias      Cafeteria[]
   foliosPedidoCafeteria FolioPedidoCafeteria[]
   documents       Document[]
+  prestamosOtorgados PrestamoNegocio[] @relation("PrestamoPresta")
+  oficinaCajaChicaGastos OficinaCajaChicaGasto[]
+  prestamosRecibidos PrestamoNegocio[] @relation("PrestamoRecibe")
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 }
@@ -281,6 +284,9 @@ model CajaChicaGasto {
   /// El empleado repuso este dinero: ya no cuenta contra el disponible de caja chica.
   reimbursed   Boolean   @default(false)
   reimbursedAt DateTime?
+  /// Egreso que este gasto generó en Ingresos y egresos (los gastos anteriores a este cambio no lo tienen).
+  entryId     String?         @unique
+  entry       FinancialEntry? @relation(fields: [entryId], references: [id], onDelete: SetNull)
   createdById String?
   createdBy   User?    @relation("CajaChicaGastoCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
@@ -503,6 +509,8 @@ model FinancialEntry {
   facturaCafeteria FacturaCafeteria?
   cuentaPorPagar CuentaPorPagar?
   cajaChicaFondo CajaChicaFondo?
+  cajaChicaGasto CajaChicaGasto?
+  oficinaCajaChicaGasto OficinaCajaChicaGasto?
   folioPedidoCafeteria FolioPedidoCafeteria?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -741,9 +749,54 @@ model OficinaCajaChicaGasto {
   /// El empleado repuso este dinero: ya no cuenta contra el disponible de caja chica.
   reimbursed   Boolean   @default(false)
   reimbursedAt DateTime?
+  /// Negocio al que se le carga el gasto (opcional). Con negocio se genera un
+  /// Egreso en ese negocio (`entryId`); sin negocio, queda sólo en Oficina.
+  venueId     String?
+  venue       Venue?          @relation(fields: [venueId], references: [id], onDelete: SetNull)
+  entryId     String?         @unique
+  entry       FinancialEntry? @relation(fields: [entryId], references: [id], onDelete: SetNull)
   createdById String?
   createdBy   User?    @relation("OficinaCajaChicaGastoCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
 
   @@index([date])
+  @@index([venueId])
+}
+
+enum PrestamoEstado {
+  VIGENTE // aún no se reembolsa
+  REEMBOLSADO
+}
+
+/// Préstamo de dinero de un negocio a otro (sección Oficina → Préstamos). Al
+/// prestar se genera un egreso en el negocio que presta y un ingreso en el que
+/// recibe; al reembolsar, el movimiento inverso. Los ids de esos movimientos
+/// (FinancialEntry) se guardan aquí para poder rastrearlos.
+model PrestamoNegocio {
+  id              String         @id @default(cuid())
+  date            DateTime
+  amount          Decimal        @db.Decimal(14, 2)
+  paymentMethod   PaymentMethod  @default(EFECTIVO)
+  lenderVenueId   String
+  lenderVenue     Venue          @relation("PrestamoPresta", fields: [lenderVenueId], references: [id], onDelete: Restrict)
+  borrowerVenueId String
+  borrowerVenue   Venue          @relation("PrestamoRecibe", fields: [borrowerVenueId], references: [id], onDelete: Restrict)
+  status          PrestamoEstado @default(VIGENTE)
+  /// Egreso en quien presta / ingreso en quien recibe.
+  lenderEntryId   String?
+  borrowerEntryId String?
+
+  reimbursedAt            DateTime?
+  reimbursePaymentMethod  PaymentMethod?
+  /// Egreso en quien había recibido / ingreso en quien había prestado.
+  borrowerRepayEntryId    String?
+  lenderRepayEntryId      String?
+  reimbursedById          String?
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([date])
+  @@index([lenderVenueId])
+  @@index([borrowerVenueId])
 }

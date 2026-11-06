@@ -190,6 +190,7 @@ function buildTxWhere(
             { description: { contains: filters.search, mode: "insensitive" } },
             { reference: { contains: filters.search, mode: "insensitive" } },
             { concept: { contains: filters.search, mode: "insensitive" } },
+            { counterpartyName: { contains: filters.search, mode: "insensitive" } },
           ],
         }
       : {}),

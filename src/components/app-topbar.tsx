@@ -40,6 +40,21 @@ function writeVenueCookie(value: string) {
   document.cookie = `${VENUE_COOKIE}=${value}; path=/; max-age=${60 * 60 * 24 * 30}; samesite=lax${secure}`;
 }
 
+/**
+ * Al pasar entre Oficina y un negocio, la pantalla actual puede no existir en el
+ * otro modo (o ser otra distinta, como la caja chica de Oficina frente a la del
+ * negocio). Devuelve a dónde ir; null = quedarse en la misma ruta (recargar).
+ */
+function equivalentPath(pathname: string, toOficina: boolean): string | null {
+  const inOficina = pathname === "/oficina" || pathname.startsWith("/oficina/");
+  if (toOficina) {
+    if (inOficina) return null; // ya está en una sección de Oficina
+    return pathname === "/caja-chica" ? "/oficina/caja-chica" : null; // el resto lo redirige el proxy al dashboard
+  }
+  if (!inOficina) return null; // de un negocio a otro: misma pantalla, se recarga
+  return pathname === "/oficina/caja-chica" ? "/caja-chica" : "/dashboard";
+}
+
 export function AppTopbar({
   role,
   venues,
@@ -70,7 +85,9 @@ export function AppTopbar({
   function selectValue(value: string) {
     writeVenueCookie(value);
     setRequested(value);
-    window.location.reload();
+    const target = equivalentPath(window.location.pathname, value === OFICINA_SENTINEL);
+    if (target) window.location.assign(target);
+    else window.location.reload();
   }
 
   function onVenueChange(id: string) {

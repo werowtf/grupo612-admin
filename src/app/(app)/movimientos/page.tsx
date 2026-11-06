@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, X, ArrowDownToLine, ArrowLeftRight, Banknote, Percent, CreditCard } from "lucide-react";
+import { Search, X, Download, ArrowDownToLine, ArrowLeftRight, Banknote, Percent, CreditCard } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { getVenueTransactions, getCategoryTotals, type TxFilters } from "@/lib/queries";
 import { TransactionsTable } from "@/components/transactions-table";
@@ -105,12 +105,27 @@ export default async function MovimientosPage({
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-xl">Movimientos</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} movimiento{total === 1 ? "" : "s"} · {MONTHS[month - 1]} {year}
-          {hasFilters ? " (filtrados)" : ""}
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl">Movimientos</h1>
+          <p className="text-sm text-muted-foreground">
+            {total} movimiento{total === 1 ? "" : "s"} · {MONTHS[month - 1]} {year}
+            {hasFilters ? " (filtrados)" : ""}
+          </p>
+        </div>
+        {/* Mismos filtros que la pantalla (mes, categoría, tipo, estatus, búsqueda). */}
+        <a
+          href={`/api/movimientos/export?${new URLSearchParams(
+            Object.entries({ mes: mesValue, category: sp.category, direction: sp.direction, status: sp.status, search: sp.search }).filter(
+              (e): e is [string, string] => Boolean(e[1]) && e[1] !== "todas" && e[1] !== "todos",
+            ),
+          )}`}
+          download
+          className={buttonVariants({ variant: "outline" })}
+        >
+          <Download className="h-4 w-4" />
+          Descargar Excel
+        </a>
       </header>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -212,7 +227,7 @@ export default async function MovimientosPage({
         </div>
       </form>
 
-      <TransactionsTable rows={rows.map(toTxRow)} showTotals totals={{ count: total, byCategory: footerTotals }} />
+      <TransactionsTable rows={rows.map(toTxRow)} showMerchant showTotals totals={{ count: total, byCategory: footerTotals }} />
     </div>
   );
 }

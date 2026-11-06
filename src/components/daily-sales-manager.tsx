@@ -29,6 +29,8 @@ export interface DailySaleRow {
   efectivo: number;
   tarjeta: number;
   credito: number;
+  /** Propinas con tarjeta que ya van dentro de `tarjeta` (sólo días de corte). */
+  propinas: number;
   statusCredito: string | null;
   comida: number;
   bebida: number;
@@ -80,13 +82,15 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
       acc.efectivo += r.efectivo;
       acc.tarjeta += r.tarjeta;
       acc.credito += r.credito;
+      acc.propinas += r.propinas;
       acc.comida += r.comida;
       acc.bebida += r.bebida;
       return acc;
     },
-    { efectivo: 0, tarjeta: 0, credito: 0, comida: 0, bebida: 0 },
+    { efectivo: 0, tarjeta: 0, credito: 0, propinas: 0, comida: 0, bebida: 0 },
   );
-  const totalGeneral = totals.efectivo + totals.tarjeta + totals.credito;
+  // Ventas con imp. = lo cobrado menos las propinas (no son venta), como el ticket.
+  const totalGeneral = totals.efectivo + totals.tarjeta + totals.credito - totals.propinas;
   const totalSinImp = totals.comida + totals.bebida;
 
   return (
@@ -115,7 +119,7 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
                   <th className="px-3 py-2 text-right font-semibold">Efectivo</th>
                   <th className="px-3 py-2 text-right font-semibold">Tarjeta</th>
                   <th className="px-3 py-2 text-right font-semibold">Crédito</th>
-                  <th className="px-3 py-2 text-right font-semibold">Total</th>
+                  <th className="px-3 py-2 text-right font-semibold" title="Efectivo + Tarjeta + Crédito − propinas">Ventas con imp.</th>
                   <th className="px-3 py-2 font-semibold">Status crédito</th>
                   <th className="px-3 py-2 text-right font-semibold">$ Comida</th>
                   <th className="px-3 py-2 text-right font-semibold">$ Bebida</th>
@@ -127,7 +131,7 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
               </thead>
               <tbody className="divide-y divide-border">
                 {rows.map((r) => {
-                  const total = r.efectivo + r.tarjeta + r.credito;
+                  const total = r.efectivo + r.tarjeta + r.credito - r.propinas;
                   const sinImp = r.comida + r.bebida;
                   return (
                     <tr key={r.id} className="hover:bg-muted/60">
@@ -136,7 +140,12 @@ export function DailySalesManager({ venueId, rows }: { venueId: string; rows: Da
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{diaSemana(`${r.date}T00:00:00.000Z`)}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(r.efectivo)}</td>
-                      <td className="px-3 py-2 text-right tabular-nums">{formatMXN(r.tarjeta)}</td>
+                      <td className="px-3 py-2 text-right tabular-nums">
+                        {formatMXN(r.tarjeta)}
+                        {r.propinas > 0 && (
+                          <div className="text-[10px] font-normal text-muted-foreground">incl. {formatMXN(r.propinas)} propinas</div>
+                        )}
+                      </td>
                       <td className="px-3 py-2 text-right tabular-nums">{formatMXN(r.credito)}</td>
                       <td className="px-3 py-2 text-right tabular-nums font-semibold">{formatMXN(total)}</td>
                       <td className="px-3 py-2 text-muted-foreground" title={r.statusCredito ?? ""}>

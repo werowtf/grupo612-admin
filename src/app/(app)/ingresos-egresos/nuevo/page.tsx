@@ -4,8 +4,17 @@ import { getAppContext } from "@/lib/context";
 import { getVenueCategories } from "@/lib/entries/queries";
 import { EntryForm } from "@/components/entry-form";
 
-export default async function NuevoMovimientoPage() {
+export default async function NuevoMovimientoPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
   const { selected } = await getAppContext();
+  const sp = await searchParams;
+  // Desde /ingresos o /egresos llega ?tipo=: preselecciona el tipo y regresa a esa sección.
+  const tipo = sp.tipo === "INGRESO" ? "INGRESO" : "EGRESO";
+  const backHref = tipo === "INGRESO" ? "/ingresos" : "/egresos";
+  const backLabel = tipo === "INGRESO" ? "Ingresos" : "Egresos";
   if (!selected) {
     return (
       <div className="card p-10 text-center text-sm text-muted-foreground">
@@ -19,11 +28,11 @@ export default async function NuevoMovimientoPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/ingresos-egresos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <Link href={backHref} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
-          Ingresos y Egresos
+          {backLabel}
         </Link>
-        <h1 className="mt-1 text-xl">Nuevo movimiento</h1>
+        <h1 className="mt-1 text-xl">{tipo === "INGRESO" ? "Nuevo ingreso" : "Nuevo egreso"}</h1>
       </div>
 
       <EntryForm
@@ -31,7 +40,8 @@ export default async function NuevoMovimientoPage() {
         defaultVenueId={selected.id}
         categories={categories}
         mode="full"
-        redirectTo="/ingresos-egresos"
+        redirectTo={backHref}
+        initialType={tipo}
         initialValues={
           selected.slug === "comisariato"
             ? { date: today, paymentMethod: "TRANSFERENCIA" }

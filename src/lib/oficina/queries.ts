@@ -9,7 +9,7 @@ function num(v: { toString(): string } | null | undefined): number {
 export async function getOficinaCajaChica() {
   const [fondos, gastos] = await Promise.all([
     prisma.oficinaCajaChicaFondo.findMany({ orderBy: { date: "desc" } }),
-    prisma.oficinaCajaChicaGasto.findMany({ orderBy: { date: "desc" } }),
+    prisma.oficinaCajaChicaGasto.findMany({ orderBy: { date: "desc" }, include: { venue: { select: { name: true } } } }),
   ]);
   const fondoTotal = fondos.reduce((s, f) => s + num(f.amount), 0);
   const gastadoTotal = gastos.reduce((s, g) => (g.reimbursed ? s : s + num(g.amount)), 0);

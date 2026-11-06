@@ -33,14 +33,20 @@ export default async function DocumentDetailPage({
 
   const isPreviewable = doc.mime.startsWith("image/") || doc.mime === "application/pdf";
   const fileUrl = `/api/documents/${doc.id}/file`;
+  // Ya no hay lista de Documentos: se regresa al corte o movimiento al que está adjunto.
+  const [backHref, backLabel] = doc.corte
+    ? [`/cortes/${doc.corte.id}`, "Corte de caja"]
+    : doc.entry
+      ? [`/ingresos-egresos/${doc.entry.id}`, "Movimiento"]
+      : ["/dashboard", "Inicio"];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href="/documentos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+          <Link href={backHref} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
-            Documentos
+            {backLabel}
           </Link>
           <h1 className="mt-1 text-xl">{doc.title}</h1>
           <p className="text-sm text-muted-foreground">

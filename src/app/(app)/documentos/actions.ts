@@ -103,5 +103,5 @@ export async function deleteDocumentAction(documentId: string) {
     entityId: documentId,
   });
   revalidatePath("/documentos");
-  redirect("/documentos");
+  redirect("/dashboard");
 }

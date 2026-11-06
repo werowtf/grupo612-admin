@@ -63,6 +63,9 @@ export interface GastoRow {
   employee: string;
   description: string | null;
   reimbursed: boolean;
+  /** Sólo Oficina: negocio al que se le cargó el gasto. */
+  venueId?: string | null;
+  venueName?: string | null;
 }
 
 const init: CajaChicaActionState = {};
@@ -74,6 +77,7 @@ export function CajaChicaManager({
   fondos,
   gastos,
   categories,
+  venues = [],
 }: {
   /** "oficina": caja chica propia de Oficina (sin negocio ni Egreso asociado). */
   scope?: "venue" | "oficina";
@@ -82,6 +86,8 @@ export function CajaChicaManager({
   fondos: FondoRow[];
   gastos: GastoRow[];
   categories: string[];
+  /** Sólo Oficina: negocios a los que se puede asignar un gasto. */
+  venues?: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const oficina = scope === "oficina";
@@ -107,7 +113,7 @@ export function CajaChicaManager({
         router.refresh();
       });
     }
-  }, [fondoState.ok, router]);
+  }, [fondoState, router]); // el objeto cambia en cada resultado: cierra también en guardados consecutivos
 
   function onFondoOpenChange(o: boolean) {
     setFondoOpen(o);
@@ -144,7 +150,7 @@ export function CajaChicaManager({
         router.refresh();
       });
     }
-  }, [gastoState.ok, router]);
+  }, [gastoState, router]); // el objeto cambia en cada resultado: cierra también en guardados consecutivos
 
   function onGastoOpenChange(o: boolean) {
     setGastoOpen(o);
@@ -245,7 +251,7 @@ export function CajaChicaManager({
                 </div>
                 {!editingFondo && !oficina && (
                   <p className="text-xs text-muted-foreground">
-                    Se creará un Egreso por este monto en Ingresos y egresos (categoría &ldquo;Caja chica&rdquo;).
+                    Aprobar el fondo no registra un egreso: el egreso se registra con cada gasto.
                   </p>
                 )}
                 {fondoState.error && (
@@ -337,7 +343,8 @@ export function CajaChicaManager({
                 <DialogTitle>{editingGasto ? "Editar gasto" : "Nuevo gasto de caja chica"}</DialogTitle>
               </DialogHeader>
               <form key={editingGasto?.id ?? "new"} action={gastoAction} className="space-y-3">
-                <input type="hidden" name="venueId" value={venueId} />
+                {/* En Oficina el negocio lo elige el selector "Negocio" (mismo nombre de campo). */}
+                {!oficina && <input type="hidden" name="venueId" value={venueId} />}
                 {editingGasto && <input type="hidden" name="id" value={editingGasto.id} />}
                 <div>
                   <label className="label font-semibold" htmlFor="gasto-date">Fecha</label>
@@ -390,6 +397,31 @@ export function CajaChicaManager({
                     defaultValue={editingGasto?.description ?? ""}
                   />
                 </div>
+                {oficina && (
+                  <div>
+                    <label className="label font-semibold" htmlFor="gasto-venue">Negocio (opcional)</label>
+                    <Select name="venueId" defaultValue={editingGasto?.venueId ?? "none"}>
+                      <SelectTrigger id="gasto-venue" className={FIELD_TRIGGER_CLASS}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Sin negocio (solo Oficina)</SelectItem>
+                        {venues.map((v) => (
+                          <SelectItem key={v.id} value={v.id}>
+                            {v.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  {oficina
+                    ? "Si eliges un negocio, se registra un Egreso por este monto en ese negocio (y se actualiza si cambias el gasto)."
+                    : editingGasto
+                      ? "Si el gasto tiene un egreso en Ingresos y egresos, también se actualiza."
+                      : "Se registrará un Egreso por este monto en Ingresos y egresos."}
+                </p>
                 {gastoState.error && (
                   <p className="flex items-start gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
                     <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -424,6 +456,7 @@ export function CajaChicaManager({
                   <th className="px-3 py-2 font-semibold">Fecha</th>
                   <th className="px-3 py-2 font-semibold">Quién</th>
                   <th className="px-3 py-2 font-semibold">Categoría</th>
+                  {oficina && <th className="px-3 py-2 font-semibold">Negocio</th>}
                   <th className="px-3 py-2 font-semibold">Descripción</th>
                   <th className="px-3 py-2 text-right font-semibold">Monto</th>
                   <th className="px-3 py-2 font-semibold">Repuesto</th>
@@ -436,6 +469,7 @@ export function CajaChicaManager({
                     <td className="whitespace-nowrap px-3 py-2 font-semibold">{formatDate(g.date)}</td>
                     <td className="px-3 py-2">{g.employee}</td>
                     <td className="px-3 py-2 text-muted-foreground">{g.category}</td>
+                    {oficina && <td className="px-3 py-2 text-muted-foreground">{g.venueName ?? "—"}</td>}
                     <td className="px-3 py-2 text-muted-foreground">{g.description ?? "—"}</td>
                     <td className={`px-3 py-2 text-right tabular-nums font-semibold ${g.reimbursed ? "text-muted-foreground line-through" : "text-cargo"}`}>
                       {formatMXN(g.amount)}
@@ -487,7 +521,8 @@ export function CajaChicaManager({
                             <AlertDialogHeader>
                               <AlertDialogTitle>¿Eliminar este gasto?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                {g.employee} — {formatMXN(g.amount)}. Esta acción no se puede deshacer.
+                                {g.employee} — {formatMXN(g.amount)}.
+                                {oficina && !g.venueId ? "" : " También se eliminará su egreso en Ingresos y egresos, si lo tiene."} Esta acción no se puede deshacer.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

@@ -42,9 +42,9 @@ export default async function EntryDetailPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href="/ingresos-egresos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+          <Link href={isEgreso ? "/egresos" : "/ingresos"} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
-            Ingresos y Egresos
+            {isEgreso ? "Egresos" : "Ingresos"}
           </Link>
           <h1 className="mt-1 text-xl">
             {entryTypeLabels[entry.type]} · {formatDate(entry.date)}
@@ -58,7 +58,7 @@ export default async function EntryDetailPage({
           <Link href={`/ingresos-egresos/${entry.id}/editar`} className={buttonVariants({ variant: "outline" })}>
             <Pencil className="h-4 w-4" /> Editar
           </Link>
-          <DeleteEntryButton entryId={entry.id} redirectTo="/ingresos-egresos" />
+          <DeleteEntryButton entryId={entry.id} redirectTo={isEgreso ? "/egresos" : "/ingresos"} />
         </div>
       </div>
 

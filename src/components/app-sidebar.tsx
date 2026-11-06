@@ -7,13 +7,14 @@ import {
   Landmark,
   ListOrdered,
   Receipt,
-  Wallet,
+  TrendingUp,
+  TrendingDown,
   HandCoins,
   PiggyBank,
   UtensilsCrossed,
-  FileText,
   BarChart3,
   StickyNote,
+  ArrowLeftRight,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,13 +35,14 @@ const NAV: NavItem[] = [
   { href: "/conciliacion", label: "Estados de Cuenta", icon: Landmark },
   { href: "/cortes", label: "Cortes de Caja", icon: Receipt },
   { href: "/movimientos", label: "Movimientos", icon: ListOrdered },
-  { href: "/ingresos-egresos", label: "Ingresos y Egresos", icon: Wallet },
+  { href: "/ingresos", label: "Ingresos", icon: TrendingUp },
+  { href: "/egresos", label: "Egresos", icon: TrendingDown },
   { href: "/por-pagar", label: "Por Pagar", icon: HandCoins },
   { href: "/caja-chica", label: "Caja Chica", icon: PiggyBank },
   { href: "/pedidos", label: "Pedidos", icon: UtensilsCrossed },
   { href: "/reportes", label: "Reportes", icon: BarChart3 },
-  { href: "/documentos", label: "Documentos", icon: FileText },
   { href: "/oficina/caja-chica", label: "Caja Chica", icon: PiggyBank },
+  { href: "/oficina/prestamos", label: "Préstamos", icon: ArrowLeftRight },
   { href: "/oficina/notas", label: "Notas", icon: StickyNote },
 ];
 

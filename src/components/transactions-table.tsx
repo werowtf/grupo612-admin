@@ -22,6 +22,8 @@ export interface TxRow {
   time: string | null;
   description: string;
   descriptionLong: string | null;
+  /** Comercio / beneficiario que trae el estado de cuenta (si lo hay). */
+  merchant: string | null;
   direction: TxDirection;
   amount: number;
   category: TxCategory;
@@ -43,12 +45,15 @@ export function TransactionsTable({
   categoryOrder = DEFAULT_CATEGORIES,
   showTotals = false,
   showStatus = true,
+  showMerchant = false,
   totals,
 }: {
   rows: TxRow[];
   categoryOrder?: TxCategory[];
   showTotals?: boolean;
   showStatus?: boolean;
+  /** Columna "Comercio": negocio / contraparte según el estado de cuenta. */
+  showMerchant?: boolean;
   /**
    * Totales ya calculados por el servidor con los mismos filtros que la tabla.
    * Si no se pasan, se suman de las filas que se muestran.
@@ -96,6 +101,7 @@ export function TransactionsTable({
               <th className="px-2 py-2 font-semibold sm:px-3">Fecha</th>
               <th className="hidden px-3 py-2 font-semibold sm:table-cell">Hora</th>
               <th className="px-2 py-2 font-semibold sm:px-3">Descripción</th>
+              {showMerchant && <th className="hidden px-3 py-2 font-semibold sm:table-cell">Comercio</th>}
               {CATEGORIES.map((c) => (
                 <th key={c} className="hidden px-3 py-2 text-right font-semibold sm:table-cell">
                   {categoryLabels[c]}
@@ -126,6 +132,18 @@ export function TransactionsTable({
                     <TooltipContent>{r.descriptionLong || r.description}</TooltipContent>
                   </Tooltip>
                 </td>
+                {showMerchant && (
+                  <td className="hidden max-w-[240px] px-3 py-2 sm:table-cell">
+                    {r.merchant ? (
+                      <Tooltip>
+                        <TooltipTrigger className="block max-w-full truncate text-left">{r.merchant}</TooltipTrigger>
+                        <TooltipContent>{r.merchant}</TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <span className="text-muted-foreground/40">—</span>
+                    )}
+                  </td>
+                )}
                 {CATEGORIES.map((c) =>
                   c === r.category ? (
                     <td key={c} className="hidden whitespace-nowrap px-3 py-2 text-right tabular-nums sm:table-cell">
@@ -198,6 +216,7 @@ export function TransactionsTable({
                 <td className="px-2 py-2 text-xs font-normal text-muted-foreground sm:px-3">
                   {movCount} mov.
                 </td>
+                {showMerchant && <td className="hidden px-3 py-2 sm:table-cell" />}
                 {CATEGORIES.map((c, i) => (
                   <td
                     key={c}

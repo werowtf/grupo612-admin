@@ -25,13 +25,27 @@ async function requireEditor(venueId: string) {
 
 function revalidate() {
   revalidatePath("/caja-chica");
+  revalidatePath("/egresos");
+}
+
+/** Los movimientos del libro se guardan a mediodía del día (como el resto de los ingresos/egresos). */
+function entryDate(dateStr: string): Date {
+  return new Date(`${dateStr}T12:00:00`);
+}
+
+/** Texto del egreso que genera un gasto: quién tomó el dinero y para qué. */
+function entryText(employee: string, description: string | null) {
+  return {
+    description: description ? `Caja chica: ${description}` : "Caja chica",
+    supplier: employee,
+  };
 }
 
 /**
- * Aprueba (crea) o edita un fondo de caja chica. Al aprobarlo se crea el
- * Egreso correspondiente en Ingresos y egresos (es dinero que sale de la
- * caja/banco principal hacia caja chica); al editar el monto o la fecha, se
- * actualiza también ese mismo egreso para que no se desincronicen.
+ * Aprueba (crea) o edita un fondo de caja chica. Aprobar un fondo ya NO genera
+ * un Egreso: el egreso se registra con cada gasto (ver saveGastoAction). Los
+ * fondos aprobados antes de este cambio conservan el egreso que se les creó;
+ * si se edita su monto o fecha, ese egreso se actualiza para no desincronizarse.
  */
 export async function saveFondoAction(
   _prev: CajaChicaActionState,
@@ -70,29 +84,15 @@ export async function saveFondoAction(
         meta: { venueId, amount },
       });
     } else {
-      await prisma.$transaction(async (tx) => {
-        const entry = await tx.financialEntry.create({
-          data: {
-            venueId,
-            type: "EGRESO",
-            date,
-            amount,
-            category: "Caja chica",
-            description: notes ?? "Fondo de caja chica",
-            source: "MANUAL",
-            createdById: user.id,
-          },
-        });
-        const created = await tx.cajaChicaFondo.create({
-          data: { venueId, date, amount, notes, entryId: entry.id, createdById: user.id },
-        });
-        await logAudit({
-          userId: user.id,
-          action: "cajaChicaFondo.aprobar",
-          entity: "CajaChicaFondo",
-          entityId: created.id,
-          meta: { venueId, amount },
-        });
+      const created = await prisma.cajaChicaFondo.create({
+        data: { venueId, date, amount, notes, createdById: user.id },
+      });
+      await logAudit({
+        userId: user.id,
+        action: "cajaChicaFondo.aprobar",
+        entity: "CajaChicaFondo",
+        entityId: created.id,
+        meta: { venueId, amount },
       });
     }
     revalidate();
@@ -104,7 +104,7 @@ export async function saveFondoAction(
   }
 }
 
-/** Elimina un fondo de caja chica y el egreso que había creado. */
+/** Elimina un fondo de caja chica (y el egreso que tuviera ligado, si es de antes del cambio). */
 export async function deleteFondoAction(id: string): Promise<CajaChicaActionState> {
   try {
     const fondo = await prisma.cajaChicaFondo.findUnique({ where: { id } });
@@ -132,7 +132,11 @@ export async function deleteFondoAction(id: string): Promise<CajaChicaActionStat
   }
 }
 
-/** Crea o edita un gasto de caja chica (sólo desglose interno, no genera Egreso). */
+/**
+ * Crea o edita un gasto de caja chica. Cada gasto registra su propio Egreso en
+ * Ingresos y egresos (misma categoría, monto y fecha); al editar el gasto se
+ * actualiza ese egreso. Los gastos anteriores a este cambio no tienen egreso.
+ */
 export async function saveGastoAction(
   _prev: CajaChicaActionState,
   formData: FormData,
@@ -157,9 +161,17 @@ export async function saveGastoAction(
     if (id) {
       const existing = await prisma.cajaChicaGasto.findUnique({ where: { id } });
       if (!existing || existing.venueId !== venueId) return { error: "No encontrado." };
-      await prisma.cajaChicaGasto.update({
-        where: { id },
-        data: { date, amount, category, employee, description },
+      await prisma.$transaction(async (tx) => {
+        await tx.cajaChicaGasto.update({
+          where: { id },
+          data: { date, amount, category, employee, description },
+        });
+        if (existing.entryId) {
+          await tx.financialEntry.update({
+            where: { id: existing.entryId },
+            data: { date: entryDate(dateStr), amount, category, ...entryText(employee, description) },
+          });
+        }
       });
       await logAudit({
         userId: user.id,
@@ -169,8 +181,23 @@ export async function saveGastoAction(
         meta: { venueId, amount },
       });
     } else {
-      const created = await prisma.cajaChicaGasto.create({
-        data: { venueId, date, amount, category, employee, description, createdById: user.id },
+      const created = await prisma.$transaction(async (tx) => {
+        const entry = await tx.financialEntry.create({
+          data: {
+            venueId,
+            type: "EGRESO",
+            date: entryDate(dateStr),
+            amount,
+            category,
+            ...entryText(employee, description),
+            paymentMethod: "EFECTIVO",
+            source: "SISTEMA",
+            createdById: user.id,
+          },
+        });
+        return tx.cajaChicaGasto.create({
+          data: { venueId, date, amount, category, employee, description, entryId: entry.id, createdById: user.id },
+        });
       });
       await logAudit({
         userId: user.id,
@@ -224,7 +251,10 @@ export async function deleteGastoAction(id: string): Promise<CajaChicaActionStat
     if (!gasto) return { error: "No encontrado." };
     const user = await requireEditor(gasto.venueId);
 
-    await prisma.cajaChicaGasto.delete({ where: { id } });
+    await prisma.$transaction(async (tx) => {
+      await tx.cajaChicaGasto.delete({ where: { id } });
+      if (gasto.entryId) await tx.financialEntry.delete({ where: { id: gasto.entryId } }).catch(() => {});
+    });
     await logAudit({
       userId: user.id,
       action: "cajaChicaGasto.eliminar",

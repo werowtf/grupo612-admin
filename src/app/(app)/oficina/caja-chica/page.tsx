@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { getOficinaCajaChica } from "@/lib/oficina/queries";
 import { DEFAULT_EGRESO_CATEGORIES } from "@/lib/entries/config";
 import { CajaChicaManager, type FondoRow, type GastoRow } from "@/components/caja-chica-manager";
@@ -8,7 +9,10 @@ export default async function OficinaCajaChicaPage() {
   const user = await getCurrentUser();
   if (!user?.canAccessOficina) notFound();
 
-  const { resumen, fondos, gastos } = await getOficinaCajaChica();
+  const [{ resumen, fondos, gastos }, venues] = await Promise.all([
+    getOficinaCajaChica(),
+    prisma.venue.findMany({ where: { active: true }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
+  ]);
 
   const fondoRows: FondoRow[] = fondos.map((f) => ({
     id: f.id,
@@ -24,6 +28,8 @@ export default async function OficinaCajaChicaPage() {
     employee: g.employee,
     description: g.description,
     reimbursed: g.reimbursed,
+    venueId: g.venueId,
+    venueName: g.venue?.name ?? null,
   }));
 
   return (
@@ -42,6 +48,7 @@ export default async function OficinaCajaChicaPage() {
         fondos={fondoRows}
         gastos={gastoRows}
         categories={[...DEFAULT_EGRESO_CATEGORIES]}
+        venues={venues}
       />
     </div>
   );

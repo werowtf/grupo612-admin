@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
+import { guardarOficinaGasto, eliminarOficinaGasto, OficinaGastoError } from "@/lib/caja-chica/oficina-gasto";
 import type { CajaChicaActionState } from "@/app/(app)/caja-chica/actions";
 
 /** La caja chica de Oficina la administra cualquier usuario con acceso a Oficina. */
@@ -16,6 +17,7 @@ async function requireOficina() {
 
 function revalidate() {
   revalidatePath("/oficina/caja-chica");
+  revalidatePath("/egresos");
 }
 
 function parseDate(formData: FormData) {
@@ -78,16 +80,23 @@ export async function deleteOficinaFondoAction(id: string): Promise<CajaChicaAct
   }
 }
 
+/**
+ * Crea o edita un gasto de la caja chica de Oficina. Puede asignarse a un negocio
+ * (campo `venueId`, "none" = sólo Oficina): con negocio se registra un Egreso en él.
+ */
 export async function saveOficinaGastoAction(
   _prev: CajaChicaActionState,
   formData: FormData,
 ): Promise<CajaChicaActionState> {
   const id = String(formData.get("id") ?? "").trim() || null;
+  const dateStr = String(formData.get("date") ?? "");
   const date = parseDate(formData);
   const amount = Number(formData.get("amount"));
   const category = String(formData.get("category") ?? "").trim();
   const employee = String(formData.get("employee") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim() || null;
+  const rawVenue = String(formData.get("venueId") ?? "").trim();
+  const venueId = rawVenue && rawVenue !== "none" ? rawVenue : null;
 
   if (!date) return { error: "Fecha inválida." };
   if (!Number.isFinite(amount) || amount <= 0) return { error: "El monto debe ser mayor a cero." };
@@ -96,26 +105,20 @@ export async function saveOficinaGastoAction(
 
   try {
     const user = await requireOficina();
-    if (id) {
-      await prisma.oficinaCajaChicaGasto.update({
-        where: { id },
-        data: { date, amount, category, employee, description },
-      });
-    } else {
-      const created = await prisma.oficinaCajaChicaGasto.create({
-        data: { date, amount, category, employee, description, createdById: user.id },
-      });
+    const gasto = await guardarOficinaGasto({ id, dateStr, amount, category, employee, description, venueId, userId: user.id });
+    if (!id) {
       await logAudit({
         userId: user.id,
         action: "oficinaCajaChicaGasto.crear",
         entity: "OficinaCajaChicaGasto",
-        entityId: created.id,
-        meta: { amount, employee },
+        entityId: gasto.id,
+        meta: { amount, employee, ...(venueId ? { venueId } : {}) },
       });
     }
     revalidate();
     return { ok: true };
   } catch (err) {
+    if (err instanceof OficinaGastoError) return { error: err.message };
     console.error("Error al guardar gasto de caja chica de Oficina:", err);
     return { error: "No se pudo guardar." };
   }
@@ -150,7 +153,7 @@ export async function setOficinaGastoReembolsadoAction(
 export async function deleteOficinaGastoAction(id: string): Promise<CajaChicaActionState> {
   try {
     const user = await requireOficina();
-    await prisma.oficinaCajaChicaGasto.delete({ where: { id } });
+    await eliminarOficinaGasto(id);
     await logAudit({
       userId: user.id,
       action: "oficinaCajaChicaGasto.eliminar",
