@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import { splitFormasPago, type CorteAmounts } from "./amounts";
 
 function num(v: { toString(): string } | null | undefined): number {
   return v ? Number(v.toString()) : 0;
@@ -27,7 +28,8 @@ function calendarDay(date: Date): Date {
  *
  * - "Tarjeta" agrupa lo cobrado que no fue efectivo ni crédito (visa/
  *   mastercard/amex/vales), porque el libro del contador sólo distingue tres
- *   formas de pago.
+ *   formas de pago, más las propinas pagadas con tarjeta (el ticket también
+ *   las suma a Tarjeta: ese dinero entra por la terminal y llega al banco).
  * - "Crédito" es lo que el corte registra como "Otros" (crédito, cortesías,
  *   consumos de socios, etc.: ver el desglose CorteCredito) más lo vendido
  *   pero no cobrado ese día (venta total menos formas de pago), si lo hubiera.
@@ -56,25 +58,35 @@ export async function syncDailySaleFromCortes(venueId: string, date: Date): Prom
     return;
   }
 
-  let pagoEfectivo = 0;
-  let pagoOtros = 0;
-  let totalFormasPago = 0;
-  let totalVenta = 0;
+  const sum: CorteAmounts = {
+    pagoEfectivo: 0,
+    pagoOtros: 0,
+    totalFormasPago: 0,
+    totalVenta: 0,
+    propinaEfectivo: 0,
+    propinaVisa: 0,
+    propinaMastercard: 0,
+    propinaAmex: 0,
+    totalPropinas: 0,
+  };
   let ventaAlimentos = 0;
   let ventaBebidas = 0;
   for (const c of cortes) {
-    pagoEfectivo += num(c.pagoEfectivo);
-    pagoOtros += num(c.pagoOtros);
-    totalFormasPago += num(c.totalFormasPago);
-    totalVenta += num(c.totalVenta);
+    sum.pagoEfectivo += num(c.pagoEfectivo);
+    sum.pagoOtros += num(c.pagoOtros);
+    sum.totalFormasPago += num(c.totalFormasPago);
+    sum.totalVenta += num(c.totalVenta);
+    sum.propinaEfectivo += num(c.propinaEfectivo);
+    sum.propinaVisa += num(c.propinaVisa);
+    sum.propinaMastercard += num(c.propinaMastercard);
+    sum.propinaAmex += num(c.propinaAmex);
+    sum.totalPropinas += num(c.totalPropinas);
     ventaAlimentos += num(c.ventaAlimentos);
     ventaBebidas += num(c.ventaBebidas);
   }
 
   const statusCredito = creditSummary(cortes.flatMap((c) => c.creditos)) || undefined;
-  const efectivo = pagoEfectivo;
-  const tarjeta = Math.max(0, totalFormasPago - pagoEfectivo - pagoOtros);
-  const credito = pagoOtros + Math.max(0, totalVenta - totalFormasPago);
+  const { efectivo, tarjeta, credito } = splitFormasPago(sum);
 
   await prisma.dailySale.upsert({
     where: { venueId_date: { venueId, date: day } },
