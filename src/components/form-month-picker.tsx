@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { MonthPicker } from "@/components/month-picker";
 
 /**
@@ -11,11 +11,13 @@ import { MonthPicker } from "@/components/month-picker";
 export function FormMonthPicker({ name, defaultValue }: { name: string; defaultValue: string }) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const ref = useRef<HTMLDivElement>(null);
 
   function apply(value: string) {
     const form = ref.current?.closest("form");
-    const params = new URLSearchParams();
+    // Dentro de un formulario conserva sus campos; fuera de uno, los parámetros actuales de la URL.
+    const params = form ? new URLSearchParams() : new URLSearchParams(searchParams.toString());
     if (form) {
       for (const [k, v] of new FormData(form).entries()) {
         if (typeof v === "string" && v !== "" && k !== name) params.set(k, v);

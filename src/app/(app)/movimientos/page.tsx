@@ -10,7 +10,7 @@ import { formatMXN } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MonthPicker } from "@/components/month-picker";
+import { FormMonthPicker } from "@/components/form-month-picker";
 
 const FILTER_TRIGGER_CLASS =
   "h-8 w-full border-transparent bg-field-bg font-semibold text-foreground hover:bg-muted/50";
@@ -128,7 +128,7 @@ export default async function MovimientosPage({
       <form method="get" className="card flex flex-wrap items-end gap-3 p-4">
         <div>
           <label className="label font-semibold">Mes</label>
-          <MonthPicker name="mes" defaultValue={mesValue} />
+          <FormMonthPicker name="mes" defaultValue={mesValue} />
         </div>
 
         <div className="min-w-[180px] flex-1">
