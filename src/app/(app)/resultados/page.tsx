@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { TrendingUp, Wallet, Percent, Scale } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { getEstadoResultados } from "@/lib/resultados/queries";
 import { PAY_COLUMNS, type StatementLine } from "@/lib/resultados/statement";
 import { ResultadosActions } from "@/components/resultados-actions";
+import { ResultadosSkeleton } from "@/components/resultados-skeleton";
 import { StatCard } from "@/components/stat-card";
 import { formatMXN, cn } from "@/lib/utils";
 
@@ -64,39 +66,12 @@ function LineRow({ line }: { line: StatementLine }) {
   );
 }
 
-export default async function ResultadosPage({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | undefined>>;
-}) {
-  const { user, selected } = await getAppContext();
-  if (!ALLOWED_ROLES.includes(user.role)) notFound();
-  const sp = await searchParams;
-
-  if (!selected) {
-    return (
-      <div className="card p-10 text-center text-sm text-muted-foreground">
-        Tu usuario no tiene negocios asignados.
-      </div>
-    );
-  }
-
-  const { year, month } = parseMonth(sp.mes);
-  const mesValue = `${year}-${String(month).padStart(2, "0")}`;
-  const { lines, kpis } = await getEstadoResultados(selected, year, month);
+/** Tarjetas de resumen, tabla y notas: lo único que consulta datos (se carga con su esqueleto). */
+async function ResultadosContent({ venue, year, month }: { venue: { id: string; slug: string }; year: number; month: number }) {
+  const { lines, kpis } = await getEstadoResultados(venue, year, month);
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl">Resultados</h1>
-          <p className="text-sm text-muted-foreground">
-            Estado de resultados de {selected.name} · {MONTHS[month - 1]} {year}
-          </p>
-        </div>
-        <ResultadosActions key={mesValue} mes={mesValue} />
-      </header>
-
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Ingreso total" value={formatMXN(kpis.ingresoTotal)} tone="positive" icon={<TrendingUp className="h-4 w-4" />} />
         <StatCard label="Utilidad bruta" value={formatMXN(kpis.utilidadBruta)} tone={kpis.utilidadBruta >= 0 ? "positive" : "negative"} icon={<Scale className="h-4 w-4" />} />
@@ -138,6 +113,46 @@ export default async function ResultadosPage({
         de categoría Comisión (cargos menos abonos). Impuestos: estimado de 19.181% sobre la utilidad antes de impuestos; los egresos de
         categoría Impuestos y los préstamos entre negocios no se cuentan.
       </p>
+    </div>
+  );
+}
+
+export default async function ResultadosPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const { user, selected } = await getAppContext();
+  if (!ALLOWED_ROLES.includes(user.role)) notFound();
+  const sp = await searchParams;
+
+  if (!selected) {
+    return (
+      <div className="card p-10 text-center text-sm text-muted-foreground">
+        Tu usuario no tiene negocios asignados.
+      </div>
+    );
+  }
+
+  const { year, month } = parseMonth(sp.mes);
+  const mesValue = `${year}-${String(month).padStart(2, "0")}`;
+
+  return (
+    <div className="space-y-6">
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl">Resultados</h1>
+          <p className="text-sm text-muted-foreground">
+            Estado de resultados de {selected.name} · {MONTHS[month - 1]} {year}
+          </p>
+        </div>
+        <ResultadosActions key={mesValue} mes={mesValue} />
+      </header>
+
+      {/* key = mes: al cambiar de mes se muestra el esqueleto mientras llegan los datos nuevos. */}
+      <Suspense key={mesValue} fallback={<ResultadosSkeleton />}>
+        <ResultadosContent venue={selected} year={year} month={month} />
+      </Suspense>
     </div>
   );
 }
