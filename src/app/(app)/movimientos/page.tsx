@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, X, Download, ArrowDownToLine, ArrowLeftRight, Banknote, Percent, CreditCard } from "lucide-react";
+import { Search, X, ArrowDownToLine, ArrowLeftRight, Banknote, Percent, CreditCard } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { getVenueTransactions, getCategoryTotals, type TxFilters } from "@/lib/queries";
 import { TransactionsTable } from "@/components/transactions-table";
@@ -11,6 +11,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormMonthPicker } from "@/components/form-month-picker";
+import { MovimientosExcelLink } from "@/components/movimientos-excel-link";
 
 const FILTER_TRIGGER_CLASS =
   "h-8 w-full border-transparent bg-field-bg font-semibold text-foreground hover:bg-muted/50";
@@ -114,18 +115,14 @@ export default async function MovimientosPage({
           </p>
         </div>
         {/* Mismos filtros que la pantalla (mes, categoría, tipo, estatus, búsqueda). */}
-        <a
-          href={`/api/movimientos/export?${new URLSearchParams(
-            Object.entries({ mes: mesValue, category: sp.category, direction: sp.direction, status: sp.status, search: sp.search }).filter(
+        <MovimientosExcelLink
+          mes={mesValue}
+          filters={Object.fromEntries(
+            Object.entries({ category: sp.category, direction: sp.direction, status: sp.status, search: sp.search }).filter(
               (e): e is [string, string] => Boolean(e[1]) && e[1] !== "todas" && e[1] !== "todos",
             ),
-          )}`}
-          download
-          className={buttonVariants({ variant: "outline" })}
-        >
-          <Download className="h-4 w-4" />
-          Descargar Excel
-        </a>
+          )}
+        />
       </header>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">

@@ -1,11 +1,10 @@
 import { notFound } from "next/navigation";
-import { Download, TrendingUp, Wallet, Percent, Scale } from "lucide-react";
+import { TrendingUp, Wallet, Percent, Scale } from "lucide-react";
 import { getAppContext } from "@/lib/context";
 import { getEstadoResultados } from "@/lib/resultados/queries";
 import { PAY_COLUMNS, type StatementLine } from "@/lib/resultados/statement";
-import { FormMonthPicker } from "@/components/form-month-picker";
+import { ResultadosActions } from "@/components/resultados-actions";
 import { StatCard } from "@/components/stat-card";
-import { buttonVariants } from "@/components/ui/button";
 import { formatMXN, cn } from "@/lib/utils";
 
 const MONTHS = [
@@ -95,10 +94,7 @@ export default async function ResultadosPage({
             Estado de resultados de {selected.name} · {MONTHS[month - 1]} {year}
           </p>
         </div>
-        <a href={`/api/resultados/pdf?mes=${mesValue}`} download className={buttonVariants({ variant: "outline" })}>
-          <Download className="h-4 w-4" />
-          Descargar PDF
-        </a>
+        <ResultadosActions key={mesValue} mes={mesValue} />
       </header>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -113,11 +109,6 @@ export default async function ResultadosPage({
           icon={<Percent className="h-4 w-4" />}
         />
       </section>
-
-      <div>
-        <label className="label">Mes</label>
-        <FormMonthPicker name="mes" defaultValue={mesValue} />
-      </div>
 
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
