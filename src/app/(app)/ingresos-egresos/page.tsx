@@ -11,7 +11,7 @@ import { getDailySales } from "@/lib/daily-sales/queries";
 import { EntriesTable } from "@/components/entries-table";
 import { DailySalesManager, type DailySaleRow } from "@/components/daily-sales-manager";
 import { DailySaleDialogProvider } from "@/components/daily-sales-context";
-import { MonthPicker } from "@/components/month-picker";
+import { FormMonthPicker } from "@/components/form-month-picker";
 import { StatCard } from "@/components/stat-card";
 import { formatMXN } from "@/lib/utils";
 import type { EntryType } from "@/generated/prisma/enums";
@@ -128,7 +128,7 @@ export default async function IngresosEgresosPage({
       <form method="get" className="space-y-3">
         <div>
           <label className="label">Mes</label>
-          <MonthPicker name="mes" defaultValue={mesValue} />
+          <FormMonthPicker name="mes" defaultValue={mesValue} />
         </div>
 
         <div className="card flex flex-wrap items-end gap-3 p-4">
