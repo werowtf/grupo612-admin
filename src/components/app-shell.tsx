@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import { VENUE_LOGOS } from "@/lib/venue-logos";
+import { LOGOS_INVERT_ON_DARK } from "@/lib/venue-themes";
+import { cn } from "@/lib/utils";
 import type { UserRole } from "@/generated/prisma/enums";
 
 interface Props {
@@ -58,7 +60,11 @@ export function AppShell({
           <div key={pathname} className="animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
             {logo && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={logo} alt="" className="mb-4 h-16 w-auto" />
+              <img
+                src={logo}
+                alt=""
+                className={cn("mb-4 h-16 w-auto", selectedVenueSlug && LOGOS_INVERT_ON_DARK.has(selectedVenueSlug) && "dark:invert")}
+              />
             )}
             {children}
           </div>

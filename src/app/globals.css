@@ -13,7 +13,7 @@
 
   --color-danger: #EE4273;
   --color-danger-bg: #F8D2DD;
-  --color-success: var(--color-brand-600);
+  --color-success: #3AAF85; /* verde fijo: no sigue el acento de cada negocio */
   --color-success-bg: #EFFBF6;
   --color-abono: #3AAF85;
   --color-abono-bg: #E3F3EC;

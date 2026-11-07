@@ -3,6 +3,7 @@ import { getCurrentUser, getAccessibleVenues } from "@/lib/auth";
 import { getSelectedVenue, isOficinaSelected } from "@/lib/venue";
 import { roleLabels } from "@/lib/labels";
 import { AppShell } from "@/components/app-shell";
+import { venueThemeCss } from "@/lib/venue-themes";
 
 export default async function AppLayout({
   children,
@@ -18,18 +19,24 @@ export default async function AppLayout({
   const oficina = user.canAccessOficina && (await isOficinaSelected());
   const selected = oficina ? null : await getSelectedVenue(venues);
 
+  // Tema de color del negocio (sale del color de su logo); en Oficina, el verde de Grupo 612.
+  const themeCss = venueThemeCss(selected?.slug);
+
   return (
-    <AppShell
-      role={user.role}
-      venues={venues.map((v) => ({ id: v.id, name: v.name }))}
-      selectedVenueId={selected?.id ?? null}
-      selectedVenueSlug={selected?.slug ?? null}
-      canAccessOficina={user.canAccessOficina}
-      oficina={oficina}
-      userName={user.name}
-      roleLabel={roleLabels[user.role]}
-    >
-      {children}
-    </AppShell>
+    <>
+      {themeCss && <style dangerouslySetInnerHTML={{ __html: themeCss }} />}
+      <AppShell
+        role={user.role}
+        venues={venues.map((v) => ({ id: v.id, name: v.name }))}
+        selectedVenueId={selected?.id ?? null}
+        selectedVenueSlug={selected?.slug ?? null}
+        canAccessOficina={user.canAccessOficina}
+        oficina={oficina}
+        userName={user.name}
+        roleLabel={roleLabels[user.role]}
+      >
+        {children}
+      </AppShell>
+    </>
   );
 }
