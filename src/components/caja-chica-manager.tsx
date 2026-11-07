@@ -78,6 +78,8 @@ export function CajaChicaManager({
   gastos,
   categories,
   venues = [],
+  readOnly = false,
+  fixedFund = false,
 }: {
   /** "oficina": caja chica propia de Oficina (sin negocio ni Egreso asociado). */
   scope?: "venue" | "oficina";
@@ -88,6 +90,10 @@ export function CajaChicaManager({
   categories: string[];
   /** Sólo Oficina: negocios a los que se puede asignar un gasto. */
   venues?: { id: string; name: string }[];
+  /** Periodo cerrado: sólo consulta (sin altas, ediciones ni reposiciones). */
+  readOnly?: boolean;
+  /** Periodo con fondo fijo autorizado: no hay lista de fondos, el fondo es el autorizado. */
+  fixedFund?: boolean;
 }) {
   const router = useRouter();
   const oficina = scope === "oficina";
@@ -185,7 +191,11 @@ export function CajaChicaManager({
   return (
     <div className="space-y-6">
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Fondo aprobado" value={formatMXN(resumen.fondoTotal)} icon={<PiggyBank className="h-4 w-4" />} />
+        <StatCard
+          label={fixedFund ? (readOnly ? "Fondo autorizado" : "Fondo autorizado vigente") : "Fondo aprobado"}
+          value={formatMXN(resumen.fondoTotal)}
+          icon={<PiggyBank className="h-4 w-4" />}
+        />
         <StatCard
           label="Gastado"
           value={formatMXN(resumen.gastadoTotal)}
@@ -194,9 +204,9 @@ export function CajaChicaManager({
           icon={<HandCoins className="h-4 w-4" />}
         />
         <StatCard
-          label="Repuesto"
+          label={fixedFund ? "Reposiciones" : "Repuesto"}
           value={formatMXN(resumen.reembolsadoTotal)}
-          hint="Ya no cuenta contra el disponible"
+          hint={fixedFund ? "Gastos ya repuestos en el periodo" : "Ya no cuenta contra el disponible"}
           icon={<Undo2 className="h-4 w-4" />}
         />
         <StatCard
@@ -207,10 +217,12 @@ export function CajaChicaManager({
         />
       </section>
 
-      {/* Fondos aprobados */}
+      {/* Fondos aprobados (con fondo fijo vigente no aplica: el fondo es el autorizado) */}
+      {!fixedFund && (
       <div className="card min-w-0 space-y-3 p-5">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">Fondos aprobados</h2>
+          {!readOnly && (
           <Dialog open={fondoOpen} onOpenChange={onFondoOpenChange}>
             <DialogTrigger render={<Button type="button" size="sm" />}>
               <Plus className="h-4 w-4" />
@@ -267,6 +279,7 @@ export function CajaChicaManager({
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </div>
 
         {fondos.length === 0 ? (
@@ -291,6 +304,7 @@ export function CajaChicaManager({
                     <td className="px-3 py-2 text-muted-foreground">{f.notes ?? "—"}</td>
                     <td className="px-3 py-2 text-right tabular-nums font-semibold text-abono">{formatMXN(f.amount)}</td>
                     <td className="px-3 py-2 text-right">
+                      {!readOnly && (
                       <div className="flex items-center justify-end gap-1.5">
                         <Button type="button" variant="ghost" size="icon-sm" title="Editar" onClick={() => onEditFondo(f)}>
                           <Pencil className="h-3.5 w-3.5" />
@@ -320,6 +334,7 @@ export function CajaChicaManager({
                           </AlertDialogContent>
                         </AlertDialog>
                       </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -328,11 +343,13 @@ export function CajaChicaManager({
           </div>
         )}
       </div>
+      )}
 
       {/* Gastos */}
       <div className="card min-w-0 space-y-3 p-5">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">Gastos</h2>
+          {!readOnly && (
           <Dialog open={gastoOpen} onOpenChange={onGastoOpenChange}>
             <DialogTrigger render={<Button type="button" size="sm" />}>
               <Plus className="h-4 w-4" />
@@ -435,6 +452,7 @@ export function CajaChicaManager({
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </div>
 
         {reembolsoError && (
@@ -475,7 +493,11 @@ export function CajaChicaManager({
                       {formatMXN(g.amount)}
                     </td>
                     <td className="px-3 py-2">
-                      {g.reimbursed ? (
+                      {readOnly ? (
+                        <span className={`text-xs font-medium ${g.reimbursed ? "text-abono" : "text-muted-foreground"}`}>
+                          {g.reimbursed ? "Repuesto" : "Pendiente"}
+                        </span>
+                      ) : g.reimbursed ? (
                         <div className="flex items-center gap-1.5">
                           <span className="inline-flex items-center gap-1 text-xs font-medium text-abono">
                             <Check className="h-3.5 w-3.5" />
@@ -505,6 +527,7 @@ export function CajaChicaManager({
                       )}
                     </td>
                     <td className="px-3 py-2 text-right">
+                      {!readOnly && (
                       <div className="flex items-center justify-end gap-1.5">
                         <Button type="button" variant="ghost" size="icon-sm" title="Editar" onClick={() => onEditGasto(g)}>
                           <Pencil className="h-3.5 w-3.5" />
@@ -534,6 +557,7 @@ export function CajaChicaManager({
                           </AlertDialogContent>
                         </AlertDialog>
                       </div>
+                      )}
                     </td>
                   </tr>
                 ))}

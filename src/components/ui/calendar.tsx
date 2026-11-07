@@ -24,7 +24,8 @@ function Calendar({
         month: "flex flex-col gap-3",
         month_caption: "flex justify-center pt-1 relative items-center w-full capitalize",
         caption_label: "text-sm font-semibold",
-        nav: "flex items-center gap-1 absolute inset-x-0 top-0 justify-between px-1",
+        // z-10: el título del mes (relative, ancho completo) quedaba encima y se llevaba el clic de las flechas.
+        nav: "flex items-center gap-1 absolute inset-x-0 top-0 z-10 justify-between px-1",
         button_previous: cn(
           buttonVariants({ variant: "ghost", size: "icon-sm" }),
           "opacity-70 hover:opacity-100",

@@ -763,6 +763,19 @@ model OficinaCajaChicaGasto {
   @@index([venueId])
 }
 
+/// Periodo de control de la caja chica de Oficina. Cada periodo arranca en
+/// `startDate` con un fondo fijo autorizado y dura hasta el inicio del siguiente;
+/// los fondos y gastos se asignan por fecha. Lo anterior al primer periodo es el
+/// "periodo inicial" (sin fondo fijo). El vigente es el de `startDate` más reciente.
+model OficinaCajaChicaPeriodo {
+  id          String   @id @default(cuid())
+  startDate   DateTime @unique
+  fondoFijo   Decimal  @db.Decimal(14, 2)
+  notes       String?
+  createdById String?
+  createdAt   DateTime @default(now())
+}
+
 enum PrestamoEstado {
   VIGENTE // aún no se reembolsa
   REEMBOLSADO

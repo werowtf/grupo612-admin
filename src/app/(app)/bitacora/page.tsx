@@ -54,6 +54,8 @@ const actionLabels: Record<string, string> = {
   "oficinaCajaChicaGasto.eliminar": "Eliminó gasto de caja chica (Oficina)",
   "oficinaCajaChicaGasto.reembolsar": "Marcó gasto de Oficina como repuesto",
   "oficinaCajaChicaGasto.pendiente": "Marcó gasto de Oficina como pendiente",
+  "oficinaCajaChicaPeriodo.abrir": "Cerró el periodo de caja chica (Oficina) y abrió uno nuevo",
+  "oficinaCajaChicaPeriodo.editar": "Editó el periodo vigente de caja chica (Oficina)",
   "oficinaNota.crear": "Creó nota de Oficina",
   "oficinaNota.editar": "Editó nota de Oficina",
   "oficinaNota.eliminar": "Eliminó nota de Oficina",

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { guardarOficinaGasto, eliminarOficinaGasto, OficinaGastoError } from "@/lib/caja-chica/oficina-gasto";
+import { abrirPeriodo, editarPeriodoVigente, PeriodoError } from "@/lib/oficina/periodos";
 import type { CajaChicaActionState } from "@/app/(app)/caja-chica/actions";
 
 /** La caja chica de Oficina la administra cualquier usuario con acceso a Oficina. */
@@ -165,5 +166,60 @@ export async function deleteOficinaGastoAction(id: string): Promise<CajaChicaAct
   } catch (err) {
     console.error("Error al eliminar gasto de caja chica de Oficina:", err);
     return { error: "No se pudo eliminar." };
+  }
+}
+
+/** Cierra el periodo vigente y abre uno nuevo con su fondo fijo autorizado. */
+export async function abrirOficinaPeriodoAction(
+  _prev: CajaChicaActionState,
+  formData: FormData,
+): Promise<CajaChicaActionState> {
+  const dateStr = String(formData.get("date") ?? "");
+  const fondoFijo = Number(formData.get("fondoFijo"));
+  const notes = String(formData.get("notes") ?? "").trim() || null;
+  try {
+    const user = await requireOficina();
+    const p = await abrirPeriodo({ dateStr, fondoFijo, notes, userId: user.id });
+    await logAudit({
+      userId: user.id,
+      action: "oficinaCajaChicaPeriodo.abrir",
+      entity: "OficinaCajaChicaPeriodo",
+      entityId: p.id,
+      meta: { startDate: dateStr, fondoFijo },
+    });
+    revalidate();
+    return { ok: true };
+  } catch (err) {
+    if (err instanceof PeriodoError) return { error: err.message };
+    console.error("Error al abrir periodo de caja chica de Oficina:", err);
+    return { error: "No se pudo abrir el periodo." };
+  }
+}
+
+/** Corrige el periodo vigente (fecha de inicio, fondo fijo o notas). */
+export async function editarOficinaPeriodoAction(
+  _prev: CajaChicaActionState,
+  formData: FormData,
+): Promise<CajaChicaActionState> {
+  const id = String(formData.get("id") ?? "");
+  const dateStr = String(formData.get("date") ?? "");
+  const fondoFijo = Number(formData.get("fondoFijo"));
+  const notes = String(formData.get("notes") ?? "").trim() || null;
+  try {
+    const user = await requireOficina();
+    const p = await editarPeriodoVigente({ id, dateStr, fondoFijo, notes });
+    await logAudit({
+      userId: user.id,
+      action: "oficinaCajaChicaPeriodo.editar",
+      entity: "OficinaCajaChicaPeriodo",
+      entityId: p.id,
+      meta: { startDate: dateStr, fondoFijo },
+    });
+    revalidate();
+    return { ok: true };
+  } catch (err) {
+    if (err instanceof PeriodoError) return { error: err.message };
+    console.error("Error al editar periodo de caja chica de Oficina:", err);
+    return { error: "No se pudo guardar el periodo." };
   }
 }
