@@ -2,7 +2,7 @@ import { cache, Suspense } from "react";
 import Link from "next/link";
 import { Plus, TrendingDown, Tags } from "lucide-react";
 import { getAppContext } from "@/lib/context";
-import { getEntrySummary, getVenueEntries, getVenueCategories, type EntryFilters } from "@/lib/entries/queries";
+import { getEntrySummary, getVenueEntries, getVenueCategories, MAX_ENTRY_ROWS, type EntryFilters } from "@/lib/entries/queries";
 import { EntriesTable } from "@/components/entries-table";
 import { EgresosFilters } from "@/components/entry-type-filters";
 import { FormMonthPicker } from "@/components/form-month-picker";
@@ -34,7 +34,7 @@ const loadEgresos = cache(async (venueId: string, year: number, month: number, s
     type: "EGRESO",
     category: category || undefined,
     search: search || undefined,
-    take: 300,
+    take: MAX_ENTRY_ROWS,
   };
   const [summary, egresos, categories] = await Promise.all([
     getEntrySummary(venueId, year, month),
@@ -60,6 +60,11 @@ async function EgresosTable(q: Query) {
       <h2 className="text-base font-semibold">
         Egresos <span className="text-sm font-normal text-muted-foreground">· {egresos.total}</span>
       </h2>
+      {egresos.total > egresos.rows.length && (
+        <p className="rounded-lg bg-pending-bg px-3 py-2 text-xs text-foreground">
+          Se muestran los primeros {egresos.rows.length} de {egresos.total} egresos del mes. Usa los filtros para ver el resto.
+        </p>
+      )}
       <EgresosFilters
         categories={categories.EGRESO}
         defaultSearch={filters.search ?? ""}

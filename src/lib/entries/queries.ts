@@ -67,6 +67,13 @@ async function searchEntryIds(venueId: string, range: { gte: Date; lt: Date }, s
   return rows.map((r) => r.id);
 }
 
+/**
+ * Máximo de renglones que se listan por tipo y mes en Ingresos/Egresos. Un mes con más movimientos
+ * se corta por el final (la lista va de la fecha más antigua a la más reciente), así que el límite
+ * debe quedar muy por encima de lo real; las pantallas avisan si aun así se recorta.
+ */
+export const MAX_ENTRY_ROWS = 2000;
+
 export async function getVenueEntries(venueId: string, filters: EntryFilters) {
   const range = monthRange(filters.year, filters.month);
   const searchIds = filters.search ? await searchEntryIds(venueId, range, filters.search) : null;

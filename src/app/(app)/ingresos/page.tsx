@@ -2,7 +2,7 @@ import { cache, Suspense } from "react";
 import Link from "next/link";
 import { Plus, TrendingUp, Banknote, Tags } from "lucide-react";
 import { getAppContext } from "@/lib/context";
-import { getEntrySummary, getVenueEntries, getVenueCategories, type EntryFilters } from "@/lib/entries/queries";
+import { getEntrySummary, getVenueEntries, getVenueCategories, MAX_ENTRY_ROWS, type EntryFilters } from "@/lib/entries/queries";
 import { getDailySales } from "@/lib/daily-sales/queries";
 import { EntriesTable } from "@/components/entries-table";
 import { DailySalesManager, type DailySaleRow } from "@/components/daily-sales-manager";
@@ -37,7 +37,7 @@ const loadIngresos = cache(async (venueId: string, year: number, month: number, 
     type: "INGRESO",
     category: category || undefined,
     search: search || undefined,
-    take: 300,
+    take: MAX_ENTRY_ROWS,
   };
 
   const [summary, ingresos, categories, { rows: dailySales, propinas: propinasDia }] = await Promise.all([
@@ -93,6 +93,11 @@ async function IngresosTables(q: Query) {
         <h2 className="text-base font-semibold">
           Otros ingresos <span className="text-sm font-normal text-muted-foreground">· {ingresos.total}</span>
         </h2>
+        {ingresos.total > ingresos.rows.length && (
+          <p className="rounded-lg bg-pending-bg px-3 py-2 text-xs text-foreground">
+            Se muestran los primeros {ingresos.rows.length} de {ingresos.total} ingresos del mes. Usa los filtros para ver el resto.
+          </p>
+        )}
         <IngresosFilters
           categories={categories.INGRESO}
           defaultSearch={filters.search ?? ""}
