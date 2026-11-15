@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh vps docker ps)",
+      "Bash(ssh vps docker ps *)",
+      "Bash(ssh vps docker logs *)",
+      "Bash(ssh vps docker stats --no-stream*)",
+      "Bash(ssh vps ls *)",
+      "Bash(ssh vps df -h*)",
+      "Bash(ssh vps free -h*)",
+      "Bash(ssh vps uptime)"
+    ]
+  }
+}
